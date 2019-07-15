@@ -1,0 +1,332 @@
+#!/usr/bin/perl -w
+
+#    debsigs: Package signing/verification system
+#    Copyright (C) 2000   Progeny Linux Systems, Inc. <jgoerzen@progeny.com>
+#    Copyright (C) 2009   Peter Pentchev <roam@ringlet.net>
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+use strict;
+use Debian::debsigs::arf;
+use Debian::debsigs::debsigsmain;
+use Debian::debsigs::forktools ':all';
+use Debian::debsigs::gpg;
+use Getopt::Long;
+use List::Util qw(first);
+use IO::File;
+use POSIX ":sys_wait_h";
+
+sub cmd_sign($);
+sub cmd_list($);
+sub cmd_delete($);
+sub syntax($);
+sub version();
+
+Getopt::Long::Configure('no_ignore_case');
+
+my ($delete, $sign, $key, $partition, $user, $password, $list, $showhelp, $showversion);
+my ($verbose, $verify);
+
+# Parse the command line; @ARGV will then contain filenames to operate on.
+
+my($result) =  GetOptions("sign|s=s" => \$sign,
+					   "key-uid|u=s" => \$key,
+					 "partition|p=s" => \$partition,
+						  "user=s" => \$user,
+                      "password|w=s" => \$password,
+							"help|h" => \$showhelp,
+                          "list|l|t" => \$list,
+                          "delete=s" => \$delete,
+                        "verbose|v+" => \$verbose,
+                    "verify|check|c" => \$verify,
+		         "version|V" => \$showversion);
+
+version() if $showversion;
+syntax(0) if $showhelp;
+exit(0) if $showhelp || $showversion;
+
+unless (($#ARGV >= 0) && $result) {
+  syntax(1);
+  exit(1);
+}
+
+# Process each file.
+
+foreach my $file (@ARGV) {
+  print " *** Processing file $file\n" if (defined($verbose) && $verbose >= 1);
+  if ($sign) {
+    cmd_sign($file);
+  } elsif ($list) {
+    cmd_list($file);
+  } elsif ($delete) {
+    cmd_delete($file);
+  } elsif ($verify) {
+    die "Verify not yet implemented.";
+  }
+}
+
+sub cmd_sign($) {
+  my $file = shift @_;
+  if (length($sign) > 10) {
+    die "Signature type must be 10 characters or less.";
+  }
+
+  unless (-r $file && -f $file) {
+    die "File $file does not exist, is not a file, or is not readable.";
+  }
+
+  my $arobj = new Debian::debsigs::arf($file);
+  my @armembers = $arobj->contents();
+  my $member_ctrl = first { /^control\.tar(?:\.gz|\.xz)?$/ } @armembers;
+  my $member_data = first { /^data\.tar(?:\.gz|\.xz|\.bz2|\.lzma)?$/ } @armembers;
+
+  my ($arfd,$arpid) = $arobj->getfiles("debian-binary", $member_ctrl, $member_data);
+  my $dir = mktempdir();
+  my $sigfile = new IO::File(">$dir/_gpg$sign") or die
+    "Couldn't open: $!";
+
+  # forktools::assertsuccess($arpid, 'ar');
+
+  # Why doesn't this work?
+
+  #  my $gpgout = forktools::forkboth($arfd, $sigfile, "/usr/bin/gpg",
+  #"--detach-sign");
+
+  #my @cmdline = ("gpg", "--openpgp", "--detach-sign");
+  my @cmdline = ("ucl sign -i /dev/stdin --out-format PGP -hash SHA256 -o /dev/stdout");
+
+  if ($key) {
+    $cmdline[0].=" -u $key";
+	#push (@cmdline, "-u", $key);
+  } else {
+	die "key uid is required -u";
+  }
+
+  if ($partition) {
+    $cmdline[0].=" -p $partition";
+    #push (@cmdline, "-p", $partition);
+  }
+
+  if ($user) {
+    $cmdline[0].=" --user $user";
+  }
+  
+  if ($password) {
+    $cmdline[0].=" -w $password";
+  }
+  if ($verbose) {
+    warn("RUNNING: " . join(" ", @cmdline));
+  }
+
+  my ($gpgout, $gpgpid)
+    = forkreader($arfd, @cmdline);
+  my($line);
+  while (defined($line = <$gpgout>)) {
+    print $sigfile $line;
+  }
+
+  close $sigfile;
+
+  Debian::debsigs::forktools::assertsuccess($arpid, 'ar', 1);
+  Debian::debsigs::forktools::assertsuccess($gpgpid, "gpg", 1);
+
+  $arobj->setfile("$dir/_gpg$sign");
+  system("rm -rf $dir");
+  $arobj->fixup();
+  exit(0);
+}
+
+sub cmd_list($) {
+  my $file = shift @_;
+  my $arobj = new Debian::debsigs::arf($file);
+  my @list = $arobj->contents();
+
+  print "GPG signatures in $file:\n";
+
+  foreach my $sigfile (@list) {
+    if ($sigfile =~ /^_gpg/) {
+      my ($sig) = $sigfile =~ /^_gpg(.+)$/;
+      my ($arfd, $arpid) = $arobj->getfiles($sigfile);
+      my ($gpgkey, $gpgdate) = Debian::debsigs::gpg::getkeyfromfd($arfd);
+      Debian::debsigs::forktools::assertsuccess($arpid, 'ar');
+      if ($verbose) {
+        my $gpgkeyname = Debian::debsigs::gpg::getkeynamefromid($gpgkey);
+        print "$sig: signed by ";
+        print $gpgkeyname ? $gpgkeyname : $gpgkey;
+        print " on ", scalar(localtime($gpgdate)), "\n";
+      } else {
+        print "$sig: signed by $gpgkey on ", scalar(localtime($gpgdate)), "\n";
+      }
+    }
+  }
+
+  print " *** NO ATTEMPT HAS BEEN MADE TO VERIFY THE LISTED SIGNATURES ***\n";
+  exit(0);
+}
+
+sub cmd_delete($) {
+  my $file = shift @_;
+  my $arobj = new Debian::debsigs::arf($file);
+  my @list = $arobj->contents();
+
+  die "File $file is not readable or does not exist." unless (-f $file);
+
+  unless(scalar(grep(/^_gpg$delete$/, @list))) {
+    die "File $file does not contain signature type $delete to remove.\n";
+  }
+
+  if ($arobj->delete("_gpg$delete")) {
+    die "ar failed: $!\n";
+  }
+}
+
+
+sub mktempdir() {
+  mkdir("/tmp/debsigndeb.$$", 0700) or die "couldn't mkdir: $!";
+  return "/tmp/debsigndeb.$$";
+}
+
+sub syntax($) {
+  my ($err) = @_;
+  my $s = <<EOUSAGE ;
+Usage:
+	debsigs --sign=type [--default-key=keyID] [-v] file [file...]
+		options:
+		-u [--key-uid]     UID of private key
+		-p [--partition]   Partition name (optional)
+		--user	   UKC username to perform sign operation (optional)
+		-w [--password]	   Password of UKC username to perform sign operation (optional)
+
+The signature type will usually be one of 'origin', 'maint', or 'archive';
+see the manual page or the /usr/share/doc/debsigs/signature-types.txt file
+for details.
+EOUSAGE
+
+  if ($err) {
+    print STDERR "$s";
+    exit(1);
+  } else {
+    print "$s";
+  }
+}
+
+sub version() {
+  print "debsigs $Debian::debsigs::debsigsmain::VERSION\n";
+}
+
+__END__
+
+=head1 NAME
+
+debsigs - process signatures in .deb packages
+
+=head1 SYNOPSIS
+
+B<debsigs> B<--list>|B<-l> [B<-v>] file [file...]
+
+B<debsigs> B<--sign=type> [B<--default-key=keyID>] [B<-v>] file [file...]
+
+B<debsigs> B<--verify>|B<--check>|B<-c> file [file...]
+
+B<debsigs> B<--delete=type> file [file...]
+
+=head1 DESCRIPTION
+
+I<debsigs> is used to manipulate the cryptographic signatures stored inside
+a .deb file.  It is not used to verify those signatures; for that purpose,
+see debsig-verify(1).
+
+=head1 OPTIONS
+
+=over 5
+
+=item B<--list> or B<-l> or B<-t>
+
+Lists the signatures found in the specified file.
+
+=item B<--sign=type>
+
+Creates a new signature of the type specified in the given file.
+The signature will be created using the default key for your GPG keyring.
+See L<SIGNATURE TYPES> below for possible values of the C<type> field.
+
+=item B<--default-key=keyID>
+
+Uses a key other than the default for signing the package.
+
+=item B<--secret-keyring=file> or B<-K file>
+
+Uses a keyring other than the default for signing the package.  This
+option is passed along to GPG verbatim; see the discussion in the gpg(1)
+manpage for information on how to specify the keyring file.
+
+=item B<-v>
+
+Displays verbose output.
+
+=item B<--verify> or B<--check> or B<-c>
+
+Invokes debsig-verify to check the validity of the signature on this
+package.
+
+=item B<--delete=type>
+
+Deletes the signature of the specified type from the package.
+
+=back
+
+=head1 SIGNATURE TYPES
+
+A Debian package may carry different types of signatures.  The most
+commonly-used ones are:
+
+=over 4
+
+=item * C<origin>
+
+The official signature of the organization which distributes
+the package, usually the Debian Project or a GNU/Linux distribution
+derived from it.  This signature may be added automatically.
+
+=item * C<maint>
+
+The signature of the maintainer of the Debian package.  This signature
+should be added by the maintainer before uploading the package.
+
+=item * C<archive>
+
+An automatically-added signature renewed periodically to ensure
+that a package downloaded from an online archive is indeed
+the latest version distributed by the organization.
+
+=back
+
+See the F</usr/share/doc/debsigs/signing-policy.txt> file for
+more information and rationale for the different signature types.
+
+=head1 FUTURE DIRECTIONS
+
+It would be nice to have a command-line option to change the command used
+for signing, instead of hard-coding "gpg".
+
+=head1 AUTHOR
+
+John Goerzen <jgoerzen@progenylinux.com>
+
+=head1 SEE ALSO
+
+debsig-verify(1), gpg(1)
+
+=cut
