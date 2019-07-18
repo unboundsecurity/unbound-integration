@@ -18,11 +18,11 @@ from pypkcs11.object_attr_lookup import c_find_objects
 from pypkcs11.object_attr_lookup import c_get_attribute_value
 
 def check_rv(rv,op):
-    if (rv != CKR_OK): halt(op)
+    if (rv != CKR_OK): halt(op,rv)
 
-def halt(message):
+def halt(message,rv):
     print("Error : " + message, file=sys.stderr)
-    sys.exit(0)
+    sys.exit(rv)
 
 parser = \
     argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
