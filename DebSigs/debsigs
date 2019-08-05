@@ -163,7 +163,7 @@ Usage:
 	
 	debsigs --version
 The signature type will usually be one of 'origin', 'maint', or 'archive';
-see the manual page or the degsigs.txt or debsigs.txt.gz file for details.
+see the manual page or the debsigs.txt or debsigs.txt.gz file for details.
 EOUSAGE
 
   if ($err) {
