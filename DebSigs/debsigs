@@ -68,12 +68,6 @@ foreach my $file (@ARGV) {
   print " *** Processing file $file\n" if (defined($verbose) && $verbose >= 1);
   if ($sign) {
     cmd_sign($file);
-  } elsif ($list) {
-    cmd_list($file);
-  } elsif ($delete) {
-    cmd_delete($file);
-  } elsif ($verify) {
-    die "Verify not yet implemented.";
   }
 }
 
@@ -96,27 +90,17 @@ sub cmd_sign($) {
   my $dir = mktempdir();
   my $sigfile = new IO::File(">$dir/_gpg$sign") or die
     "Couldn't open: $!";
-
-  # forktools::assertsuccess($arpid, 'ar');
-
-  # Why doesn't this work?
-
-  #  my $gpgout = forktools::forkboth($arfd, $sigfile, "/usr/bin/gpg",
-  #"--detach-sign");
-
-  #my @cmdline = ("gpg", "--openpgp", "--detach-sign");
+	
   my @cmdline = ("ucl sign -i /dev/stdin --out-format PGP -hash SHA256 -o /dev/stdout");
 
   if ($key) {
     $cmdline[0].=" -u $key";
-	#push (@cmdline, "-u", $key);
   } else {
 	die "key uid is required -u";
   }
 
   if ($partition) {
     $cmdline[0].=" -p $partition";
-    #push (@cmdline, "-p", $partition);
   }
 
   if ($user) {
@@ -130,66 +114,34 @@ sub cmd_sign($) {
     warn("RUNNING: " . join(" ", @cmdline));
   }
 
+  #my $gpgout=`@cmdline 2>/dev/null`;
   my ($gpgout, $gpgpid)
     = forkreader($arfd, @cmdline);
+  
+  #print "gpgout : $gpgout\n";
+  
+  
+
+  
   my($line);
   while (defined($line = <$gpgout>)) {
+    if (index($line, "Error") != -1) {
+		print "$line\n";
+		last;
+	}
     print $sigfile $line;
   }
 
   close $sigfile;
 
+  Debian::debsigs::forktools::assertsuccess($gpgpid, "ucl", 1);
   Debian::debsigs::forktools::assertsuccess($arpid, 'ar', 1);
-  Debian::debsigs::forktools::assertsuccess($gpgpid, "gpg", 1);
 
   $arobj->setfile("$dir/_gpg$sign");
   system("rm -rf $dir");
   $arobj->fixup();
+  print "Archive signed successfully\n";
   exit(0);
-}
-
-sub cmd_list($) {
-  my $file = shift @_;
-  my $arobj = new Debian::debsigs::arf($file);
-  my @list = $arobj->contents();
-
-  print "GPG signatures in $file:\n";
-
-  foreach my $sigfile (@list) {
-    if ($sigfile =~ /^_gpg/) {
-      my ($sig) = $sigfile =~ /^_gpg(.+)$/;
-      my ($arfd, $arpid) = $arobj->getfiles($sigfile);
-      my ($gpgkey, $gpgdate) = Debian::debsigs::gpg::getkeyfromfd($arfd);
-      Debian::debsigs::forktools::assertsuccess($arpid, 'ar');
-      if ($verbose) {
-        my $gpgkeyname = Debian::debsigs::gpg::getkeynamefromid($gpgkey);
-        print "$sig: signed by ";
-        print $gpgkeyname ? $gpgkeyname : $gpgkey;
-        print " on ", scalar(localtime($gpgdate)), "\n";
-      } else {
-        print "$sig: signed by $gpgkey on ", scalar(localtime($gpgdate)), "\n";
-      }
-    }
-  }
-
-  print " *** NO ATTEMPT HAS BEEN MADE TO VERIFY THE LISTED SIGNATURES ***\n";
-  exit(0);
-}
-
-sub cmd_delete($) {
-  my $file = shift @_;
-  my $arobj = new Debian::debsigs::arf($file);
-  my @list = $arobj->contents();
-
-  die "File $file is not readable or does not exist." unless (-f $file);
-
-  unless(scalar(grep(/^_gpg$delete$/, @list))) {
-    die "File $file does not contain signature type $delete to remove.\n";
-  }
-
-  if ($arobj->delete("_gpg$delete")) {
-    die "ar failed: $!\n";
-  }
 }
 
 
@@ -208,7 +160,8 @@ Usage:
 		-p [--partition]   Partition name (optional)
 		--user	   UKC username to perform sign operation (optional)
 		-w [--password]	   Password of UKC username to perform sign operation (optional)
-
+	
+	debsigs --version
 The signature type will usually be one of 'origin', 'maint', or 'archive';
 see the manual page or the /usr/share/doc/debsigs/signature-types.txt file
 for details.
