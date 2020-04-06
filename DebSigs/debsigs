@@ -91,7 +91,7 @@ sub cmd_sign($) {
   my $sigfile = new IO::File(">$dir/_gpg$sign") or die
     "Couldn't open: $!";
 	
-  my @cmdline = ("ucl sign -i /dev/stdin --out-format PGP -hash SHA256 -o /dev/stdout");
+  my @cmdline = ("ucl sign -i /dev/stdin --out-format PGP-ARMOR -hash SHA256");
 
   if ($key) {
     $cmdline[0].=" -u $key";
