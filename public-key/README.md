@@ -1,7 +1,9 @@
 # Unbound Public Key
 
 Unbound packages are provided with a signature that you can use to verify the integrity of the package. In addition, the certicate can be used to verify the public key.
- 
+
+## Verify a package using the public key
+
 Use the following procedure to verify the package.
 
 1. Download Unbound's public key from this repo. The file is called ub.pgp.
@@ -68,7 +70,8 @@ Use the following procedure to verify the package.
 	
 	`debsig-verify -v <Unbound package>.deb`
 
-## Verify the Certificate
+## Verify the certificate
+
 Use the following procedure to verify the certificate.
 
 1. Validate with the certificate authority directly using this command:
