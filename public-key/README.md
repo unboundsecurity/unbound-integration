@@ -6,21 +6,27 @@ Use the following procedure to verify the package.
 
 1. Download Unbound's public key from this repo. The file is called ub.pgp.
 1. To verify the RPM distro:
+
      a. Import the Unbound public key.
 	 
-	 `rpm --import ub.pgp`
-	 a. Verify the RPM using the command:
+     `rpm --import ub.pgp`
+
+    a. Verify the RPM using the command:
 	 
-	 `rpm -K <Unbound package>.rpm`
+     `rpm -K <Unbound package>.rpm`
 1. To verify the DEB distro in Ubuntu:
-    a. Make a keyring folder and import  public key into it:
+
+    a. Make a keyring folder and import the Unbound public key into it:
+    
 	```
 	mkdir /usr/share/debsig/keyrings/8C96D305FA28E1EF
 	touch /usr/share/debsig/keyrings/8C96D305FA28E1EF/debsig.gpg
 	gpg --no-default-keyring --keyring /usr/share/debsig/keyrings/8C96D305FA28E1EF/debsig.gpg --import ub.pgp
 	```
 	a. Make a folder for the file verification policy:
+	
 	`mkdir /etc/debsig/policies/8C96D305FA28E1EF`
+	
 	a. In the folder, create the policy file.
 	
 	- The policy file for Ubuntu 16.04:
