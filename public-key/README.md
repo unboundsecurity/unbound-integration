@@ -12,10 +12,20 @@ Use the following procedure to verify the package.
      a. Import the Unbound public key.
 	 
      `rpm --import ub.pgp`
+	 
+	 No response indicates success.
 
     b. Verify the RPM using the command:
 	 
      `rpm -K <Unbound package>.rpm`
+	 
+	Results:
+    - OK: `<filepath.rpm> :  md5 OK`
+	
+    - Unknown: `<filepath.rpm> :  md5 NOT OK (MISSING KEYS:  PGP#<pgp-keyid>)` This response indicates that the validation key could not be found in the RPM repository. 
+
+    - Bad - any other output - file is corrupted.
+	
 1. To verify the DEB distro in Ubuntu:
 
     a. Make a keyring folder and import the Unbound public key into it:
@@ -25,6 +35,9 @@ Use the following procedure to verify the package.
 	touch /usr/share/debsig/keyrings/8C96D305FA28E1EF/debsig.gpg
 	gpg --no-default-keyring --keyring /usr/share/debsig/keyrings/8C96D305FA28E1EF/debsig.gpg --import ub.pgp
 	```
+	
+	**Note:** The 16 character directory name used in these commands is the last 16 characters of the key fingerprint. You can find the fingerprint using the command: `gpg  --with-fingerprint ub.pgp`
+	
 	
     b. Make a folder for the file verification policy:
 	
@@ -69,7 +82,23 @@ Use the following procedure to verify the package.
     d. Verify the DEB file.
 	
 	`debsig-verify -v <Unbound package>.deb`
+	
+	The expected output:
 
+    ```
+	debsig: Starting verification for: ekm-client_2.0.2007.45954.deb9_amd64.deb
+	debsig: Using policy directory: /etc/debsig/policies/8C96D305FA28E1EF
+	debsig:   Parsing policy file: /etc/debsig/policies/8C96D305FA28E1EF/unbound.pol
+	debsig:     Checking Selection group(s).
+	debsig:       Processing 'origin' key...
+	debsig:     Selection group(s) passed, policy is usable.
+	debsig: Using policy file: /etc/debsig/policies/8C96D305FA28E1EF/unbound.pol
+	debsig:     Checking Verification group(s).
+	debsig:       Processing 'origin' key...
+	debsig:     Verification group(s) passed, deb is validated.
+	debsig: Verified package from 'UnboundTech' 
+    ```
+	
 ## Verify the certificate
 
 Use the following procedure to verify the certificate.
@@ -301,4 +330,31 @@ Use the following procedure to verify the certificate.
 
     `gpg2 -v --list-packets ub.gpg`
 
+    The expected response is:
+	
+	```
+    gpg: armor header: Version: EKM
+    # off=0 ctb=99 tag=6 hlen=3 plen=269
+    :public key packet:
+            version 4, algo 1, created 1527724800, expires 0
+            pkey[0]: E4E832245995EA119ABDE668EA148F923CCAB9AE0C3B6502BA890B9D27DE249A8DF9F77A3FA96BA7C0EEB704DF8F05DF0800DC287056603CB12D7FC2CA5613D99C72C82D7B780ABF651014ED4CF6F6ECDC4FFCB3ADC42CA4DF80C41004833BE7A596FC39887C1C082FC4C3615A60A96E883AF00C890024DD4F39E90204EA1BF1ACE388C6C468ACA89C2299C10291EE43499DAE9510554FA0DB86B8F968B48230EF911ADE3A4FEFCB549FBE6B11EA1FE1A3DCD6C89EE0D26CA3C3730B345355C3102F6F5AF5A11E59D0F17E2240DEC06BF99850A2BCE658A6D72CDCDECF62AFC51E8E0250165E2177803EFD9943BB11993FA51C3C61182B56162D139179A0C071
+            pkey[1]: 010001
+            keyid: 8C96D305FA28E1EF
+    # off=272 ctb=b4 tag=13 hlen=2 plen=7
+    :user ID packet: "unbound"
+    # off=281 ctb=89 tag=2 hlen=3 plen=313
+    :signature packet: algo 1, keyid 8C96D305FA28E1EF
+            version 4, created 1527724800, md5len 0, sigclass 0x13
+            digest algo 8, begin of digest 1d 9c
+            hashed subpkt 2 len 4 (sig created 2018-05-31)
+            hashed subpkt 27 len 1 (key flags: 2F)
+            hashed subpkt 11 len 6 (pref-sym-algos: 9 8 7 3 2 1)
+            hashed subpkt 21 len 5 (pref-hash-algos: 8 2 9 10 11)
+            hashed subpkt 22 len 3 (pref-zip-algos: 2 3 1)
+            hashed subpkt 30 len 1 (features: 01)
+            hashed subpkt 23 len 1 (keyserver preferences: 80)
+            subpkt 16 len 8 (issuer key ID 8C96D305FA28E1EF)
+            data: 403D97670F754106E6B8D40A27AB95826805198C641450459D15C53234677951270E120F00319C6D0384AEF4F425E93AF9A4B905909E17631D4B8C38A89C20863D45EAA03903EE3B62FF50872ED118FDCE1DBB4FB8026CC31970D2CF22D32614AA36522AC5D14F528131C67ED9BC467247711FF402FC2110F1E8CFC3F5EE845493CE8F353901D79B704EBD952FA8196DA89036745E644E7967179E79C620099939A5488D81DC6DDA4A1AF191B6DC560E19C32ED73B14D411EAE97BFF3AA826A663E536C8CAB05E72B6274DDEED3893809745304077EE245F18E0DD85EB49954A94D8BE460D4E5AAEC2D369FCD0658E10781D93C423496B311BB9562940F30F6D
+    
+	```
 1. Check the details of the public key and see that the same modulus and public exponent exists in both files, i.e. this is the same key/certificate.
