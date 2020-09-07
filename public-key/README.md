@@ -193,7 +193,7 @@ Use the following procedure to verify the certificate.
              8f:f9:05:dc
 	````
 
-1. Check if the certificate is active using this command. Note that DigiCert is used as an example.
+1. Check if the certificate is active using this command.
     
 	`openssl ocsp -no_nonce -issuer <OSCPCHAINPUBLICKEYNAME> -cert ub-fullchain.pem -VAfile <OSCPCHAINPUBLICKEYNAME> -text -url http://ocsp.digicert.com -respout ocsptest`
 
