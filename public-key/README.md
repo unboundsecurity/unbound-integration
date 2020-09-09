@@ -328,7 +328,7 @@ Use the following procedure to verify the certificate.
 
 1. GPG shows the content of the public key file using the command:
 
-    `gpg2 -v --list-packets ub.gpg`
+    `gpg2 -v --list-packets unbound.pgp`
 
     The expected response is:
 	
