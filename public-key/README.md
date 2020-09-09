@@ -6,12 +6,12 @@ Unbound packages are provided with a signature that you can use to verify the in
 
 Use the following procedure to verify the package.
 
-1. Download Unbound's public key from this repo. The file is called ub.pgp.
+1. Download Unbound's public key from this repo. The file is called unbound.pgp.
 1. To verify the RPM distro:
 
      a. Import the Unbound public key.
 	 
-     `rpm --import ub.pgp`
+     `rpm --import unbound.pgp`
 	 
 	 No response indicates success.
 
@@ -33,10 +33,10 @@ Use the following procedure to verify the package.
 	```
 	mkdir /usr/share/debsig/keyrings/8C96D305FA28E1EF
 	touch /usr/share/debsig/keyrings/8C96D305FA28E1EF/debsig.gpg
-	gpg --no-default-keyring --keyring /usr/share/debsig/keyrings/8C96D305FA28E1EF/debsig.gpg --import ub.pgp
+	gpg --no-default-keyring --keyring /usr/share/debsig/keyrings/8C96D305FA28E1EF/debsig.gpg --import unbound.pgp
 	```
 	
-	**Note:** The 16 character directory name used in these commands is the last 16 characters of the key fingerprint. You can find the fingerprint using the command: `gpg  --with-fingerprint ub.pgp`
+	**Note:** The 16 character directory name used in these commands is the last 16 characters of the key fingerprint. You can find the fingerprint using the command: `gpg  --with-fingerprint unbound.pgp`
 	
 	
     b. Make a folder for the file verification policy:
