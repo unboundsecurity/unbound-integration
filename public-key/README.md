@@ -105,7 +105,7 @@ Use the following procedure to verify the certificate.
 
 1. Validate with the certificate authority directly using this command:
 
-    `openssl x509 -inform pem -in ub-fullchain.pem -noout -text`
+    `openssl x509 -inform pem -in unbound-cert.pem -noout -text`
 
     This proves to the verifier that it was signed by the signer. The results of the command are:
 	
@@ -195,17 +195,22 @@ Use the following procedure to verify the certificate.
 
 1. Check if the certificate is active using this command.
     
-	`openssl ocsp -no_nonce -issuer <OSCPCHAINPUBLICKEYNAME> -cert ub-fullchain.pem -VAfile <OSCPCHAINPUBLICKEYNAME> -text -url http://ocsp.digicert.com -respout ocsptest`
+	`openssl ocsp -no_nonce -issuer digicert-chain.pem -cert unbound-cert.pem -CAfile digicert-chain.pem  -url http://ocsp.digicert.com`
 
     This shows that the certificate is active.
 
     If the certificate is valid, the output is:
  
-    `Response verify OK`
+    ```
+    Response verify OK
+    unbound-cert.pem: good
+        This Update: Sep  9 03:09:01 2020 GMT
+        Next Update: Sep 16 02:24:01 2020 GMT
+    ```
 
 1. OpenSSL shows the content of X509 certificate using the command:
 
-    `openssl x509 -text -in ub-fullchain.pem`
+    `openssl x509 -text -in digicert-chain.pem`
 	
 	The results are:
 	
