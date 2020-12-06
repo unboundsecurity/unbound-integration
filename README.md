@@ -7,4 +7,5 @@ It currently contains:
 1. [Google](./Google) - contains a script used to retrieve a Google authentication token.
 1. [OpenSSL](./OpenSSL) - a configuration file for OpenSSL used to interface with UKC in a Docker/Notary solution.
 1. [public-key](./public-key) - contains Unbound's public key and instructions on how to verify packages using it.
+1. [Tessera](./Tessare) - how to integrate UKC with Tessara.
 1. [UKC Salesforce Integration](./UKC-Salesforce-Integration) - a helper script for UKC integration with Salesforce.
