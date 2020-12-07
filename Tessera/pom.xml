@@ -181,7 +181,7 @@
 
     </build>
     <description>encryption-ub module is standalone github project to generate CUSTOM key in Tessera project </description>
-    <url>https://github.com/unbound-tech/encryption-ub</url>
+    <url>https://github.com/unbound-tech/ub-integration/blob/master/Tessera</url>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -201,9 +201,9 @@
 
     </distributionManagement>
     <scm>
-        <connection>scm:git:git://github.com/unbound-tech/encryption-ub.git</connection>
-        <developerConnection>scm:git:ssh://github.com:unbound-tech/encryption-ub.git</developerConnection>
-        <url>http://github.com/unbound-tech/encryption-ub</url>
+        <connection>scm:git:git://github.com/unbound-tech/ub-integration.git</connection>
+        <developerConnection>scm:git:ssh://github.com/unbound-tech/ub-integration.git</developerConnection>
+        <url>http://github.com/unbound-tech/ub-integration</url>
     </scm>
     <developers>
         <developer>
