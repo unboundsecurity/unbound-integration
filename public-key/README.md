@@ -201,7 +201,7 @@ Use the following procedure to verify the certificate.
 
 1. Check if the certificate is active using this command.
     
-	`openssl ocsp -no_nonce -issuer digicert-chain.pem -cert unbound-cert.pem -CAfile digicert-chain.pem  -url http://ocsp.digicert.com`
+	`openssl ocsp -no_nonce -issuer digicert-chain.pem -cert unbound-cert.pem -CAfile digicert-chain.pem  -url http://ocsp.digicert.com -verify_other digicert-chain.pem`
 
     This shows that the certificate is active.
 
