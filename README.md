@@ -8,5 +8,6 @@ It currently contains:
 1. [Jmeter](./Jmeter) - Unbound Key Control performance testing using Jmeter.
 1. [OpenSSL](./OpenSSL) - a configuration file for OpenSSL used to interface with UKC in a Docker/Notary solution.
 1. [public-key](./public-key) - contains Unbound's public key and instructions on how to verify packages using it.
+1. [SQL-Server-Always-Encrypted](./SQL-Server-Always-Encrypted) - create keys that can be used with Microsoft SQL Server with the Always Encrypted ("AE") feature.
 1. [Tessera](./Tessera) - how to integrate UKC with Tessara.
 1. [UKC Salesforce Integration](./UKC-Salesforce-Integration) - a helper script for UKC integration with Salesforce.
