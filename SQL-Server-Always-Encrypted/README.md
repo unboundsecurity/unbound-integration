@@ -1,4 +1,4 @@
-# ub_sql_always_encrypted
+# Integrating UKC with MS SQL Server Always Encrypted
 
 Unbound Key Control ("UKC") can be used to create keys that can be used with Microsoft SQL Server with the Always Encrypted ("AE") feature.
 
