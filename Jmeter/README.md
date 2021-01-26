@@ -25,15 +25,6 @@ You need the following before running the performance tests:
 1. Copy *ub-maven-test-1.0.0.jar* to the *lib* directory in your Jmeter installation.
 1. Copy *ekm-java-provider-2.0.jar* from the UKC client to the *lib* directory in your Jmeter installation.
 
-### Configuration
-1. Create a key for testing (See the testing section for the different keys needed for the tests). For example:
-
-    `ucl generate -t AES -p <PART_NAME> --name aes-256-key --purpose E`
-    
-    Note: The test uses the key named *aes-256-key*.
-1. Confirm that the default user does not have a password. (Note: A blank password is the default)
-1. Open the *Ubtest.jmx* file in Jmeter.
-
 ### Testing
 
 The following tests are provided:
@@ -41,6 +32,8 @@ The following tests are provided:
 2. RSA-OAEP - decrypt.
 3. ECDSA-P256 - sign.
 4. ECDH-P256 - derive.
+
+For the tests, first confirm that the default user does not have a password. (Note: A blank password is the default)
 
 #### AES-GCM - encrypt and decrypt
 1. Create a key for testing. For example:
