@@ -26,7 +26,7 @@ You need the following before running the performance tests:
 1. Copy *ekm-java-provider-2.0.jar* from the UKC client to the *lib* directory in your Jmeter installation.
 
 ### Configuration
-1. Create a key for testing. For example:
+1. Create a key for testing (See the testing section for the different keys needed for the tests). For example:
 
     `ucl generate -t AES -p <PART_NAME> --name aes-256-key --purpose E`
     
@@ -35,6 +35,37 @@ You need the following before running the performance tests:
 1. Open the *Ubtest.jmx* file in Jmeter.
 
 ### Testing
-The **Encrypt** and **Decrypt** tests are now visible in the test plan and can be run.
 
-The tests use an AES-GCM key with 32-bit data.
+The following tests are provided:
+1. AES-GCM - encrypt and decrypt.
+2. RSA-OAEP - decrypt.
+3. ECDSA-P256 - sign.
+4. ECDH-P256 - derive.
+
+#### AES-GCM - encrypt and decrypt
+1. Create a key for testing. For example:
+
+    `ucl generate -t AES -p <PART_NAME> --name aes-256-key --purpose E`
+1. Open the *Ubtest.jmx* file in Jmeter.
+1. Run the relevant tests: Encrypt GCM or Decrypt GCM.
+
+#### RSA-OAEP - decrypt
+1. Create a key for testing. For example:
+
+    `ucl generate -t RSA -p <PART_NAME> --name rsa-2048-key`
+1. Open the *Ubtest.jmx* file in Jmeter.
+1. Run the relevant test: Decrypt RSA.
+
+#### ECDSA-P256 - sign
+1. Create a key for testing. For example:
+
+    `ucl generate -t ECC -p <PART_NAME> --name ecdsa-p256-key`
+1. Open the *Ubtest.jmx* file in Jmeter.
+1. Run the relevant test: Sign ECDSA.
+
+#### ECDH-P256 - derive
+1. Create a key for testing. For example:
+
+    `ucl generate -t ECC -p <PART_NAME> --purpose D --name ecdh-p256-key`
+1. Open the *Ubtest.jmx* file in Jmeter.
+1. Run the relevant tests: Derive ECDH.
