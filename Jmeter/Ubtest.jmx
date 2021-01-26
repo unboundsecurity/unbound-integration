@@ -121,14 +121,14 @@
           <stringProp name="classname">com.unbound.jmeter.RSAOAEPDecryptTest</stringProp>
         </JavaSampler>
         <hashTree/>
-        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="ECDSA" enabled="false">
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Sign ECDSA" enabled="false">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="classname">com.unbound.jmeter.ECDSATest</stringProp>
         </JavaSampler>
         <hashTree/>
-        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="ECDH" enabled="false">
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Derive ECDH" enabled="false">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
