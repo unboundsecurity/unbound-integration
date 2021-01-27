@@ -56,7 +56,7 @@ For the tests, first confirm that the default user does not have a password. (No
 1. Open the *Ubtest.jmx* file in Jmeter.
 1. Run the relevant test: Sign ECDSA.
 
-#### ECDH-P256 - derive
+#### ECDH-P256 - derive and encrypt
 1. Create a key for testing. For example:
 
     `ucl generate -t ECC -p <PART_NAME> --purpose D --name ecdh-p256-key`
