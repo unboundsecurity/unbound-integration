@@ -7,6 +7,15 @@ This folder contains:
 2. unbound-cert.pem - The Unbound public certificate signed by DigiCert (in PEM format).
 3. digicert-chain.pem - The chain of certificates that signed the Unbound certificate.
 
+# Validating Debian and RPM Packages 
+
+Unbound packages are provided with a signature that you can use to verify the integrity of the Debian or RPM package.  
+
+This is a one-time procedure that includes: 
+1. Obtaining the verification key (*unbound.pgp* file). Note: It contains the public part of the key that had signed the UKC software distribution in the PGP-ARMOR format. The file is derived from the corresponding certified PEM file. 
+2. Optionally, asserting the integrity of the verification key and the validity of its certificate. Refer to [Verify UB Certificate](#verify-the-certificate).
+3. Adding the verification key to the native verification infrastructure for the RPM and Debian package managers. Refer to [Verify a Package using the Public Key](#verify-a-package-using-the-public-key). 
+
 
 ## Verify a package using the public key
 
@@ -104,6 +113,31 @@ Use the following procedure to verify the package.
 	debsig:     Verification group(s) passed, deb is validated.
 	debsig: Verified package from 'UnboundTech' 
     ```
+
+## Troubleshooting Debian Validation 
+
+The verification of a <UKC distribution>.deb file may produce an error that points at issues in the verification infrastructure, such as: 
+
+`debsig: No applicable policy found. `
+
+To troubleshoot these errors: 
+
+1. Run the following command using the debug **-d** option: 
+
+    `debsig-verify -d <UKC distribution>.deb`
+    
+    Response:
+    ```
+    debsig: 3: policy name space != https://www.debian.org/debsig/1.0/  
+    debsig: parsePolicyFile: 1 errors during parsing, failed  
+    debsig: No applicable policy found. 
+    ```
+
+2. Use error analysis to resolve the issue: 
+
+    a. Open the *unbound.pol* file.  
+    b. Change the *<Policy xmlns= >* value to the one specified in the debug output.
+	
 	
 ## Verify the certificate
 
@@ -245,36 +279,3 @@ Use the following procedure to verify the certificate.
 	```
 1. Optionally, check the details of the public key and see that the same modulus and public exponent exists in both files, i.e. this is the same key/certificate.
 
-
-# Validating Debian and RPM Packages 
-
-Unbound packages are provided with a signature that you can use to verify the integrity of the Debian or RPM package.  
-
-This is a one-time procedure that includes: 
-1. Obtaining the verification key (*unbound.pgp* file). Note: It contains the public part of the key that had signed the UKC software distribution in the PGP-ARMOR format. The file is derived from the corresponding certified PEM file. 
-2. Optionally, asserting the integrity of the verification key and the validity of its certificate. Refer to [Verify UB Certificate](#verify-the-certificate).
-3. Adding the verification key to the native verification infrastructure for the RPM and Debian package managers. Refer to [Verify a Package using the Public Key](#verify-a-package-using-the-public-key). 
-
-## Troubleshooting Debian Validation 
-
-The verification of a <UKC distribution>.deb file may produce an error that points at issues in the verification infrastructure, such as: 
-
-`debsig: No applicable policy found. `
-
-To troubleshoot these errors: 
-
-1. Run the following command using the debug **-d** option: 
-
-    `debsig-verify -d <UKC distribution>.deb`
-    
-    Response:
-    ```
-    debsig: 3: policy name space != https://www.debian.org/debsig/1.0/  
-    debsig: parsePolicyFile: 1 errors during parsing, failed  
-    debsig: No applicable policy found. 
-    ```
-
-2. Use error analysis to resolve the issue: 
-
-    a. Open the *unbound.pol* file.  
-    b. Change the *<Policy xmlns= >* value to the one specified in the debug output.
