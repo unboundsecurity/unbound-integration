@@ -11,3 +11,4 @@ It currently contains:
 1. [SQL-Server-Always-Encrypted](./SQL-Server-Always-Encrypted) - create keys that can be used with Microsoft SQL Server with the Always Encrypted ("AE") feature.
 1. [Tessera](./Tessera) - how to integrate UKC with Tessara.
 1. [UKC Salesforce Integration](./UKC-Salesforce-Integration) - a helper script for UKC integration with Salesforce.
+1. [CipherTrace Data Collector](./data-collectors/ciphertrace) - code sample for CipherTrace Data collector.
