@@ -1,4 +1,4 @@
-# Using Unbound Key Control (UKC) with  Hyperledger Fabric Client
+# Using UKC with  Hyperledger Fabric Client
 This demo shows how to use Unbound Key Control ("UKC") for secure distributed key storage as the crypto-provider for Hyperledger fabric client with Java.
 
 ## Solution Overview
@@ -21,11 +21,6 @@ Unbound's provider can sign only with keys stored in its own secure, distributed
 
 ## POC Code
 
-### Modified Repository
-Unbound copied and modified the POC repository provided by Custodigit. The modified repository has been shared with Vadim at:
-```
-https://github.com/unbound-tech/fabric-token-poc2-master
-```
 
 ### Files on the POC VM
 All files required for this demo are found in the POC VM under the folder:
