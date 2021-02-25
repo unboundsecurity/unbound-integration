@@ -1,61 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="Unboundtech Jar Signer" default="rebuild" basedir=".">
-   <description>Build file for Unboundtech Jar Signer</description>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="Unbound Azure Storage" default="rebuild" basedir=".">
+   <description>Build file for Unbound Azure Storage-</description>
    <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
    <!-- set global properties for this build -->
-   <property name="src" location="src" />
+   <property name="src" location="src/com/unboundtech" />
    <property name="build" location="build" />
    <property name="dist" location="dist" />
    <property name="lib" location="lib" />
-   <property name="jar" value="ub-sign-jar.jar" />
- 
+
+   <property name="ekm.client.jar" location="ekm-java-provider-2.0.jar" />
+   <echo message="Using Java version ${ant.java.version}." />
    
    <path id="classpath">
       <fileset dir="lib">
          <include name="**/*.jar" />
-      </fileset>   	
+      </fileset>
+	  <fileset file="${ekm.client.jar}" />
    </path>
-   
    <target name="resolve" description="retrieve dependencies with ivy">
       <ivy:retrieve type="jar, bundle" />
    </target>
-   
    <target name="report" depends="resolve" description="generates a report of dependencies">
       <ivy:report todir="${build}" />
    </target>
-   
    <target name="clean-cache" description="clean the ivy cache">
       <ivy:cleancache />
    </target>
-   
    <target name="convert">
       <ivy:convertpom pomFile="pom.xml" ivyFile="ivy.xml" />
    </target>
-
-   
-  <target name="compile" depends="resolve" description="compiles Unboundtech Jar Signer">
-      <mkdir dir="${build}" />	  
+   <target name="compile" depends="resolve" description="compile Unbound Unbound Azure Storage sources">
+      <mkdir dir="${build}" />
       <mkdir dir="${lib}" />
-      <javac srcdir="${src}" destdir="${build}" includeAntRuntime="false" target="1.7" source="1.7" deprecation="true">       
-       <classpath refid="classpath" />
+      <javac srcdir="${src}" destdir="${build}" includeAntRuntime="false" target="1.7" source="1.7" deprecation="true"> 
+         <classpath refid="classpath" />
       </javac>
-  </target>
-  
-   <target name="dist" depends="compile" description="creates Unboundtech Jar Signer">
+   </target>
+   <target name="dist" depends="compile" description="creates the Unbound Azure Storage JAR file">
       <mkdir dir="${dist}" />
-      <jar jarfile="${dist}/${jar}" duplicate="preserve">
+      <jar jarfile="${dist}/ub-azure.jar" duplicate="preserve">
          <fileset dir="${build}" />
-         <zipgroupfileset dir="${lib}" includes="*.jar"/>
       </jar>
-  </target>
-   
+   </target>
    <target name="clean" description="clean up">
       <delete dir="${build}" />
       <delete dir="${dist}" />
       <delete dir="${lib}" />
    </target>
-   
    <target name="rebuild" description="rebuilds all from scratch" depends="clean, convert, dist" />
-      
 </project>
