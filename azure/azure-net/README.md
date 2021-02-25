@@ -1,9 +1,9 @@
-# ub-azure-storage-net
-Unbound-tech Azure Storage .Net Client implementation
+# Azure Storage Client .NET 
+Unbound Azure Storage .Net Client implementation
 
 
 ## Prerequisites
-* EKM client is installed
+* UKC client is installed
 
 ## Usage
 
