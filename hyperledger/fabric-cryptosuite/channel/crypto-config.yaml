@@ -1,0 +1,19 @@
+OrdererOrgs:
+  - Name: orderer
+    Domain: example.com
+    Specs:
+      - Hostname: orderer1
+        SANS:
+          - localhost
+
+PeerOrgs:
+  - Name: PeerOrg1
+    Domain: org1.example.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: ca
+        SANS:
+          - localhost
+      - Hostname: peer1
+        SANS:
+          - localhost

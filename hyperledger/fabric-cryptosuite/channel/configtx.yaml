@@ -1,0 +1,93 @@
+
+Profiles:
+    OrdererGenesis:
+        Policies: &DefaultPolicies
+            Readers:
+                Type: ImplicitMeta
+                Rule: "ANY Readers"
+            Writers:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
+            Admins:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Admins"
+        Capabilities:
+            V1_3: true
+        Orderer:
+            OrdererType: solo
+            Addresses:
+                - orderer1.example.com:7050
+            BatchTimeout: 100ms
+            BatchSize:
+                MaxMessageCount: 1000
+                AbsoluteMaxBytes: 98 MB
+                PreferredMaxBytes: 1024 KB
+            Policies:
+                <<: *DefaultPolicies
+            Capabilities:
+                V1_1: true
+            Organizations:
+                -
+                    Name: OrdererOrg
+                    ID: OrdererOrg
+                    MSPDir: crypto-config/ordererOrganizations/example.com/msp
+                    Policies:
+                        Readers:
+                            Type: Signature
+                            Rule: "OR('OrdererOrg.member')"
+                        Writers:
+                            Type: Signature
+                            Rule: "OR('OrdererOrg.member')"
+                        Admins:
+                            Type: Signature
+                            Rule: "OR('OrdererOrg.admin')"
+        Consortiums:
+            MyConsortium:
+                Organizations:
+                    - &PeerOrg1
+                        Name: PeerOrg1
+                        ID: PeerOrg1
+                        MSPDir: crypto-config/peerOrganizations/org1.example.com/msp
+                        AnchorPeers:
+                            - Host: peer1.org1.example.com
+                              Port: 7051
+                        Policies:
+                            Readers:
+                                Type: Signature
+                                Rule: "OR('PeerOrg1.admin', 'PeerOrg1.peer', 'PeerOrg1.client')"
+                            Writers:
+                                Type: Signature
+                                Rule: "OR('PeerOrg1.admin', 'PeerOrg1.client')"
+                            Admins:
+                                Type: Signature
+                                Rule: "OR('PeerOrg1.admin')"
+                            Endorsement:
+                                Type: Signature
+                                Rule: "OR('PeerOrg1.peer')"
+    MyChannel:
+        Consortium: MyConsortium
+        Policies:
+            <<: *DefaultPolicies
+        Capabilities:
+            V1_4: true
+        Application:
+            Policies:
+                Readers:
+                    Type: ImplicitMeta
+                    Rule: "ANY Readers"
+                Writers:
+                    Type: ImplicitMeta
+                    Rule: "ANY Writers"
+                Admins:
+                    Type: ImplicitMeta
+                    Rule: "MAJORITY Admins"
+                LifecycleEndorsement:
+                    Type: ImplicitMeta
+                    Rule: "MAJORITY Endorsement"
+                Endorsement:
+                    Type: ImplicitMeta
+                    Rule: "MAJORITY Endorsement"
+            Organizations:
+                - *PeerOrg1
+            Capabilities:
+                V1_3: true
