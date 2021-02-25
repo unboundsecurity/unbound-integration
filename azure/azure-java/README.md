@@ -16,7 +16,7 @@ Refer to http://ant.apache.org/ivy/history/2.2.0/ant.html for further details.
 Copy the Unbound Java Security Provider (`ekm-java-provider-2.0.jar`) file from the UKC Client distribution to the root directory of the project and run `ant`.
 
 ## Usage
-Include The Unbound Java Security Provider (`ekm-java-provider-2.0.jar`) file and the `dist/ub-azure.jar` in your project.
+Include the Unbound Java Security Provider (`ekm-java-provider-2.0.jar`) file and the `dist/ub-azure.jar` in your project.
 
 ### Assumptions
 In the following code we assume that:
