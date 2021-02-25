@@ -1,4 +1,4 @@
-# ub-ant-signjar-task
+# Code Signing with Ant
 
 The default [signjar][e668d98b]
  task is lacking functionality related to the usage of external cryptograhy providers.
