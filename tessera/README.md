@@ -164,10 +164,10 @@ Create the jar file for Unbound encryption, which is used in the next section.
 
 1. Get this repo.
 
-    `git clone https://github.com/unbound-tech/encryption-ub.git`
+    `git clone https://github.com/unbound-tech/unbound-integration.git`
 1. Access the local directory.
 
-    `cd encryption-ub`
+    `cd unbound-integration/tessera`
 1. Use Maven to create the package.
 
     `mvn package`
