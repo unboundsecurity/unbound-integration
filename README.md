@@ -5,7 +5,6 @@ It currently contains:
 1. [Certificate Authority](./certificate-authority) - integrate UKC with a CA.
 2. [Code-Signing](./code-signing) - integrate UKC with storage providers, such as AWS and Azure.
 3. [Data-Collectors](./data-collectors) - sample code for using CASP Data Collectors.
-4. [DebSigs](./debsigs) - a utility that enables signing Debian archives.
 5. [Docker Keys Syncronization](./docker-sync) - a Python script that syncronizes the target keys between Docker and the UKC.
 6. [Google](./google) - contains a script used to retrieve a Google authentication token.
 7. [Hyperledger](./hyperledger) - integrate with Hyperledger Fabric.
