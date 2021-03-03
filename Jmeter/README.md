@@ -66,7 +66,7 @@ For the tests, first confirm that the default user does not have a password. (No
 ## Prerequisites for CoT Performance tests
 
 You need the following before running the performance tests:
-1. EKP Client - installed an running
+1. EKP Client - installed an running. JMeter-2003 branch is compatible with ekp-client-1.3.2003.
 1. CoT server - installed and running
 1. Jmeter - install version 5.4 or newer
 1. Maven CLI - installed
