@@ -1,7 +1,6 @@
 package com.unbound.jmeter;
 
 import com.dyadicsec.provider.DYCryptoProvider;
-import com.unbound.provider.UBCryptoProvider;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,6 @@ public class RSASignTest extends SignTest{
     @Override
     public void setupTest(JavaSamplerContext context) {
 
-        UBCryptoProvider.allowPrivateKeyWithoutCertificate(true);
         DYCryptoProvider provider = new DYCryptoProvider();
         Security.addProvider(provider);
 
@@ -34,7 +32,7 @@ public class RSASignTest extends SignTest{
             kpg.initialize(2048);
             KeyPair kp = kpg.generateKeyPair();
             keyName = KEY_NAME + "-" + Thread.currentThread().getName();
-            keyStore.setEntry(getKeyName(), new UBCryptoProvider.KeyEntry(kp.getPrivate()), null);
+            keyStore.setEntry(getKeyName(), new DYCryptoProvider.KeyEntry(kp.getPrivate()), null);
 
             key = keyStore.getKey(getKeyName(), null);
 
