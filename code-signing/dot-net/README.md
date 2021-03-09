@@ -27,6 +27,7 @@ As an example, assume the following:
 4. The timestamp provider is *http://timestamp.digicert.com*.
 
 Using the assumptions, run:
-    `SignApp.exe "..\Notepad-unsigned.orig.msi" "3a448fa86d5cd3aa2787d420a94212ea8da4b791" "http://timestamp.digicert.com"`
+
+`SignApp.exe "..\Notepad-unsigned.orig.msi" "3a448fa86d5cd3aa2787d420a94212ea8da4b791" "http://timestamp.digicert.com"`
 
 
