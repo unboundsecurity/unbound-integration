@@ -10,6 +10,7 @@ Unlike participants, which can be human and require no development, data collect
 The following components are required:
 - Maven 3 or newer 
 - Java 1.8 or newer
+- CipherTrace API key (used when starting the CASP data collector)
 
 ## Building and running
 Use the following procedure to install the jar files to local Maven repository.
