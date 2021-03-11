@@ -128,7 +128,7 @@ public class Main {
         if (line.hasOption("w")) {
             return line.getOptionValue("w");
         } else {
-            return new String(System.console().readPassword("%s :  ", "Please, enter password for Data Collector keystore"));
+            return new String(System.console().readPassword("%s :  ", "Please, enter keystore password"));
         }
     }
 
