@@ -59,9 +59,11 @@ public class Main {
             return;
         }
 
-        if (!line.hasOption("w")) {
-            System.err.println("Keystore password is missing");
-            formatter.printHelp(" ", options);
+        String keyStorePassword = getKeyStorePassword(line);
+        if ((keyStorePassword != null) && (keyStorePassword.length() > 0)) {
+            System.out.println("Data Collector keystore password was provided successfully");
+        }else{
+            System.out.println("Data Collector keystore password was not provided");
             return;
         }
 
@@ -71,7 +73,6 @@ public class Main {
             return;
         }
 
-        String keyStorePassword = line.getOptionValue("w");
         String dcId = line.getOptionValue("i");
 
         System.out.println("Starting CASP Data Collector");
@@ -123,6 +124,13 @@ public class Main {
         poolExecutor.awaitTermination(9999, TimeUnit.DAYS);
     }
 
+    private static String getKeyStorePassword(CommandLine line) {
+        if (line.hasOption("w")) {
+            return line.getOptionValue("w");
+        } else {
+            return new String(System.console().readPassword("%s :  ", "Please, enter password for Data Collector keystore"));
+        }
+    }
 
 
     public static void calcRiskForSignRequests(){
