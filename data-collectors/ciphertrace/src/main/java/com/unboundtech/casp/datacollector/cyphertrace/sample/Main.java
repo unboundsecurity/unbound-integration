@@ -61,9 +61,9 @@ public class Main {
 
         String keyStorePassword = getKeyStorePassword(line);
         if ((keyStorePassword != null) && (keyStorePassword.length() > 0)) {
-            System.out.println("Data Collector keystore password was provided successfully");
+            System.out.println("Keystore password was provided successfully");
         }else{
-            System.out.println("Data Collector keystore password was not provided");
+            System.out.println("Keystore password was not provided");
             return;
         }
 
