@@ -7,11 +7,11 @@
     <artifactId>coinmetrics-data-collector-sample</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <parent>
-        <groupId>com.unboundtech.casp</groupId>
-        <artifactId>casp</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+<!--    <parent>-->
+<!--        <groupId>com.unboundtech.casp</groupId>-->
+<!--        <artifactId>casp</artifactId>-->
+<!--        <version>1.0-SNAPSHOT</version>-->
+<!--    </parent>-->
 
     <name>CoinMetrics Data Collector sample</name>
 
