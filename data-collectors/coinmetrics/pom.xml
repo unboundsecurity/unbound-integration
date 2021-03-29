@@ -41,7 +41,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.unboundtech.casp.datacollector.coinmetrics.sample.Main</mainClass>
+                            <mainClass>com.unboundtech.casp.datacollector.coinmetrics.com.unboundtech.casp.datacollector.coinmetrics.sample.Main</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Implementation-Version>2010</Implementation-Version>
@@ -143,6 +143,12 @@
             <artifactId>client-sdk</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.unboundtech.casp</groupId>
+            <artifactId>client-sdk</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
