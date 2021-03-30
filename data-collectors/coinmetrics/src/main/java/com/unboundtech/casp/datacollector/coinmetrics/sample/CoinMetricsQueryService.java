@@ -79,7 +79,7 @@ public class CoinMetricsQueryService {
     public static class CoinMetricsResponse {
         public String asset;
         public String time;
-        public String priceUSD;
+        public String PriceUSD;
 
         public CoinMetricsResponse(){}
 
@@ -92,7 +92,7 @@ public class CoinMetricsQueryService {
         }
 
         public BigDecimal getPriceUSD() {
-            return new BigDecimal(priceUSD);
+            return new BigDecimal(PriceUSD);
         }
     }
 
