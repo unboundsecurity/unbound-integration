@@ -1,14 +1,16 @@
 package com.unboundtech.casp.datacollector.coinmetrics.sample;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.JacksonFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
@@ -21,6 +23,12 @@ import static java.util.concurrent.TimeUnit.*;
 public class CoinMetricsQueryService {
     private final String accessToken;
     private final WebTarget assetMetricsTarget;
+    private static final ObjectMapper mapper;
+
+    static {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new Jdk8Module());
+    }
 
 
     public CoinMetricsQueryService(String accessToken) {
@@ -33,8 +41,8 @@ public class CoinMetricsQueryService {
         assetMetricsTarget = client.target("https://api.coinmetrics.io/v4/timeseries/asset-metrics");
     }
 
-    public BigInteger getUSDPriceForBTC(String startTime, String frequency) {
-        CoinMetricsData coinMetricsData =  assetMetricsTarget
+    public BigInteger getUSDPriceForBTC(String startTime, String frequency) throws JsonProcessingException {
+        String coinMetricsDataString =  assetMetricsTarget
                 .queryParam("assets", "btc")
                 .queryParam("metrics", "PriceUSD")
                 .queryParam("start_time", startTime)
@@ -45,7 +53,10 @@ public class CoinMetricsQueryService {
                 .queryParam("api_key", accessToken)
                 .request()
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .get(new GenericType<CoinMetricsData>(){});
+                .get(String.class);
+
+        CoinMetricsData coinMetricsData = mapper.readValue(coinMetricsDataString, new TypeReference<CoinMetricsData>(){});
+
         if(coinMetricsData != null && !coinMetricsData.data.isEmpty()) {
             return coinMetricsData.data
                     .stream()

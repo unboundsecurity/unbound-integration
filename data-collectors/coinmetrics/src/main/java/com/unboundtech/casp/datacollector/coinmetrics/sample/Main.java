@@ -2,6 +2,7 @@ package com.unboundtech.casp.datacollector.coinmetrics.sample;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unboundtech.casp.desktop.bot.KeyStoreStorage;
 import com.unboundtech.casp.desktop.dc.DataCollectorSdk;
 import com.unboundtech.casp.desktop.dc.DataCollectorSdkInitBuilder;
@@ -167,7 +168,13 @@ public class Main {
                     .map(detailedTransaction -> detailedTransaction.getAmount())
                     .reduce(new BigInteger(String.valueOf(0L)), BigInteger::add);
 
-            BigInteger btcInUSDRate = service.getUSDPriceForBTC(ZonedDateTime.now().minusMonths(1).format(DateTimeFormatter.ISO_DATE), "1d");
+            BigInteger btcInUSDRate = new BigInteger(String.valueOf(-1L)).negate();
+            try {
+                btcInUSDRate = service.getUSDPriceForBTC(ZonedDateTime.now().minusMonths(1).format(DateTimeFormatter.ISO_DATE), "1d");
+            } catch (JsonProcessingException e) {
+                System.err.println("failed to get btcInUSD rate");
+            }
+
             if(btcInUSDRate.compareTo(BigInteger.valueOf(0L)) == -1){
                 System.err.println("failed to get btcInUSD rate");
                 System.exit(-1);
