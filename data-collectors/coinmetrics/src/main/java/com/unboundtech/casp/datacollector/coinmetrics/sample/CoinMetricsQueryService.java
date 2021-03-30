@@ -56,6 +56,8 @@ public class CoinMetricsQueryService {
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .get(String.class);
 
+        System.out.println(coinMetricsDataString);
+
         CoinMetricsData coinMetricsData = mapper.readValue(coinMetricsDataString, new TypeReference<CoinMetricsData>(){});
 
         if(coinMetricsData != null && !coinMetricsData.data.isEmpty()) {

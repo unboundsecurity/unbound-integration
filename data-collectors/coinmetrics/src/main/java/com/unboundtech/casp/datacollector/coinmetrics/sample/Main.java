@@ -168,9 +168,12 @@ public class Main {
                     .map(detailedTransaction -> detailedTransaction.getAmount())
                     .reduce(new BigInteger(String.valueOf(0L)), BigInteger::add);
 
+            System.out.println("txVolumeInBTC: " + txVolumeInBTC);
+
             BigInteger btcInUSDRate = new BigInteger(String.valueOf(-1L)).negate();
             try {
                 btcInUSDRate = service.getUSDPriceForBTC(ZonedDateTime.now().minusMonths(1).format(DateTimeFormatter.ISO_DATE), "1d");
+                System.out.println("btcInUSDRate: " + btcInUSDRate);
             } catch (JsonProcessingException e) {
                 System.err.println("failed to get btcInUSD rate. " + e.getMessage() );
             }
