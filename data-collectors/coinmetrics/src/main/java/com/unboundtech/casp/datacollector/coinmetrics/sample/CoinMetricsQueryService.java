@@ -12,7 +12,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class CoinMetricsQueryService {
         assetMetricsTarget = client.target("https://api.coinmetrics.io/v4/timeseries/asset-metrics");
     }
 
-    public BigInteger getUSDPriceForBTC(String startTime, String frequency) throws JsonProcessingException {
+    public BigDecimal getUSDPriceForBTC(String startTime, String frequency) throws JsonProcessingException {
         String coinMetricsDataString =  assetMetricsTarget
                 .queryParam("assets", "btc")
                 .queryParam("metrics", "PriceUSD")
@@ -67,7 +67,7 @@ public class CoinMetricsQueryService {
                     .get()
                     .getPriceUSD();
         }else {
-            return new BigInteger(String.valueOf(1L)).negate();
+            return new BigDecimal(String.valueOf(1L)).negate();
         }
 
     }
@@ -79,7 +79,7 @@ public class CoinMetricsQueryService {
     public static class CoinMetricsResponse {
         public String asset;
         public String time;
-        public BigInteger priceUSD;
+        public String priceUSD;
 
         public CoinMetricsResponse(){}
 
@@ -91,20 +91,8 @@ public class CoinMetricsQueryService {
             return ZonedDateTime.parse(time, DateTimeFormatter.ISO_ZONED_DATE_TIME);
         }
 
-        public BigInteger getPriceUSD() {
-            return priceUSD;
-        }
-
-        public void setAsset(String asset) {
-            this.asset = asset;
-        }
-
-        public void setTime(String time) {
-            this.time = time;
-        }
-
-        public void setPriceUSD(BigInteger priceUSD) {
-            this.priceUSD = priceUSD;
+        public BigDecimal getPriceUSD() {
+            return new BigDecimal(priceUSD);
         }
     }
 

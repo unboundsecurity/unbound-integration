@@ -17,6 +17,7 @@ import com.unboundtech.casp.service.txhandlers.errors.BadTransactionException;
 import com.unboundtech.utils.Utils;
 import org.apache.commons.cli.*;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -170,7 +171,7 @@ public class Main {
 
             System.out.println("txVolumeInBTC: " + txVolumeInBTC);
 
-            BigInteger btcInUSDRate = new BigInteger(String.valueOf(-1L)).negate();
+            BigDecimal btcInUSDRate = new BigDecimal(String.valueOf(-1L)).negate();
             try {
                 btcInUSDRate = service.getUSDPriceForBTC(ZonedDateTime.now().minusMonths(1).format(DateTimeFormatter.ISO_DATE), "1d");
                 System.out.println("btcInUSDRate: " + btcInUSDRate);
@@ -178,13 +179,13 @@ public class Main {
                 System.err.println("failed to get btcInUSD rate. " + e.getMessage() );
             }
 
-            if(btcInUSDRate.compareTo(BigInteger.valueOf(0L)) == -1){
+            if(btcInUSDRate.compareTo(BigDecimal.valueOf(0L)) == -1){
                 System.err.println("failed to get btcInUSD rate");
                 System.exit(-1);
             }
 
             Map<String, String> collectedData = new HashMap<>(1);
-            collectedData.put("transaction.value.in.dollars", String.valueOf(btcInUSDRate.multiply(txVolumeInBTC)));
+            collectedData.put("transaction.value.in.dollars", String.valueOf(btcInUSDRate.multiply(new BigDecimal(txVolumeInBTC))));
             dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
                 if (dataCollectionStatus.getCode() != 0) {
                     System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
