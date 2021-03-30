@@ -11,6 +11,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -31,10 +32,8 @@ public class CoinMetricsQueryService {
         assetMetricsTarget = client.target("https://api.coinmetrics.io/v4/timeseries/asset-metrics");
     }
 
-    //assets=btc&metrics=PriceUSD&start_time=2021-03-20&frequency=1d&pretty=true&sort=time&api_key=zZQZUSMowLMGFMPXpOdB
-
     public BigInteger getUSDPriceForBTC(String startTime, String frequency) {
-        return assetMetricsTarget
+        CoinMetricsData coinMetricsData =  assetMetricsTarget
                 .queryParam("assets", "btc")
                 .queryParam("metrics", "PriceUSD")
                 .queryParam("start_time", startTime)
@@ -45,11 +44,16 @@ public class CoinMetricsQueryService {
                 .queryParam("api_key", accessToken)
                 .request()
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .get(new GenericType<List<CoinMetricsResponse>>(){})
-                .stream()
-                .max(Comparator.comparing(CoinMetricsResponse::getTime))
-                .get()
-                .getPriceUSD();
+                .get(new GenericType<CoinMetricsData>(){});
+        if(coinMetricsData != null && !coinMetricsData.data.isEmpty()) {
+            return coinMetricsData.data
+                    .stream()
+                    .max(Comparator.comparing(CoinMetricsResponse::getTime))
+                    .get()
+                    .getPriceUSD();
+        }else {
+            return new BigInteger(String.valueOf(1L)).negate();
+        }
 
     }
 
@@ -79,6 +83,12 @@ public class CoinMetricsQueryService {
         public BigInteger getPriceUSD() {
             return priceUSD;
         }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+    public static class CoinMetricsData {
+        public List<CoinMetricsResponse> data = new ArrayList<>();
     }
 
 }

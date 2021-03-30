@@ -167,9 +167,14 @@ public class Main {
                     .map(detailedTransaction -> detailedTransaction.getAmount())
                     .reduce(new BigInteger(String.valueOf(0L)), BigInteger::add);
 
-            BigInteger txVolumeInUSD = service.getUSDPriceForBTC(ZonedDateTime.now().minusMonths(1).format(DateTimeFormatter.ISO_DATE), "1d").multiply(txVolumeInBTC);
+            BigInteger btcInUSDRate = service.getUSDPriceForBTC(ZonedDateTime.now().minusMonths(1).format(DateTimeFormatter.ISO_DATE), "1d");
+            if(btcInUSDRate.compareTo(BigInteger.valueOf(0L)) == -1){
+                System.err.println("failed to get btcInUSD rate");
+                System.exit(-1);
+            }
+
             Map<String, String> collectedData = new HashMap<>(1);
-            collectedData.put("transaction.value.in.dollars", String.valueOf(txVolumeInUSD));
+            collectedData.put("transaction.value.in.dollars", String.valueOf(btcInUSDRate.multiply(txVolumeInBTC)));
             dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
                 if (dataCollectionStatus.getCode() != 0) {
                     System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
