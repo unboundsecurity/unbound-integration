@@ -184,7 +184,7 @@ public class Main {
 
             Map<String, String> collectedData = new HashMap<>(1);
             BigDecimal txVolumeInBTC = new BigDecimal(txVolumeInSatoshi).multiply(new BigDecimal(Math.pow(10, -8)));
-            collectedData.put("transaction.value.in.dollars", String.valueOf(btcInUSDRate.multiply(txVolumeInBTC)));
+            collectedData.put("transaction.value.in.dollars", String.valueOf(btcInUSDRate.multiply(txVolumeInBTC).multiply(new BigDecimal(Math.pow(10,5))).intValue()));
             dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
                 if (dataCollectionStatus.getCode() != 0) {
                     System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
