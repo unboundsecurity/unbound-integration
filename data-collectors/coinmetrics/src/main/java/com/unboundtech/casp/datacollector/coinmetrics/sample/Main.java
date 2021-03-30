@@ -165,16 +165,14 @@ public class Main {
                 System.exit(-1);
             }
 
-            BigInteger txVolumeInBTC = detailedTransactions.stream()
+            BigInteger txVolumeInSatoshi = detailedTransactions.stream()
                     .map(detailedTransaction -> detailedTransaction.getAmount())
                     .reduce(new BigInteger(String.valueOf(0L)), BigInteger::add);
 
-            System.out.println("txVolumeInBTC: " + txVolumeInBTC);
 
             BigDecimal btcInUSDRate = new BigDecimal(String.valueOf(-1L)).negate();
             try {
                 btcInUSDRate = service.getUSDPriceForBTC(ZonedDateTime.now().minusMonths(1).format(DateTimeFormatter.ISO_DATE), "1d");
-                System.out.println("btcInUSDRate: " + btcInUSDRate);
             } catch (JsonProcessingException e) {
                 System.err.println("failed to get btcInUSD rate. " + e.getMessage() );
             }
@@ -185,7 +183,8 @@ public class Main {
             }
 
             Map<String, String> collectedData = new HashMap<>(1);
-            collectedData.put("transaction.value.in.dollars", String.valueOf(btcInUSDRate.multiply(new BigDecimal(txVolumeInBTC))));
+            BigDecimal txVolumeInBTC = new BigDecimal(txVolumeInSatoshi).multiply(new BigDecimal(Math.pow(10, -8)));
+            collectedData.put("transaction.value.in.dollars", String.valueOf(btcInUSDRate.multiply(txVolumeInBTC)));
             dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
                 if (dataCollectionStatus.getCode() != 0) {
                     System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
