@@ -1,6 +1,7 @@
 package com.unboundtech.casp.datacollector.coinmetrics.sample;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.util.JacksonFeature;
 
@@ -66,11 +67,7 @@ public class CoinMetricsQueryService {
         public ZonedDateTime time;
         public BigInteger priceUSD;
 
-        public CoinMetricsResponse(String asset, String time, String priceUSD){
-            this.asset = asset;
-            this.time = ZonedDateTime.parse(time);
-            this.priceUSD = new BigInteger(priceUSD);
-        }
+        public CoinMetricsResponse(){}
 
         public String getAsset() {
             return asset;
@@ -82,6 +79,18 @@ public class CoinMetricsQueryService {
 
         public BigInteger getPriceUSD() {
             return priceUSD;
+        }
+
+        public void setAsset(String asset) {
+            this.asset = asset;
+        }
+
+        public void setTime(ZonedDateTime time) {
+            this.time = time;
+        }
+
+        public void setPriceUSD(BigInteger priceUSD) {
+            this.priceUSD = priceUSD;
         }
     }
 
