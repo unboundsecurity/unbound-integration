@@ -86,7 +86,7 @@ public class CoinMetricsQueryService {
         }
 
         public ZonedDateTime getTime() {
-            return ZonedDateTime.parse(this.time, DateTimeFormatter.ISO_INSTANT);
+            return ZonedDateTime.parse(time, DateTimeFormatter.ISO_ZONED_DATE_TIME);
         }
 
         public BigInteger getPriceUSD() {
