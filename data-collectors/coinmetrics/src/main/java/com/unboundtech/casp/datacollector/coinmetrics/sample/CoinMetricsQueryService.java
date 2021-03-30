@@ -14,6 +14,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -75,7 +76,7 @@ public class CoinMetricsQueryService {
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     public static class CoinMetricsResponse {
         public String asset;
-        public ZonedDateTime time;
+        public String time;
         public BigInteger priceUSD;
 
         public CoinMetricsResponse(){}
@@ -85,7 +86,7 @@ public class CoinMetricsQueryService {
         }
 
         public ZonedDateTime getTime() {
-            return time;
+            return ZonedDateTime.parse(this.time, DateTimeFormatter.ISO_INSTANT);
         }
 
         public BigInteger getPriceUSD() {
@@ -96,7 +97,7 @@ public class CoinMetricsQueryService {
             this.asset = asset;
         }
 
-        public void setTime(ZonedDateTime time) {
+        public void setTime(String time) {
             this.time = time;
         }
 

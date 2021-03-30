@@ -172,7 +172,7 @@ public class Main {
             try {
                 btcInUSDRate = service.getUSDPriceForBTC(ZonedDateTime.now().minusMonths(1).format(DateTimeFormatter.ISO_DATE), "1d");
             } catch (JsonProcessingException e) {
-                System.err.println("failed to get btcInUSD rate");
+                System.err.println("failed to get btcInUSD rate. " + e.getMessage() );
             }
 
             if(btcInUSDRate.compareTo(BigInteger.valueOf(0L)) == -1){
