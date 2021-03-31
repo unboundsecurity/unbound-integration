@@ -10,9 +10,7 @@ import com.unboundtech.casp.desktop.signer.CaspLog;
 import com.unboundtech.casp.desktop.signer.CaspStatus;
 import com.unboundtech.casp.desktop.signer.Log4jLogger;
 import com.unboundtech.casp.desktop.signer.network.JavaRestClient;
-import com.unboundtech.casp.service.txhandlers.BitcoinMainNetTransactionHandler;
-import com.unboundtech.casp.service.txhandlers.DetailedTransaction;
-import com.unboundtech.casp.service.txhandlers.TransactionHandler;
+import com.unboundtech.casp.service.txhandlers.*;
 import com.unboundtech.casp.service.txhandlers.errors.BadTransactionException;
 import com.unboundtech.utils.Utils;
 import org.apache.commons.cli.*;
@@ -32,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     private static final ScheduledExecutorService poolExecutor = new ScheduledThreadPoolExecutor(1);
     public static CoinMetricsQueryService service;
-    public static BitcoinMainNetTransactionHandler btcHandler = new BitcoinMainNetTransactionHandler();
+    public static BitcoinTransactionHandler btcHandler = new BitcoinTestNetTransactionHandler();
 
 
     public static void main(String[] args) throws Exception {
