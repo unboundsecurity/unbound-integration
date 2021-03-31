@@ -19,6 +19,8 @@ import org.apache.commons.cli.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -172,19 +174,21 @@ public class Main {
 
             BigDecimal btcInUSDRate = new BigDecimal(String.valueOf(-1L)).negate();
             try {
-                btcInUSDRate = service.getUSDPriceForBTC(ZonedDateTime.now().minusMonths(1).format(DateTimeFormatter.ISO_DATE), "1d");
+
+                String yesterday = ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
+                btcInUSDRate = service.getUSDPriceForBTC(yesterday);
             } catch (JsonProcessingException e) {
-                System.err.println("failed to get btcInUSD rate. " + e.getMessage() );
+                System.err.println("failed to get btcInUSD rate" + e.getMessage());
             }
 
             if(btcInUSDRate.compareTo(BigDecimal.valueOf(0L)) == -1){
                 System.err.println("failed to get btcInUSD rate");
-                System.exit(-1);
             }
 
             Map<String, String> collectedData = new HashMap<>(1);
             BigDecimal txVolumeInBTC = new BigDecimal(txVolumeInSatoshi).multiply(new BigDecimal(Math.pow(10, -8)));
-            collectedData.put("transaction.value.in.dollars", String.valueOf(btcInUSDRate.multiply(txVolumeInBTC).multiply(new BigDecimal(Math.pow(10,5))).intValue()));
+            BigDecimal txVolumeInUSD = btcInUSDRate.multiply(txVolumeInBTC).round(new MathContext(0, RoundingMode.DOWN));
+            collectedData.put("transaction.value.in.dollars", String.valueOf(txVolumeInUSD));
             dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
                 if (dataCollectionStatus.getCode() != 0) {
                     System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());

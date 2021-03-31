@@ -42,12 +42,13 @@ public class CoinMetricsQueryService {
         assetMetricsTarget = client.target("https://api.coinmetrics.io/v4/timeseries/asset-metrics");
     }
 
-    public BigDecimal getUSDPriceForBTC(String startTime, String frequency) throws JsonProcessingException {
+    //https://docs.coinmetrics.io/api/v4#operation/getTimeseriesAssetMetrics
+    public BigDecimal getUSDPriceForBTC(String startTime) throws JsonProcessingException {
         String coinMetricsDataString =  assetMetricsTarget
                 .queryParam("assets", "btc")
                 .queryParam("metrics", "PriceUSD")
                 .queryParam("start_time", startTime)
-                .queryParam("frequency", frequency)
+                .queryParam("frequency", "1d")
                 .queryParam("pretty", true)
                 .queryParam("sort", "time")
                 .queryParam("pretty", true)
@@ -55,8 +56,6 @@ public class CoinMetricsQueryService {
                 .request()
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .get(String.class);
-
-        System.out.println(coinMetricsDataString);
 
         CoinMetricsData coinMetricsData = mapper.readValue(coinMetricsDataString, new TypeReference<CoinMetricsData>(){});
 
