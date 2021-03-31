@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     private static final ScheduledExecutorService poolExecutor = new ScheduledThreadPoolExecutor(1);
     public static CoinMetricsQueryService service;
-    public static BitcoinTransactionHandler btcHandler = new BitcoinTestNetTransactionHandler();
+    public static BitcoinTransactionHandler btcHandler = new BitcoinMainNetTransactionHandler();
 
 
     public static void main(String[] args) throws Exception {
@@ -159,7 +159,7 @@ public class Main {
 
             List<DetailedTransaction> detailedTransactions = new ArrayList<>();
             try {
-                detailedTransactions = handler.decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest. publicKeys, Collections.emptySet());
+               detailedTransactions = handler.decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest.publicKeys, new HashSet<>(signRequest.publicKeys));
             } catch (BadTransactionException e) {
                 System.err.println("failed to decode BTC transaction");
                 System.exit(-1);
