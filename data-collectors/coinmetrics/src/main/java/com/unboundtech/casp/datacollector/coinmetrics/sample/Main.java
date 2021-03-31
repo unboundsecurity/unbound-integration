@@ -187,7 +187,7 @@ public class Main {
 
             Map<String, String> collectedData = new HashMap<>(1);
             BigDecimal txVolumeInBTC = new BigDecimal(txVolumeInSatoshi).multiply(new BigDecimal(Math.pow(10, -8)));
-            BigDecimal txVolumeInUSD = btcInUSDRate.multiply(txVolumeInBTC).round(new MathContext(0, RoundingMode.DOWN));
+            BigInteger txVolumeInUSD = btcInUSDRate.multiply(txVolumeInBTC).toBigInteger();
             collectedData.put("transaction.value.in.dollars", String.valueOf(txVolumeInUSD));
             dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
                 if (dataCollectionStatus.getCode() != 0) {
