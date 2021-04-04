@@ -160,7 +160,7 @@ public class Main {
                 try {
                     detailedTransactions = handler.get().decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest.publicKeys, new HashSet<>(signRequest.publicKeys));
                 } catch (BadTransactionException e) {
-                    System.err.println("failed to decode BTC transaction");
+                    System.err.println("failed to decode BTC transaction. " + e.getMessage());
                     return;
                 }
 
