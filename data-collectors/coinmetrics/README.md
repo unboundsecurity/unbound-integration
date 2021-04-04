@@ -1,6 +1,6 @@
 # CoinMetrics Data Collector Sample
 
-This sample code implements a CASP Data Collector that returns a BTC transaction volume in USD using CoinMetrics. [CoinMetrics](https://docs.coinmetrics.io/api) is a service that provides access to historical and real-time network and market data.
+This sample code implements a CASP Data Collector that returns a BTC transaction volume in USD using CoinMetrics. [CoinMetrics](https://coinmetrics.io/) is a service that provides access to historical and real-time network and market data.
 
 **CASP data collectors** are independent components that calculate policy related attribute templates for transaction signing. Each data collector is associated with an attribute template group that contains the attribute templates.
 
@@ -14,6 +14,7 @@ Note the following about the return result:
 3. The data collector calculates a BTC transaction volume in USD based on data provided by the [getTimeseriesAssetMetrics](https://docs.coinmetrics.io/api/v4#operation/getTimeseriesAssetMetrics) API rate.
 4. **Important**: The data collector returns *transaction.value.in.dollars* rounding down to the nearest dollar.
 
+See [here](https://docs.coinmetrics.io/api) for the CoinMetrics documentation.
 
 ## Prerequisites
 The following components are required:
