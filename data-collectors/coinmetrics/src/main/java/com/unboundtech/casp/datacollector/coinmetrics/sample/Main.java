@@ -152,60 +152,58 @@ public class Main {
             SignRequest signRequest = Utils.fromJson(dataCollectionRequest.getSignRequest(), SignRequest.class);
             if (signRequest.rawTransactions.size() == 0) {
                 System.err.println("'rawTransactions' are missing from sign request");
-                System.exit(-1);
             }
 
-            TransactionHandler handler = getTransactionHandler(signRequest);
+            Optional<TransactionHandler> handler = getTransactionHandler(signRequest);
 
-            List<DetailedTransaction> detailedTransactions = new ArrayList<>();
-            try {
-               detailedTransactions = handler.decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest.publicKeys, new HashSet<>(signRequest.publicKeys));
-            } catch (BadTransactionException e) {
-                System.err.println("failed to decode BTC transaction");
-                System.exit(-1);
-            }
-
-            BigInteger txVolumeInSatoshi = detailedTransactions.stream()
-                    .map(detailedTransaction -> detailedTransaction.getAmount())
-                    .reduce(new BigInteger(String.valueOf(0L)), BigInteger::add);
-
-
-            BigDecimal btcInUSDRate = new BigDecimal(String.valueOf(-1L)).negate();
-            try {
-
-                String yesterday = ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
-                btcInUSDRate = service.getUSDPriceForBTC(yesterday);
-            } catch (JsonProcessingException e) {
-                System.err.println("failed to get btcInUSD rate" + e.getMessage());
-            }
-
-            if(btcInUSDRate.compareTo(BigDecimal.valueOf(0L)) == -1){
-                System.err.println("failed to get btcInUSD rate");
-            }
-
-            Map<String, String> collectedData = new HashMap<>(1);
-            BigDecimal txVolumeInBTC = new BigDecimal(txVolumeInSatoshi).multiply(new BigDecimal(Math.pow(10, -8)));
-            BigInteger txVolumeInUSD = btcInUSDRate.multiply(txVolumeInBTC).toBigInteger();
-            collectedData.put("transaction.value.in.dollars", String.valueOf(txVolumeInUSD));
-            dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
-                if (dataCollectionStatus.getCode() != 0) {
-                    System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
-                } else {
-                    System.out.println("Successfully provided data");
+            if(handler.isPresent()){
+                List<DetailedTransaction> detailedTransactions = new ArrayList<>();
+                try {
+                    detailedTransactions = handler.get().decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest.publicKeys, new HashSet<>(signRequest.publicKeys));
+                } catch (BadTransactionException e) {
+                    System.err.println("failed to decode BTC transaction");
                 }
-            });
+
+                BigInteger txVolumeInSatoshi = detailedTransactions.stream()
+                        .map(detailedTransaction -> detailedTransaction.getAmount())
+                        .reduce(new BigInteger(String.valueOf(0L)), BigInteger::add);
+
+
+                BigDecimal btcInUSDRate = new BigDecimal(String.valueOf(-1L)).negate();
+                try {
+
+                    String yesterday = ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
+                    btcInUSDRate = service.getUSDPriceForBTC(yesterday);
+                } catch (JsonProcessingException e) {
+                    System.err.println("failed to get btcInUSD rate" + e.getMessage());
+                }
+
+                if(btcInUSDRate.compareTo(BigDecimal.valueOf(0L)) == -1){
+                    System.err.println("failed to get btcInUSD rate");
+                }
+
+                Map<String, String> collectedData = new HashMap<>(1);
+                BigDecimal txVolumeInBTC = new BigDecimal(txVolumeInSatoshi).multiply(new BigDecimal(Math.pow(10, -8)));
+                BigInteger txVolumeInUSD = btcInUSDRate.multiply(txVolumeInBTC).toBigInteger();
+                collectedData.put("transaction.value.in.dollars", String.valueOf(txVolumeInUSD));
+                dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
+                    if (dataCollectionStatus.getCode() != 0) {
+                        System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
+                    } else {
+                        System.out.println("Successfully provided data");
+                    }
+                });
+            }
         });
     };
 
-    private static TransactionHandler getTransactionHandler(SignRequest signRequest) {
+    private static Optional<TransactionHandler> getTransactionHandler(SignRequest signRequest) {
         if (btcHandler.canDecode(signRequest.rawTransactions)){
-            return btcHandler;
+            return Optional.ofNullable(btcHandler);
         }
 
         System.err.println("cannot decode raw TX");
-        System.exit(-1);
-
-        return null;
+        return Optional.empty();
     }
 
 
