@@ -1,22 +1,25 @@
 # CoinMetrics Data Collector Sample
 
-This sample code implements a CASP Data Collector that returns a BTC transaction volume in USD.
- [CoinMetrics](https://docs.coinmetrics.io/api) is a service provides access to historical and real-time network and market data. 
- CoinMetrics Data Collector Sample retrieves BTC to USD using https://docs.coinmetrics.io/api/v4#operation/getTimeseriesAssetMetrics API.
- 1. BTC to USD rate could be retrieved based on day frequency only
- 2. Per day returned a BTC to USD rate at 00:00 UTC time - so for today request will be returned yesterday BTC to USD rate.
- 3. Data Collector calculates a BTC transaction volume in USD based on provided by  https://docs.coinmetrics.io/api/v4#operation/getTimeseriesAssetMetrics API rate.
- 4. Important - Data Collector returns a transaction.value.in.dollars rounding down to rounding to the nearest dollar.
+This sample code implements a CASP Data Collector that returns a BTC transaction volume in USD using CoinMetrics. [CoinMetrics](https://docs.coinmetrics.io/api) is a service that provides access to historical and real-time network and market data.
 
 **CASP data collectors** are independent components that calculate policy related attribute templates for transaction signing. Each data collector is associated with an attribute template group that contains the attribute templates.
 
 Unlike participants, which can be human and require no development, data collectors by definition require development by the customer. See the [CASP Java SDK](https://www.unboundtech.com/docs/CASP/CASP_Developers_Guide-HTML/Content/Products/CASP/CASP_Participant_SDK/CASP_Java_SDK.htm) in the UKC Developers Guide for more information on creating the data collector client.
 
+The CoinMetrics Data Collector Sample retrieves BTC to USD using the [getTimeseriesAssetMetrics](https://docs.coinmetrics.io/api/v4#operation/getTimeseriesAssetMetrics) API.
+
+Note the following about the return result:
+1. The BTC to USD rate can be retrieved based only on day frequency.
+2. The per day returns a BTC to USD rate at 00:00 UTC time, so today's request is returns the BTC to USD rate from yesterday.
+3. The data collector calculates a BTC transaction volume in USD based on data provided by the [getTimeseriesAssetMetrics](https://docs.coinmetrics.io/api/v4#operation/getTimeseriesAssetMetrics) API rate.
+4. **Important**: The data collector returns *transaction.value.in.dollars* rounding down to the nearest dollar.
+
+
 ## Prerequisites
 The following components are required:
 - Maven 3 or newer 
 - Java 1.8 or newer
-- CipherTrace API key (used when starting the CASP data collector)
+- CoinMetrics API key (used when starting the CASP data collector)
 
 ## Building and running
 Use the following procedure to install the jar files to local Maven repository.
