@@ -17,8 +17,6 @@ import org.apache.commons.cli.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -152,16 +150,18 @@ public class Main {
             SignRequest signRequest = Utils.fromJson(dataCollectionRequest.getSignRequest(), SignRequest.class);
             if (signRequest.rawTransactions.size() == 0) {
                 System.err.println("'rawTransactions' are missing from sign request");
+                return;
             }
 
             Optional<TransactionHandler> handler = getTransactionHandler(signRequest);
 
             if(handler.isPresent()){
-                List<DetailedTransaction> detailedTransactions = new ArrayList<>();
+                List<DetailedTransaction> detailedTransactions;
                 try {
                     detailedTransactions = handler.get().decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest.publicKeys, new HashSet<>(signRequest.publicKeys));
                 } catch (BadTransactionException e) {
                     System.err.println("failed to decode BTC transaction");
+                    return;
                 }
 
                 BigInteger txVolumeInSatoshi = detailedTransactions.stream()
@@ -169,17 +169,19 @@ public class Main {
                         .reduce(new BigInteger(String.valueOf(0L)), BigInteger::add);
 
 
-                BigDecimal btcInUSDRate = new BigDecimal(String.valueOf(-1L)).negate();
+                BigDecimal btcInUSDRate;
                 try {
 
                     String yesterday = ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
                     btcInUSDRate = service.getUSDPriceForBTC(yesterday);
                 } catch (JsonProcessingException e) {
                     System.err.println("failed to get btcInUSD rate" + e.getMessage());
+                    return;
                 }
 
                 if(btcInUSDRate.compareTo(BigDecimal.valueOf(0L)) == -1){
                     System.err.println("failed to get btcInUSD rate");
+                    return;
                 }
 
                 Map<String, String> collectedData = new HashMap<>(1);

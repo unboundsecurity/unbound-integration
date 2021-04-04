@@ -150,52 +150,53 @@ public class Main {
             SignRequest signRequest = Utils.fromJson(dataCollectionRequest.getSignRequest(), SignRequest.class);
             if (signRequest.rawTransactions.size() == 0) {
                 System.err.println("'rawTransactions' are missing from sign request");
-                System.exit(-1);
+                return;
             }
 
-            TransactionHandler handler = getTransactionHandler(signRequest);
+            Optional<TransactionHandler> handler = getTransactionHandler(signRequest);
 
-            List<DetailedTransaction> detailedTransactions = null;
-            try {
-                detailedTransactions = handler.decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest. publicKeys, Collections.emptySet());
-            } catch (BadTransactionException e) {
-                e.printStackTrace();
-            }
-            int maxRisk = detailedTransactions.stream()
-                    .flatMap(detailedTransaction -> detailedTransaction.getDestinations().stream())
-                    .mapToInt(service::getRiskForBitcoinAddress)
-                    .max()
-                    .orElseGet(() ->{
-                        System.err.println("failed to calc max risk");
-                        System.exit(-1);
-                        return  -1;
-                    });
-
-            Map<String, String> collectedData = new HashMap<>(1);
-            collectedData.put("risk", String.valueOf(maxRisk));
-            dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
-                if (dataCollectionStatus.getCode() != 0) {
-                    System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
-                } else {
-                    System.out.println("Successfully provided data");
+            if(handler.isPresent()) {
+                List<DetailedTransaction> detailedTransactions;
+                try {
+                    detailedTransactions = handler.get().decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest.publicKeys, Collections.emptySet());
+                } catch (BadTransactionException e) {
+                    System.err.println("failed to decode BTC transaction");
+                    return;
                 }
-            });
+                OptionalInt maxRisk = detailedTransactions.stream()
+                        .flatMap(detailedTransaction -> detailedTransaction.getDestinations().stream())
+                        .mapToInt(service::getRiskForBitcoinAddress)
+                        .max();
+
+                if(!maxRisk.isPresent()){
+                    System.err.println("failed to calc max risk");
+                    return;
+                }
+
+                Map<String, String> collectedData = new HashMap<>(1);
+                collectedData.put("risk", String.valueOf(maxRisk));
+                dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
+                    if (dataCollectionStatus.getCode() != 0) {
+                        System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
+                    } else {
+                        System.out.println("Successfully provided data");
+                    }
+                });
+            }
         });
     };
 
-    private static TransactionHandler getTransactionHandler(SignRequest signRequest) {
+    private static Optional<TransactionHandler> getTransactionHandler(SignRequest signRequest) {
         if (btcHandler.canDecode(signRequest.rawTransactions)){
-            return btcHandler;
+            return Optional.ofNullable(btcHandler);
         }
 
         if(ethHandler.canDecode(signRequest.rawTransactions)){
-            return ethHandler;
+            return Optional.ofNullable(ethHandler);
         }
 
         System.err.println("cannot decode raw TX");
-        System.exit(-1);
-
-        return null;
+        return Optional.empty();
     }
 
 
