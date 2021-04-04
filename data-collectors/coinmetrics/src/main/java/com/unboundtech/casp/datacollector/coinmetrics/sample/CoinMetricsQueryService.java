@@ -60,11 +60,20 @@ public class CoinMetricsQueryService {
         CoinMetricsData coinMetricsData = mapper.readValue(coinMetricsDataString, new TypeReference<CoinMetricsData>(){});
 
         if(coinMetricsData != null && !coinMetricsData.data.isEmpty()) {
-            return coinMetricsData.data
+            Comparator<CoinMetricsResponse> coinMetricsResponseComparator
+                    = Comparator.comparing(
+                    CoinMetricsResponse::getTime, (t1, t2) -> {
+                        ZonedDateTime time1 = ZonedDateTime.parse(t1, DateTimeFormatter.ISO_ZONED_DATE_TIME);
+                        ZonedDateTime time2 = ZonedDateTime.parse(t2, DateTimeFormatter.ISO_ZONED_DATE_TIME);
+                        return time1.compareTo(time2);
+                    });
+            return new BigDecimal(
+                    coinMetricsData.data
                     .stream()
-                    .max(Comparator.comparing(CoinMetricsResponse::getTime))
+                    .max(coinMetricsResponseComparator)
                     .get()
-                    .getPriceUSD();
+                    .getPriceUSD()
+            );
         }else {
             return new BigDecimal(String.valueOf(1L)).negate();
         }
@@ -86,12 +95,12 @@ public class CoinMetricsQueryService {
             return asset;
         }
 
-        public ZonedDateTime getTime() {
-            return ZonedDateTime.parse(time, DateTimeFormatter.ISO_ZONED_DATE_TIME);
+        public String getTime() {
+            return time;
         }
 
-        public BigDecimal getPriceUSD() {
-            return new BigDecimal(PriceUSD);
+        public String getPriceUSD() {
+            return PriceUSD;
         }
     }
 
