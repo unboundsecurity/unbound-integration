@@ -1,7 +1,8 @@
-package com.unboundtech.casp.datacollector.cyphertrace.sample;
+package com.unboundtech.casp.datacollector.coinmetrics.sample;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unboundtech.casp.desktop.bot.KeyStoreStorage;
 import com.unboundtech.casp.desktop.dc.DataCollectorSdk;
 import com.unboundtech.casp.desktop.dc.DataCollectorSdkInitBuilder;
@@ -9,14 +10,15 @@ import com.unboundtech.casp.desktop.signer.CaspLog;
 import com.unboundtech.casp.desktop.signer.CaspStatus;
 import com.unboundtech.casp.desktop.signer.Log4jLogger;
 import com.unboundtech.casp.desktop.signer.network.JavaRestClient;
-import com.unboundtech.casp.service.txhandlers.BitcoinMainNetTransactionHandler;
-import com.unboundtech.casp.service.txhandlers.DetailedTransaction;
-import com.unboundtech.casp.service.txhandlers.EthereumMainNetTransactionHandler;
-import com.unboundtech.casp.service.txhandlers.TransactionHandler;
+import com.unboundtech.casp.service.txhandlers.*;
 import com.unboundtech.casp.service.txhandlers.errors.BadTransactionException;
 import com.unboundtech.utils.Utils;
 import org.apache.commons.cli.*;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,11 +26,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-
     private static final ScheduledExecutorService poolExecutor = new ScheduledThreadPoolExecutor(1);
-    public static CipherTraceQueryService service;
-    public static BitcoinMainNetTransactionHandler btcHandler = new BitcoinMainNetTransactionHandler();
-    public static EthereumMainNetTransactionHandler ethHandler = new EthereumMainNetTransactionHandler();
+    public static CoinMetricsQueryService service;
+    public static BitcoinTransactionHandler btcHandler = new BitcoinMainNetTransactionHandler();
 
 
     public static void main(String[] args) throws Exception {
@@ -42,7 +42,7 @@ public class Main {
         options.addOption("u", "server-url", true, "CASP server url");
         options.addOption("k", "insecure", false, "Allow connections without certificate verification");
 
-        options.addOption("a", "ciphertracl-api-token", true, "CipherTrace API key");
+        options.addOption("a", "coinmetrics-api-token", true, "CoinMetrics API key");
 
         HelpFormatter formatter = new HelpFormatter();
         CaspLog.turnOnLogging();
@@ -77,8 +77,8 @@ public class Main {
         String dcId = line.getOptionValue("i");
 
         System.out.println("Starting CASP Data Collector");
-        System.out.println("Data collector version: " + DataCollectorSdk.getInstance().sdkVersion());
-        System.out.println("Data collector ID: " + dcId);
+        System.out.println("Data collector version: " +  DataCollectorSdk.getInstance().sdkVersion());
+        System.out.println("Data collector ID: " +  dcId);
 
         boolean allowInsecureConnection = line.hasOption("k");
 
@@ -86,7 +86,7 @@ public class Main {
         JavaRestClient javaRestClient = new JavaRestClient(line.getOptionValue("u"), allowInsecureConnection, keyStoreStorage, keyStorePassword);
 
         String serverUrl = line.getOptionValue("u");
-        System.out.println("Server URL: " + serverUrl);
+        System.out.println("Server URL: " +  serverUrl);
 
         CaspStatus initStatus = new DataCollectorSdkInitBuilder(keyStoreStorage, keyStoreStorage, javaRestClient)
                 .init();
@@ -104,7 +104,7 @@ public class Main {
                 if (status.getCode() == 0) {
                     System.out.println("activation successful");
                 } else {
-                    System.err.println("DC activation failed. " + status.getDescription());
+                    System.err.println("DC activation failed. " +  status.getDescription());
                 }
                 latch.countDown();
             });
@@ -120,8 +120,8 @@ public class Main {
 
         System.out.println("Starting data collection");
 
-        service = new CipherTraceQueryService(line.getOptionValue("a"));
-        poolExecutor.scheduleAtFixedRate(Main::calcRiskForSignRequests, 0, 10, TimeUnit.SECONDS);
+        service = new CoinMetricsQueryService(line.getOptionValue("a"));
+        poolExecutor.scheduleAtFixedRate(Main::calcBTCTransactionVolumeInUSD, 0, 10, TimeUnit.SECONDS);
         poolExecutor.awaitTermination(9999, TimeUnit.DAYS);
     }
 
@@ -134,7 +134,7 @@ public class Main {
     }
 
 
-    public static void calcRiskForSignRequests(){
+    public static void calcBTCTransactionVolumeInUSD(){
         DataCollectorSdk.getInstance().getDataCollectionRequest((getDataCollectionRequestStatus, dataCollectionRequest) -> {
             if (getDataCollectionRequestStatus.getCode() == CaspStatus.DY_ENO_ENTITY) {
                 System.out.println(getDataCollectionRequestStatus.getDescription());
@@ -142,10 +142,10 @@ public class Main {
             }
 
             if (getDataCollectionRequestStatus.getCode() != 0) {
-                System.err.println("failed to retrieve data collection request. " + getDataCollectionRequestStatus.getDescription());
+                System.err.println("failed to retrieve data collection request. " +  getDataCollectionRequestStatus.getDescription());
                 return;
             }
-            System.out.println("data collection details: " + dataCollectionRequest.toString());
+            System.out.println("data collection details: " +  dataCollectionRequest.toString());
 
             SignRequest signRequest = Utils.fromJson(dataCollectionRequest.getSignRequest(), SignRequest.class);
             if (signRequest.rawTransactions.size() == 0) {
@@ -155,26 +155,41 @@ public class Main {
 
             Optional<TransactionHandler> handler = getTransactionHandler(signRequest);
 
-            if(handler.isPresent()) {
+            if(handler.isPresent()){
                 List<DetailedTransaction> detailedTransactions;
                 try {
-                    detailedTransactions = handler.get().decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest.publicKeys, Collections.emptySet());
+                    detailedTransactions = handler.get().decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest.publicKeys, new HashSet<>(signRequest.publicKeys));
                 } catch (BadTransactionException e) {
-                    System.err.println("failed to decode BTC transaction. " + e.getMessage());
+                    System.err.println("failed to decode BTC transaction.");
+                    e.printStackTrace();
                     return;
                 }
-                OptionalInt maxRisk = detailedTransactions.stream()
-                        .flatMap(detailedTransaction -> detailedTransaction.getDestinations().stream())
-                        .mapToInt(service::getRiskForBitcoinAddress)
-                        .max();
 
-                if(!maxRisk.isPresent()){
-                    System.err.println("failed to calc max risk");
+                BigInteger txVolumeInSatoshi = detailedTransactions.stream()
+                        .map(detailedTransaction -> detailedTransaction.getAmount())
+                        .reduce(new BigInteger(String.valueOf(0L)), BigInteger::add);
+
+
+                BigDecimal btcInUSDRate;
+                try {
+
+                    String yesterday = ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
+                    btcInUSDRate = service.getUSDPriceForBTC(yesterday);
+                } catch (JsonProcessingException e) {
+                    System.err.println("failed to get btcInUSD rate.");
+                    e.printStackTrace();
+                    return;
+                }
+
+                if(btcInUSDRate.compareTo(BigDecimal.valueOf(0L)) == -1){
+                    System.err.println("failed to get btcInUSD rate.");
                     return;
                 }
 
                 Map<String, String> collectedData = new HashMap<>(1);
-                collectedData.put("risk", String.valueOf(maxRisk));
+                BigDecimal txVolumeInBTC = new BigDecimal(txVolumeInSatoshi).multiply(new BigDecimal(Math.pow(10, -8)));
+                BigInteger txVolumeInUSD = btcInUSDRate.multiply(txVolumeInBTC).toBigInteger();
+                collectedData.put("transaction.value.in.dollars", String.valueOf(txVolumeInUSD));
                 dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
                     if (dataCollectionStatus.getCode() != 0) {
                         System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
@@ -189,10 +204,6 @@ public class Main {
     private static Optional<TransactionHandler> getTransactionHandler(SignRequest signRequest) {
         if (btcHandler.canDecode(signRequest.rawTransactions)){
             return Optional.ofNullable(btcHandler);
-        }
-
-        if(ethHandler.canDecode(signRequest.rawTransactions)){
-            return Optional.ofNullable(ethHandler);
         }
 
         System.err.println("cannot decode raw TX");
