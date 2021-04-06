@@ -160,7 +160,8 @@ public class Main {
                 try {
                     detailedTransactions = handler.get().decode(signRequest.dataToSign, signRequest.rawTransactions, signRequest.publicKeys, new HashSet<>(signRequest.publicKeys));
                 } catch (BadTransactionException e) {
-                    System.err.println("failed to decode BTC transaction. " + e.getMessage());
+                    System.err.println("failed to decode BTC transaction.");
+                    e.printStackTrace();
                     return;
                 }
 
@@ -175,12 +176,13 @@ public class Main {
                     String yesterday = ZonedDateTime.now().minusDays(1).format(DateTimeFormatter.ISO_DATE);
                     btcInUSDRate = service.getUSDPriceForBTC(yesterday);
                 } catch (JsonProcessingException e) {
-                    System.err.println("failed to get btcInUSD rate" + e.getMessage());
+                    System.err.println("failed to get btcInUSD rate.");
+                    e.printStackTrace();
                     return;
                 }
 
                 if(btcInUSDRate.compareTo(BigDecimal.valueOf(0L)) == -1){
-                    System.err.println("failed to get btcInUSD rate");
+                    System.err.println("failed to get btcInUSD rate.");
                     return;
                 }
 
