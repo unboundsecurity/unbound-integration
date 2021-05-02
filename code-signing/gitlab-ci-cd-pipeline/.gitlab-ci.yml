@@ -15,6 +15,7 @@ build:
     - ls -al
     - echo "Downloading and installing ekm-client"
     - wget --no-verbose $EKM_CLIENT_RPM
+    - echo "servers=$UNBOUND_EP_SERVER" > install_props.txt
     - export INSTALL_PROPS=`pwd`/install_props.txt
     - yum localinstall -y ekm-client-*.rpm
     - export RND=`< /dev/urandom LC_CTYPE=C tr -dc 'A-Za-z-0-9' | head -c${1:-32};`
