@@ -1,0 +1,50 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  image: centos
+  script:
+    - echo "Installing missing packages"
+    - yum install -q -y rpm-build wget openssl java-devel
+    - echo "Building hello.jar file"
+    - javac HelloWorld/Main.java
+    - jar cfm hello.jar Manifest.txt HelloWorld/Main.class
+    - ls -al
+    - echo "Downloading and installing ekm-client"
+    - wget --no-verbose $EKM_CLIENT_RPM
+    - export INSTALL_PROPS=`pwd`/install_props.txt
+    - yum localinstall -y ekm-client-*.rpm
+    - export RND=`< /dev/urandom LC_CTYPE=C tr -dc 'A-Za-z-0-9' | head -c${1:-32};`
+    - ucl register -n client-$RND -t gitlab-demo -p code-sign -c $ACTIVATION_CODE
+    - ucl list
+    - echo "Signing hello.jar file"
+    - TOOLS_JAR=`find /usr/lib/jvm/ -name tools.jar | head -1`
+    - jarsigner -keystore NONE -storetype PKCS11 -storepass NULL -providername UNBOUND -providerclass com.unbound.provider.UBCryptoProvider -J-cp -J/usr/lib64/ekm-java-provider-2.0.jar:$TOOLS_JAR hello.jar $KEY_NAME
+    - echo "Building and signing rpm"
+    - rpmbuild --target noarch -bb hello.spec
+    - ucl sign-rpm -i /root/rpmbuild/RPMS/noarch/hello-1.0.0-1.noarch.rpm -o hello-1.0.0-1.noarch.signed.rpm -n $KEY_NAME
+    - echo "Validating rpm"
+    - ucl export -n $KEY_NAME -f PGP -o GPGkey-pub.pgp
+    - rpm --import GPGkey-pub.pgp
+    - rpm -Kv hello-1.0.0-1.noarch.signed.rpm
+  artifacts:
+    paths:
+      - hello-1.0.0-1.noarch.signed.rpm
+      - GPGkey-pub.pgp
+    expire_in: 1 week
+
+test:
+  image: alpine
+  stage: test
+  script:
+    - pwd
+    - echo "Run your test code here."
+
+deploy:
+  image: alpine
+  stage: deploy
+  script:
+    - echo "Run your deployment scripts here."
