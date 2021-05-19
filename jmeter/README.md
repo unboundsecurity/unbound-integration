@@ -93,6 +93,6 @@ For the tests, first confirm that the default user have the password: "Password1
 You can change the password in the RSASignTest.java if necessary.
 
 #### RSA - sign
-1. Open the *Ubtest.jmx* file in Jmeter.
+1. Open the *UBCoTtest.jmx* file in Jmeter.
 1. Run the relevant test: Sign RSA.
 
