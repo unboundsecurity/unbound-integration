@@ -39,7 +39,7 @@ wrap_key = keys.pop(0)
 
 # generate AES key to be used by SF
 key_template = {CKA_CLASS: CKO_SECRET_KEY, CKA_KEY_TYPE: CKK_AES, CKA_TOKEN: True,
-                CKA_VALUE_LEN: 32, CKA_ENCRYPT: True, CKA_DECRYPT: True, CKA_EXTRACTABLE: True, CKA_WRAP_WITH_TRUSTED: False}
+                CKA_VALUE_LEN: 32, CKA_ENCRYPT: True, CKA_DECRYPT: True, CKA_EXTRACTABLE: True, CKA_WRAP_WITH_TRUSTED: False , CKA_DERIVE: True}
 rv, aes_key = c_generate_key(session, CKM_AES_KEY_GEN, key_template)
 assert rv == CKR_OK
 
