@@ -1,6 +1,10 @@
-# Sample GitLab CI/CD pipeline implementing Unbound Security code signing for jar & rpm files
+# GitLab CI/CD pipeline for code signing JAR and RPM files
 
-This is a sample Java Hello World project. CI/CD automation can be found in the `.gitlab-ci.yml` file. It does the following:
+This is a sample Java project showing GitLab CI/CD pipeline for code signing JAR and RPM files. See [here](https://www.unboundsecurity.com/solutions/information-security/) for more information about using Unbound for code signing.
+
+CI/CD automation can be found in the `.gitlab-ci.yml` file. 
+
+The sample does the following:
 
 1. Download missing packages: `java-devel`, `wget`, etc...
 1. Build `hello.jar` file.
@@ -16,22 +20,7 @@ This is a sample Java Hello World project. CI/CD automation can be found in the 
 
 The build parameters found in the `.gitlab-ci.yml` file should be stored in this GitLab Project -> Settings -> CI/CD -> Variables.
 
-The `$UNBOUND_EP_SERVER` is an Unbound Entry Point server running in your environment. It can be a hostname or ip address.
-
-The `$ACTIVATION_CODE` variable is a UKC client activation code.
-
-The `$EKM_CLIENT_RPM` variable is the url used to download ekm client rpm file.
-
-The `$KEY_NAME` is a signing key name you created in the EKM service.
-
-## Why Unbound Security?
-
-With [Unbound Security](https://www.unboundsecurity.com/) code signing is a natural, zero hassle part of software development process.
-
-1. Top-level security. Key material is split between multiple servers without bringing the key in one place.
-1. FIPS protected pure-software virtual HSM.
-1. State of the art multi-party computation algorithms used to sign on the files. 
-1. Solution that applies to all development teams globally.
-1. Easy to deploy and use. For example with this GitLab CI/CD pipeline.
-1. Central management for keys and certificates.
-1. Detailed audit log to track all code-signing activities.
+- `$UNBOUND_EP_SERVER` is an Unbound Entry Point server running in your environment. It can be a hostname or IP address.
+- `$ACTIVATION_CODE` is a UKC client activation code.
+- `$EKM_CLIENT_RPM` is the URL used to download ekm client RPM file.
+- `$KEY_NAME` is a signing key name you created in the EKM service.
