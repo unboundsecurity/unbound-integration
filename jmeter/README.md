@@ -39,28 +39,28 @@ For the tests, first confirm that the default user does not have a password. (No
 1. Create a key for testing. For example:
 
     `ucl generate -t AES -p <PART_NAME> --name aes-256-key --purpose E`
-1. Open the *Ubtest.jmx* file in Jmeter.
+1. Open the *UBUKCTest.jmx* file in Jmeter.
 1. Run the relevant tests: Encrypt GCM or Decrypt GCM.
 
 #### RSA-OAEP - decrypt
 1. Create a key for testing. For example:
 
     `ucl generate -t RSA -p <PART_NAME> --name rsa-2048-key`
-1. Open the *Ubtest.jmx* file in Jmeter.
+1. Open the *UBUKCTest.jmx* file in Jmeter.
 1. Run the relevant test: Decrypt RSA.
 
 #### ECDSA-P256 - sign
 1. Create a key for testing. For example:
 
     `ucl generate -t ECC -p <PART_NAME> --name ecdsa-p256-key`
-1. Open the *Ubtest.jmx* file in Jmeter.
+1. Open the *UBUKCTest.jmx* file in Jmeter.
 1. Run the relevant test: Sign ECDSA.
 
 #### ECDH-P256 - derive and encrypt
 1. Create a key for testing. For example:
 
     `ucl generate -t ECC -p <PART_NAME> --purpose D --name ecdh-p256-key`
-1. Open the *Ubtest.jmx* file in Jmeter.
+1. Open the *UBUKCTest.jmx* file in Jmeter.
 1. Run the relevant tests: Derive ECDH.
 
 ## Prerequisites for CoT Performance tests
@@ -72,6 +72,36 @@ You need the following before running the performance tests:
 1. Maven CLI - installed
 
 ## Test the CoT Performance
+
+### Set up the environment
+
+1. Download this repository.
+1. From the root of the downloaded repo, run the Maven command to compile the JAR for testing.
+
+   `mvn package`
+
+   This command creates the *ub-maven-test-1.0.0.jar* file in the *target/* directory.
+1. Copy *ub-maven-test-1.0.0.jar* to the *lib* directory in your Jmeter installation.
+1. Copy *ekm-java-provider-2.0.jar* from the CoT-client .tar file to the *lib* directory in your Jmeter installation.
+
+### Testing
+
+The following tests are provided:
+1. RSA - sign
+
+For the tests, first confirm that the default user have the password: "Password1!".
+You can change the password in the RSASignTest.java if necessary.
+
+#### RSA - sign
+1. Open the *UBCoTtest.jmx* file in Jmeter.
+1. Run the relevant test: Sign RSA.
+1. Use the 'User Defined Variables' in the following manner:
+   * if 'createKeys' set to 'true', new keys will be created. You need Pre-Activated keys equal or more than the threads running.
+   * if 'createKeys' set to 'false', old keys will be used. You need to have number of keys equal or more than the threads running.
+   * if 'deleteKeys' set to 'true', the keys used will be deleted on the end of the test.
+   * if 'deleteKeys' set to 'false', the keys used will not be deleted on the end of the test.
+
+## Test the legacy-CoT Performance
 
 ### Set up the environment
 
@@ -95,4 +125,10 @@ You can change the password in the RSASignTest.java if necessary.
 #### RSA - sign
 1. Open the *UBCoTtest.jmx* file in Jmeter.
 1. Run the relevant test: Sign RSA. 
+1. Use the 'User Defined Variables' in the following manner:
+   * if 'createKeys' set to 'true', new keys will be created. 
+   * if 'createKeys' set to 'false', old keys will be used. 
+   * if 'deleteKeys' set to 'true', the keys used will be deleted on the end of the test.
+   * if 'deleteKeys' set to 'false', the keys used will not be deleted on the end of the test.
+1. We recommend to use 'createKeys' = 'true', 'deleteKeys' = 'true'
 
