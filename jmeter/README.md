@@ -2,7 +2,7 @@
 
 This repository uses [Apache Jmeter](https://jmeter.apache.org/) to test the performance of UKC and CoT.
 
-Refer to [Developing in Java](https://www.unboundtech.com/docs/UKC/UKC_Developers_Guide/HTML/Content/Products/UKC-EKM/UKC_Developers_Guide/DevelopingInJava/Developing_in_Java.htm) for more information about configuring the Java environment.
+See [Developing in Java](https://www.unboundtech.com/docs/UKC/UKC_Developers_Guide/HTML/Content/Products/UKC-EKM/UKC_Developers_Guide/DevelopingInJava/Developing_in_Java.htm) for more information about configuring the Java environment.
 
 ## Prerequisites for UKC Performance tests
 
@@ -73,7 +73,7 @@ You need the following before running the performance tests:
 
 ## Test the CoT Performance
 
-### Set up the environment
+### Set up the Environment
 
 1. Download this repository.
 1. From the root of the downloaded repo, run the Maven command to compile the JAR for testing.
@@ -82,28 +82,26 @@ You need the following before running the performance tests:
 
    This command creates the *ub-maven-test-1.0.0.jar* file in the *target/* directory.
 1. Copy *ub-maven-test-1.0.0.jar* to the *lib* directory in your Jmeter installation.
-1. Copy *ekm-java-provider-2.0.jar* from the CoT-client .tar file to the *lib* directory in your Jmeter installation.
+1. Copy *ekm-java-provider-2.0.jar* from the CoT-client *.tar* file to the *lib* directory in your Jmeter installation.
 
 ### Testing
 
 The following tests are provided:
 1. RSA - sign
 
-For the tests, first confirm that the default user have the password: "Password1!".
-You can change the password in the RSASignTest.java if necessary.
+For the tests, first confirm that the default user has the password: "Password1!".
+You can change the password in *RSASignTest.java* if necessary.
 
-#### RSA - sign
+#### RSA - Sign
 1. Open the *UBCoTtest.jmx* file in Jmeter.
 1. Run the relevant test: Sign RSA.
-1. Use the 'User Defined Variables' in the following manner:
-   * if 'createKeys' set to 'true', new keys will be created. You need Pre-Activated keys equal or more than the threads running.
-   * if 'createKeys' set to 'false', old keys will be used. You need to have number of keys equal or more than the threads running.
-   * if 'deleteKeys' set to 'true', the keys used will be deleted on the end of the test.
-   * if 'deleteKeys' set to 'false', the keys used will not be deleted on the end of the test.
+1. You can use the 'User Defined Variables' in the following manner:
+   - **createKeys** - The number of preactivated keys must be equal or more than the number of threads running. When set to *true* new keys are created. When set to *false* old keys are used. 
+   - **deleteKeys** - When set to *true* the keys used are deleted at the end of the test. When set to *false* the keys used are not deleted at the end of the test.
 
-## Test the legacy-CoT Performance
+## Test the Legacy CoT Performance
 
-### Set up the environment
+### Set up the Environment
 
 1. Download this repository.
 1. From the root of the downloaded repo, run the Maven command to compile the JAR for testing.
@@ -119,16 +117,16 @@ You can change the password in the RSASignTest.java if necessary.
 The following tests are provided:
 1. RSA - sign
 
-For the tests, first confirm that the default user have the password: "Password1!".
-You can change the password in the RSASignTest.java if necessary.
+For the tests, first confirm that the default user has the password: "Password1!".
+You can change the password in *RSASignTest.java* if necessary.
 
-#### RSA - sign
+#### RSA - Sign
 1. Open the *UBCoTtest.jmx* file in Jmeter.
 1. Run the relevant test: Sign RSA. 
 1. Use the 'User Defined Variables' in the following manner:
-   * if 'createKeys' set to 'true', new keys will be created. 
-   * if 'createKeys' set to 'false', old keys will be used. 
-   * if 'deleteKeys' set to 'true', the keys used will be deleted on the end of the test.
-   * if 'deleteKeys' set to 'false', the keys used will not be deleted on the end of the test.
-1. We recommend to use 'createKeys' = 'true', 'deleteKeys' = 'true'
+   - **createKeys** - When set to *true* new keys are created. When set to *false* old keys are used. 
+   - **deleteKeys** - When set to *true* the keys used are deleted at the end of the test. When set to *false* the keys used are not deleted at the end of the test.
+1. We recommend using:
+    - 'createKeys' = 'true'
+	- 'deleteKeys' = 'true'
 
