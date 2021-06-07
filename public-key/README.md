@@ -3,7 +3,7 @@
 Unbound packages are provided with a signature that you can use to verify the integrity of the package. In addition, the certificate can be used to verify the public key.
 
 This folder contains:
-1. unbound.pgp - The Unbound public key from *unbound-cert.pem* (in PGP format)
+1. unbound<YEARS>.pgp - The Unbound public key from *unbound-cert.pem* (in PGP format). Note that you need to select the key with a name that includes the years corresponding to the package that you are trying to validate.
 2. unbound-cert.pem - The Unbound public certificate signed by DigiCert (in PEM format).
 3. digicert-chain.pem - The chain of certificates that signed the Unbound certificate.
 
