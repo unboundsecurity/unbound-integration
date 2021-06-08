@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -107,13 +107,29 @@
           </elementProp>
           <stringProp name="classname">com.unbound.jmeter.RSASignTest</stringProp>
         </JavaSampler>
-        <hashTree/>
-        <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer" enabled="false">
-          <stringProp name="ConstantTimer.delay">45</stringProp>
-          <stringProp name="RandomTimer.range">100.0</stringProp>
-        </UniformRandomTimer>
-        <hashTree/>
+        <hashTree>
+          <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="createKeys" elementType="Argument">
+                <stringProp name="Argument.name">createKeys</stringProp>
+                <stringProp name="Argument.value">false</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="deleteKeys" elementType="Argument">
+                <stringProp name="Argument.name">deleteKeys</stringProp>
+                <stringProp name="Argument.value">false</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </Arguments>
+          <hashTree/>
+        </hashTree>
       </hashTree>
+      <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer" enabled="false">
+        <stringProp name="ConstantTimer.delay">45</stringProp>
+        <stringProp name="RandomTimer.range">100.0</stringProp>
+      </UniformRandomTimer>
+      <hashTree/>
     </hashTree>
   </hashTree>
 </jmeterTestPlan>
