@@ -96,7 +96,7 @@ You can change the password in *RSASignTest.java* if necessary.
 1. Open the *UBCoTtest.jmx* file in Jmeter.
 1. Run the relevant test: Sign RSA.
 1. You can use the 'User Defined Variables' in the following manner:
-   - **createKeys** - The number of preactivated keys must be equal or more than the number of threads running. When set to *true* new keys are created. When set to *false* old keys are used. 
+   - **createKeys** - When set to *true* new keys are created, and the number of **preactivated keys** must be equal or more than the number of threads running.  When set to *false* old keys are used, and the number of **keys** must be equal or more than the number of threads running.
    - **deleteKeys** - When set to *true* the keys used are deleted at the end of the test. When set to *false* the keys used are not deleted at the end of the test.
 
 ## Test the Legacy CoT Performance
