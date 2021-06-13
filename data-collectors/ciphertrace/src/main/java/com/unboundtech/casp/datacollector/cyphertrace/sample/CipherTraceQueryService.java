@@ -28,7 +28,7 @@ public class CipherTraceQueryService {
         btcTarget = client.target("https://rest.ciphertrace.com/aml/v1/btc/risk");
     }
 
-    int getRiskForBitcoinAddress(String btcAddress) {
+    public int getRiskForBitcoinAddress(String btcAddress) {
         return btcTarget
                 .queryParam("address", btcAddress)
                 .request()
@@ -37,7 +37,7 @@ public class CipherTraceQueryService {
                 .risk;
     }
 
-    int getRiskForEthereumAddress(String ethAddress) {
+    public int getRiskForEthereumAddress(String ethAddress) {
         return ethTarget
                 .queryParam("address", ethAddress)
                 .request()

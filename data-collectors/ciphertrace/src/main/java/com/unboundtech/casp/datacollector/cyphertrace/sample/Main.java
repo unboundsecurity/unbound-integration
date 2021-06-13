@@ -42,7 +42,7 @@ public class Main {
         options.addOption("u", "server-url", true, "CASP server url");
         options.addOption("k", "insecure", false, "Allow connections without certificate verification");
 
-        options.addOption("a", "ciphertracl-api-token", true, "CipherTrace API key");
+        options.addOption("a", "ciphertrace-api-token", true, "CipherTrace API key");
 
         HelpFormatter formatter = new HelpFormatter();
         CaspLog.turnOnLogging();
@@ -92,7 +92,7 @@ public class Main {
                 .init();
 
         if (initStatus.getCode() != 0) {
-            System.out.println(String.format("Init failed. exiting. code: %d msg: %s", initStatus.getCode(), initStatus.getDescription()));
+            System.out.printf("Init failed. exiting. code: %d msg: %s%n", initStatus.getCode(), initStatus.getDescription());
             return;
         } else {
             System.out.println("init was successful");
@@ -174,7 +174,7 @@ public class Main {
                 }
 
                 Map<String, String> collectedData = new HashMap<>(1);
-                collectedData.put("risk", String.valueOf(maxRisk));
+                collectedData.put("risk", String.valueOf(maxRisk.getAsInt()));
                 dataCollectionRequest.collectData(collectedData, dataCollectionStatus -> {
                     if (dataCollectionStatus.getCode() != 0) {
                         System.err.println("failed to provide data. " + dataCollectionStatus.getDescription());
@@ -184,7 +184,7 @@ public class Main {
                 });
             }
         });
-    };
+    }
 
     private static Optional<TransactionHandler> getTransactionHandler(SignRequest signRequest) {
         if (btcHandler.canDecode(signRequest.rawTransactions)){
