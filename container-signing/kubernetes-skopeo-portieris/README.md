@@ -51,16 +51,15 @@ skopeo copy --sign-by $PUBID docker://docker.io/library/busybox:latest \
 scp /var/lib/containers/sigstore management-box:
 ```
 
-On the **management machine** start an **nginx** container to serve static signatures.
-
-```
-docker run --rm  -v sigstore:/usr/share/nginx/html --name nginx -p 1280:80 -d nginx
-```
-
-
 ## On the management machine.
 
-1. Download and prepare portieris as in https://github.com/IBM/portieris
+1. Start the **nginx** container to serve static signatures.
+
+```
+docker run --rm  -v `pwd`/sigstore:/usr/share/nginx/html --name nginx -p 1280:80 -d nginx
+```
+
+2. Download and prepare portieris as in https://github.com/IBM/portieris
 
 ```
 sh ./portieris/gencerts
@@ -89,21 +88,23 @@ spec:
                keySecret: signing-pubkey
 ```
 
-The ```storeURL``` will point to the webserver used to host container signatured.
+The ```storeURL``` should point to the webserver used to host container signatured.
+
+3. Instal the kubernetes portieris service. It will block now all unsigned containers.
 
 ```
 helm delete -n portieris portieris || true
 helm install portieris --create-namespace --namespace portieris ./portieris --set IBMContainerService=false --debug
 ```
 
-## Test that everything is working.
+## Test that everything is setup correctly.
 
-Start kubernetes container that should run:
+This command must work. We run conatuner that we have already signed.
 ```
 kubectl run -i --tty busybox --image=stremovsky/busybox:latest --restart=Never -- sh
 ```
 
-Start kubernetes container that should be blocked:
+This command must be blocked. We run unsigned container.
 ```
 kubectl run -i --tty busybox --image=library/busybox:latest --restart=Never -- sh
 ```
