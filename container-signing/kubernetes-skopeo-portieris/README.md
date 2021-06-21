@@ -48,7 +48,7 @@ scp /var/lib/containers/sigstore management-box:
 
 ## On the management machine.
 
-1. Create a Kubernetes secret form the '''public.gpg''' file.
+1. Create a Kubernetes secret form the ```public.gpg``` file.
 ```
 kubectl create secret generic signing-pubkey --from-file=key=public.gpg
 ```
@@ -88,7 +88,7 @@ spec:
                keySecret: signing-pubkey
 ```
 
-The ```storeURL``` should point to the webserver used to host container signatured.
+The ```storeURL``` should point to the webserver used to host container signatured. For example we use **nginx**.
 
 5. Instal the kubernetes portieris service. It will block now all unsigned containers.
 
