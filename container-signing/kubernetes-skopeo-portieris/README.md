@@ -34,7 +34,7 @@ gpg2 --armor --output /tmp/public.gpg --export $KEY_NAME
 scp /tmp/public.gpg management-box:
 ```
 
-On the Kubernetes management machine create a Kubernetes secret:
+On the *management machine** create a Kubernetes secret:
 ```
 kubectl create secret generic signing-pubkey --from-file=key=public.gpg
 ```
