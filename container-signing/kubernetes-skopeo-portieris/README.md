@@ -40,16 +40,18 @@ kubectl create secret generic signing-pubkey --from-file=key=public.gpg
 ```
 
 4. Sign a public container and push it to the repository.
+
+By default, on **CentOS 8** the container signatures will be saved to the following directory: ```/var/lib/containers/sigstore```.
+You need to copy the signatures directory. For example to the **management machine**.
+
 ```
 PUBID=$(gpg --list-keys 2>/dev/null | sed -n -e  's/^ * //p')
 skopeo copy --sign-by $PUBID docker://docker.io/library/busybox:latest \
   docker://docker.io/stremovsky/busybox:latest --override-os linux --dest-creds stremovsky:PASSWORD
+scp /var/lib/containers/sigstore management-box:
 ```
 
-By default, on **CentOS 8** the container signatures will be saved to the following directory: ```/var/lib/containers/sigstore```.
-You need to copy the whole directory. For example on the management machine.
-
-On the management machine start an nginx container to serve static signatures.
+On the **management machine** start an **nginx** container to serve static signatures.
 
 ```
 docker run --rm  -v sigstore:/usr/share/nginx/html --name nginx -p 1280:80 -d nginx
@@ -89,13 +91,19 @@ spec:
 
 The ```storeURL``` will point to the webserver used to host container signatured.
 
-
-helm delete -n portieris portieris
-
+```
+helm delete -n portieris portieris || true
 helm install portieris --create-namespace --namespace portieris ./portieris --set IBMContainerService=false --debug
+```
 
-## Run a test kubernetes container:
+## Test that everything is working.
+
+Start kubernetes container that should run:
 ```
 kubectl run -i --tty busybox --image=stremovsky/busybox:latest --restart=Never -- sh
 ```
 
+Start kubernetes container that should be blocked:
+```
+kubectl run -i --tty busybox --image=library/busybox:latest --restart=Never -- sh
+```
