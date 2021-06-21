@@ -42,10 +42,11 @@ kubectl create secret generic signing-pubkey --from-file=key=public.gpg
 4. Sign a public container and push it to the repository.
 ```
 PUBID=$(gpg --list-keys 2>/dev/null | sed -n -e  's/^ * //p')
-skopeo copy --sign-by $PUBID docker://docker.io/library/busybox:latest docker://docker.io/stremovsky/busybox:latest --override-os linux --dest-creds stremovsky:PASSWORD
+skopeo copy --sign-by $PUBID docker://docker.io/library/busybox:latest \
+  docker://docker.io/stremovsky/busybox:latest --override-os linux --dest-creds stremovsky:PASSWORD
 ```
 
-By default, on CentOS 8 the container signatures will be saved to the following directory: ```/var/lib/containers/sigstore```.
+By default, on **CentOS 8** the container signatures will be saved to the following directory: ```/var/lib/containers/sigstore```.
 You need to copy the whole directory. For example on the management machine.
 
 On the management machine start an nginx container to serve static signatures.
