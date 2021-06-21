@@ -2,9 +2,9 @@
 Generate RSA key in the Unbound UKC.
 
 ## Setup a signing machine.
-It can run in a Docker container.
+It can be a Docker container.
 
-1. Install missing packages. For example for CentOS 8.
+1. Install missing packages. For example for CentOS 8:
 ```
 yum -y install jq less vim openssl java java-devel wget gpg
 RUN dnf -y install skopeo
@@ -15,14 +15,16 @@ RUN dnf -y install skopeo
 3. Setup the ekm-client.
 ```
 KEY_NAME="..."
+PARTITION="..."
+CLIENT_TEMPLATE="..."
 UKC="server-name:port"
 ACCESS_CODE="123..."
 echo "servers="$UKC > /tmp/install_props.txt
 export INSTALL_PROPS=/tmp/install_props.txt
 yum localinstall -y /tmp/ekm-client-*.rpm
 export RND=`< /dev/urandom LC_CTYPE=C tr -dc 'A-Za-z-0-9' | head -c${1:-32};`
-ucl register -n client-$RND -t gitlab-demo -p code-sign -c $ACCESS_CODE
-ucl pgp-key -p code-sign -n $KEY_NAME
+ucl register -n client-$RND -t $CLIENT_TEMPLATE -p $PARTITION -c $ACCESS_CODE
+ucl pgp-key -p $PARTITION -n $KEY_NAME
 ```
 
 3. [One-time] Export public key in pgp format and copy it to the machine used to manage kubernetes.
