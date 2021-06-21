@@ -34,11 +34,6 @@ gpg2 --armor --output /tmp/public.gpg --export $KEY_NAME
 scp /tmp/public.gpg management-box:
 ```
 
-On the *management machine** create a Kubernetes secret:
-```
-kubectl create secret generic signing-pubkey --from-file=key=public.gpg
-```
-
 4. Sign a public container and push it to the repository.
 
 By default, on **CentOS 8** the container signatures will be saved to the following directory: ```/var/lib/containers/sigstore```.
@@ -53,19 +48,24 @@ scp /var/lib/containers/sigstore management-box:
 
 ## On the management machine.
 
-1. Start the **nginx** container to serve static signatures.
+1. Create a Kubernetes secret form the '''public.gpg''' file.
+```
+kubectl create secret generic signing-pubkey --from-file=key=public.gpg
+```
+
+2. Start the **nginx** container to serve static signatures.
 
 ```
 docker run --rm  -v `pwd`/sigstore:/usr/share/nginx/html --name nginx -p 1280:80 -d nginx
 ```
 
-2. Download and prepare portieris as in https://github.com/IBM/portieris
+3. Download and prepare portieris as in https://github.com/IBM/portieris
 
 ```
 sh ./portieris/gencerts
 ```
 
-2. Edit ```portieris/templates/policies.yaml``` file.
+4. Edit ```portieris/templates/policies.yaml``` file.
 
 Change the last policy to be something like:
 
@@ -90,7 +90,7 @@ spec:
 
 The ```storeURL``` should point to the webserver used to host container signatured.
 
-3. Instal the kubernetes portieris service. It will block now all unsigned containers.
+5. Instal the kubernetes portieris service. It will block now all unsigned containers.
 
 ```
 helm delete -n portieris portieris || true
