@@ -113,7 +113,7 @@ The control is totally on your side without any further engagement with the UKC 
     --cert_validity <Validity period of each derived certificate>
     ```
     
-    The output of this command is <ACTIVATION_CODE>. Together with the <TEMPLATE_NAME> they will let Tessera to obtain its SSL client certificate (refer to [UKC User Guide](https://www.unboundtech.com/docs/UKC/UKC_User_Guide/HTML/Content/Products/UKC-EKM/UKC_User_Guide/PartitionBindings/EnrollAC.html#h3_4)).
+    The output of this command is <ACTIVATION_CODE>. Together with the <TEMPLATE_NAME> they will let Tessera to obtain its SSL client certificate (refer to [UKC User Guide](https://www.unboundsecurity.com/docs/UKC/UKC_User_Guide/HTML/Content/Products/UKC-EKM/UKC_User_Guide/PartitionBindings/EnrollAC.html#h3_4)).
     
  1. To obtain the UKC SSL trust certificate (ukc_ca.p7b) run the following command on the EP server.
    
@@ -140,7 +140,7 @@ The control is totally on your side without any further engagement with the UKC 
 <a name="Withclient"></a>
 ### Option 3: Use the UKC Client Software
 
-If you installed the UKC Client Software on the Tessera server (refer to [UKC User Guide](https://www.unboundtech.com/docs/UKC/UKC_User_Guide/HTML/Content/Products/UKC-EKM/UKC_User_Guide/Installation/ClientInstallation.html)), you can choose the following standard UKC client creation and registration approach to implicitly obtain the required certificates.
+If you installed the UKC Client Software on the Tessera server (refer to [UKC User Guide](https://www.unboundsecurity.com/docs/UKC/UKC_User_Guide/HTML/Content/Products/UKC-EKM/UKC_User_Guide/Installation/ClientInstallation.html)), you can choose the following standard UKC client creation and registration approach to implicitly obtain the required certificates.
 
 
 1. To create the certificate template, run the following command on the EP server.
@@ -164,10 +164,10 @@ Create the jar file for Unbound encryption, which is used in the next section.
 
 1. Get this repo.
 
-    `git clone https://github.com/unbound-tech/encryption-ub.git`
+    `git clone https://github.com/unboundsecurity/unbound-integration.git`
 1. Access the local directory.
 
-    `cd encryption-ub`
+    `cd unbound-integration/tessera`
 1. Use Maven to create the package.
 
     `mvn package`
