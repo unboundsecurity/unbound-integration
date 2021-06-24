@@ -28,7 +28,8 @@ namespace Microsoft.InformationProtection.Web.Models
             //use ukc as keystore
             byte[] keyNameBytes = Encoding.UTF8.GetBytes(keyName);
             //byte[] keyIDBytes = Encoding.UTF8.GetBytes("6a31bf60705cd8b9");
-
+            //ulong answer = Convert.ToInt64("6a31bf60705cd8b9",16);
+            //ulong keyUID = (ulong)Convert.ToUInt64("6a31bf60705cd8b9",16);
 
             Library.C_Initialize();
             CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
@@ -41,7 +42,7 @@ namespace Microsoft.InformationProtection.Web.Models
                 new CK_ATTRIBUTE(CK.CKA_CLASS, CK.CKO_PRIVATE_KEY),
                 new CK_ATTRIBUTE(CK.CKA_KEY_TYPE, CK.CKK_RSA),
                 new CK_ATTRIBUTE(CK.CKA_ID, keyNameBytes),
-               // new CK_ATTRIBUTE(CK.DYCKA_UID , keyIDBytes)
+                //new CK_ATTRIBUTE(CK.DYCKA_UID , keyUID)
             });
 
             CK_OBJECT_HANDLE[] foundKeyHandles = Library.C_FindObjects(session, 1);
@@ -117,6 +118,8 @@ namespace Microsoft.InformationProtection.Web.Models
             //keyName="key1";
             //use ukc as keystore
             byte[] keyNameBytes = Encoding.UTF8.GetBytes(keyName);
+            ulong keyUID = (ulong)Convert.ToUInt64(keyId,16);
+
              CK_OBJECT_HANDLE pubKey;
              CK_OBJECT_HANDLE prvKey;
              CK_OBJECT_HANDLE publicTest;
@@ -132,7 +135,9 @@ namespace Microsoft.InformationProtection.Web.Models
                 new CK_ATTRIBUTE(CK.CKA_TOKEN, true),
                 new CK_ATTRIBUTE(CK.CKA_CLASS, CK.CKO_PRIVATE_KEY),
                 new CK_ATTRIBUTE(CK.CKA_KEY_TYPE, CK.CKK_RSA),
-                new CK_ATTRIBUTE(CK.CKA_ID, keyNameBytes),
+                //new CK_ATTRIBUTE(CK.CKA_ID, keyNameBytes),
+                new CK_ATTRIBUTE(CK.DYCKA_UID , keyUID)
+
             });
 
             CK_OBJECT_HANDLE[] foundKeyHandles = Library.C_FindObjects(session, 1);
