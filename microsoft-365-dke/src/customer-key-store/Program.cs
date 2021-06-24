@@ -13,7 +13,7 @@ namespace CustomerKeyStore
     {
         public static void Main(string[] args)
         {
-            // /////////////////////////////////////////
+            /////////////////////////////////////////
             //  Library.C_Initialize();
             // CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
             // CK_SLOT_ID slot = slots[0];
@@ -124,12 +124,16 @@ namespace CustomerKeyStore
             //     CK_MECHANISM mech_rsa = new CK_MECHANISM(CK.CKM_RSA_PKCS_OAEP, oaepParams);
             //       // Encrypt Data
             //     //System.out.println("Encrypt Data");
-            //     Library.C_EncryptInit(session, mech_rsa, pubKey);
+            //     Library.C_EncryptInit(session, mech_rsa, publicTest);
             //     byte[] encrypted = Library.C_Encrypt(session, plainData);
+
+            //     ulong vIn = 12132554581603151304;
+            // uint vOut = (uint)Convert.ToUInt64(vIn);
+            // CK_OBJECT_HANDLE hKey2 = new CK_OBJECT_HANDLE(vOut);
 
             //     // Decrypt Data
             //     //System.out.println("Decrypt Data");
-            //     Library.C_DecryptInit(session, mech_rsa, prvKey);
+            //     Library.C_DecryptInit(session, mech_rsa, foundKeyHandles[0]);
             //     byte[] decrypted = Library.C_Decrypt(session, encrypted);
 
             //     //assert Arrays.equals(plainData, decrypted);
