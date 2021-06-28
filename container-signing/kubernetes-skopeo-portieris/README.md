@@ -1,3 +1,25 @@
+# Unbountsecurity vHSM integration with Skopeo and Portieris
+
+## Project Components
+
+[Skopeo])(https://github.com/containers/skopeo) is a container copying and signing command.
+
+[Portieris](https://github.com/IBM/portieris) is a Kubernetes service that blocks unauthorised containers from starting.
+
+[Unboundsecurity VHSM](https://www.unboundsecurity.com/) is a virtual HSM service.
+
+## Milestones
+
+Project task is to integrate all 3 components to work together. It is doen as following:
+1. Generate an RSA key pair used to sign containers in Unboundsecurity HSM.
+1. Export the public pair of the signing key.
+1. Create a secret in Kubernetes out of public key.
+1. Configure ``skopeo`` to work with Unboundsecurity HSM service.
+1. Sign container and generate signature file using the ``skopeo`` command.
+1. Copy generated signature file to the NGINX web server used to serve static files.
+1. Generate Portieris template to check all starting containers for signatures in NGINX server.
+1. Reload Portieris and check that everything is working and signatures enforced.
+
 ## Prerequisites
 Generate RSA key in the Unbound UKC.
 
