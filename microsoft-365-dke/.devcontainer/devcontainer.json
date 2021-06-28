@@ -15,7 +15,7 @@
 	},
 
 	"containerEnv": {
-		"EP_HOST_NAME": "ukc-ep",
+		"EP_HOST_NAME": "ep1:8443",
 		"UKC_CRYPTO_USER": "encrypter",
 		"UKC_CRYPTO_USER_PASSWORD": "Password1!",
 		 "UKC_PARTITION":"test",
