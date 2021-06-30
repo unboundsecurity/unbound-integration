@@ -8,7 +8,7 @@
 
 [Unboundsecurity VHSM](https://www.unboundsecurity.com/) is a virtual HSM service.
 
-## Milestones
+## The process
 
 Project task is to integrate all 3 components to work together. It is done as following:
 1. Generate an RSA key pair used to sign containers in Unboundsecurity HSM.
