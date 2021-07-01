@@ -64,7 +64,12 @@ RUN apt-get update \
         libx11-dev \
      && rm -rf /var/lib/apt/lists/*
 
-# [Optional] Uncomment this line to install global node packages.
-# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
 
-#ENTRYPOINT [ "/root/data/start.sh" ]
+#COPY netcoreapp3.1 /root/data
+RUN mkdir /root/data/published
+COPY published /root/data/published
+#RUN mkdir /root/data/customer-key-store
+#COPY customer-key-store /root/data/customer-key-store
+
+EXPOSE 5000
+EXPOSE 5001
