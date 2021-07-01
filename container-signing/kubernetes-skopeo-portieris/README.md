@@ -1,4 +1,4 @@
-# Unbountsecurity vHSM integration with Skopeo and Portieris
+# Unbound Security vHSM Integration with Skopeo and Portieris
 
 ## Project Components
 
@@ -6,25 +6,25 @@
 
 [Portieris](https://github.com/IBM/portieris) is a Kubernetes service that blocks unauthorized containers from starting.
 
-[Unboundsecurity VHSM](https://www.unboundsecurity.com/) is a virtual HSM service.
+[Unbound Security vHSM](https://www.unboundsecurity.com/) is a virtual HSM service.
 
-## The process
+## Process Overview
 
-Project task is to integrate all 3 components to work together. It is done as following:
-1. Generate an RSA key pair used to sign containers in Unboundsecurity HSM.
+The project task is to integrate all 3 components to work together. It is done as following:
+1. Generate an RSA key pair used to sign containers in Unbound vHSM.
 1. Export the public pair of the signing key.
 1. Create a secret in Kubernetes out of public key.
-1. Configure ``skopeo`` to work with Unboundsecurity HSM service.
+1. Configure ``skopeo`` to work with Unbound vHSM service.
 1. Sign container and generate the signature file using the ``skopeo`` command.
 1. Copy generated signature file to the ``NGINX`` web server used to serve static files.
 1. Generate ``portieris`` template to check all starting containers for signatures in NGINX server.
-1. Start ``portieris`` and check that everything is working and container signatures enforced.
+1. Start ``portieris`` and check that everything is working and container signatures are enforced.
 
 ## Prerequisites
 Generate RSA key in the Unbound UKC.
 
 ## Setup a signing machine.
-It can be a Docker container.
+This step can be done with a Docker container.
 
 1. Install missing packages. For example for CentOS 8:
 ```
@@ -32,7 +32,7 @@ yum -y install jq less vim openssl java java-devel wget gpg
 RUN dnf -y install skopeo
 ```
 
-2. Upload the ekm-client.rpm file to the machine.
+2. Upload the *ekm-client.rpm* file to the machine.
 
 3. Setup the ekm-client.
 ```
@@ -58,8 +58,8 @@ scp /tmp/public.gpg management-box:
 
 4. Sign a public container and push it to the repository.
 
-By default, on **CentOS 8** the container signatures will be saved to the following directory: ```/var/lib/containers/sigstore```.
-You need to copy the signatures directory. For example to the **management machine**.
+By default, on **CentOS 8** the container signatures are saved to the following directory: ```/var/lib/containers/sigstore```.
+You need to copy the signatures directory to the **management machine**.
 
 ```
 PUBID=$(gpg --list-keys 2>/dev/null | sed -n -e  's/^ * //p')
@@ -68,7 +68,7 @@ skopeo copy --sign-by $PUBID docker://docker.io/library/busybox:latest \
 scp /var/lib/containers/sigstore management-box:
 ```
 
-## On the management machine.
+## On the Management Machine
 
 1. Create a Kubernetes secret form the ```public.gpg``` file.
 ```
@@ -87,7 +87,7 @@ docker run --rm  -v `pwd`/sigstore:/usr/share/nginx/html --name nginx -p 1280:80
 sh ./portieris/gencerts
 ```
 
-4. Edit ```portieris/templates/policies.yaml``` file.
+4. Edit ```portieris/templates/policies.yaml```.
 
 Change the last policy to be something like:
 
@@ -110,23 +110,23 @@ spec:
                keySecret: signing-pubkey
 ```
 
-The ```storeURL``` should point to the webserver used to host container signatured. For example we use **nginx**.
+The ```storeURL``` should point to the webserver used to host container signatured. For example, we use **nginx**.
 
-5. Instal the kubernetes portieris service. It will block now all unsigned containers.
+5. Instal the kubernetes portieris service. It blocks all unsigned containers.
 
 ```
 helm delete -n portieris portieris || true
 helm install portieris --create-namespace --namespace portieris ./portieris --set IBMContainerService=false --debug
 ```
 
-## Test that everything is setup correctly.
+## Test the System
 
-This command must work. We run conatuner that we have already signed.
+Run a container that we already signed. It runs without any issues.
 ```
 kubectl run -i --tty busybox --image=stremovsky/busybox:latest --restart=Never -- sh
 ```
 
-This command must be blocked. We run unsigned container.
+Run an unsigned container. It is blocked from running.
 ```
 kubectl run -i --tty busybox --image=library/busybox:latest --restart=Never -- sh
 ```
