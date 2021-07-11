@@ -26,7 +26,7 @@
 
 	},
 
-	"runArgs": ["--network=casp_default"],
+	//"runArgs": ["--network=casp_default"],
 
 
 	// Set *default* container specific settings.json values on container create.
@@ -41,7 +41,7 @@
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	 //"forwardPorts": [5000, 5001],
+	 "forwardPorts": [8080, 8000],
 
 	 "postCreateCommand": "sh /root/data/start.sh"
 

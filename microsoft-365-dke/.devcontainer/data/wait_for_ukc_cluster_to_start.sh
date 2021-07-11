@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -x
 
 EP_HOST_NAME="${EP_HOST_NAME:-ep}"
 

@@ -64,12 +64,41 @@ RUN apt-get update \
         libx11-dev \
      && rm -rf /var/lib/apt/lists/*
 
+#install ssh
+RUN apt-get update \
+&& apt-get install -y --no-install-recommends openssh-server \
+&& echo "root:Docker!" | chpasswd
+
+COPY sshd_config /etc/ssh/
+
 
 #COPY netcoreapp3.1 /root/data
 RUN mkdir /root/data/published
-COPY published /root/data/published
+COPY publish /root/data/published
+RUN mkdir /home/published
+COPY publish /home/published
 #RUN mkdir /root/data/customer-key-store
 #COPY customer-key-store /root/data/customer-key-store
 
-EXPOSE 5000
-EXPOSE 5001
+#EXPOSE 5000
+#EXPOSE 5001
+#EXPOSE 8000
+EXPOSE 2222
+#EXPOSE 8443
+
+
+ENV PORT 8080
+#EXPOSE 8080
+#EXPOSE 80 2222
+EXPOSE 2222 8080
+
+ENV ASPNETCORE_URLS "http://*:${PORT}"
+
+#ENTRYPOINT ["dotnet", "/root/data/published/customerkeystore.dll"]
+#ENTRYPOINT ["/bin/bash", "/root/data/start_test.sh"]
+CMD "/root/data/start.sh"
+
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
+#ENTRYPOINT ["/root/data/start.sh"]
+
+
