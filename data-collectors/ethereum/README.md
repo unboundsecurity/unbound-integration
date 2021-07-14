@@ -68,3 +68,13 @@ Use the following command to start the data collector:
 ```
 sudo java -jar casp-eth-data-collector-sample.jar -k -i eth_data_collector_id -u https://localhost/ -w 12345678
 ```
+
+## Notes
+
+The following notes are important to consider when developing with this sample.
+
+1. The names of the templates should be exactly as specified above. The names should not have spaces before or after, and no capital letters. 
+1. *contractAddress* must be either ERC20-0x<contract_address_in_upper_case_letters> or ETH. 
+1. *recipientAddress* must be in uppercase letters and without the 0x prefix. 
+1. *totalAmount* must be in **wei** or the equivalent for any erc20 coin. 
+1. To run the bot, use *casp-eth-data-collector-sample.jar*.
