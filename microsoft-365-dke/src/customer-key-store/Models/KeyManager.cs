@@ -9,18 +9,24 @@ namespace Microsoft.InformationProtection.Web.Models
     using unbound.cryptoki;
     using System.Linq;
     using System.Text;
+    using Microsoft.Extensions.Logging;
+
 
     public class KeyManager
     {
         private readonly IKeyStore keyStore;
+        private readonly ILogger _logger;
 
-        public KeyManager(IKeyStore keyStore)
+
+        public KeyManager(IKeyStore keyStore,ILogger<KeyManager> logger)
         {
             this.keyStore = keyStore;
+             _logger = logger;
         }
 
         public KeyData GetPublicKey(Uri requestUri, string keyName)
         {
+            _logger.LogInformation("get public key:" + keyName );
             //requestUri.ThrowIfNull(nameof(requestUri));
             keyName.ThrowIfNull(nameof(keyName));
             PublicKeyCache cache = null;
@@ -74,14 +80,30 @@ namespace Microsoft.InformationProtection.Web.Models
                 //publicKeyFromUkc.KeyId = ((UInt64)privateKeyUid.pValue).ToString();
                 publicKeyFromUkc.KeyType = "RSA";
                 publicKeyFromUkc.Algorithm = "RS256";
-                
-                return new KeyData(publicKeyFromUkc, cache);
 
+                //return new KeyData(publicKeyFromUkc, cache);
+                
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            var key2 = keyStore.GetActiveKey(keyName);
+            var publicKey2 = new PublicKey(nStrBase64,65537);
+
+            publicKey2.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + key2.KeyId;
+            publicKey2.KeyType = key2.KeyType;
+            publicKey2.Algorithm = key2.SupportedAlgorithm;
+
+            if(key2.ExpirationTimeInDays.HasValue)
+            {
+                cache = new PublicKeyCache(
+                    DateTime.UtcNow.AddDays(
+                        key2.ExpirationTimeInDays.Value).ToString("yyyy-MM-ddTHH:mm:ss", sg.CultureInfo.InvariantCulture));
+            }
+
+            return new KeyData(publicKey2, cache);
 
             }
 
 
-            //////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //TODO: should remove this(microsoft code)
             var key = keyStore.GetActiveKey(keyName);
             var publicKey = key.Key.GetPublicKey();
@@ -103,11 +125,13 @@ namespace Microsoft.InformationProtection.Web.Models
 
         public DecryptedData Decrypt(ClaimsPrincipal user, string keyName, string keyId, EncryptedData encryptedData)
         {
+            _logger.LogInformation("decrypt called from key manager class for keyName: " + keyName + " and keyID:" + keyId );
+            Console.WriteLine("decrypt called");
             user.ThrowIfNull(nameof(user));
             keyName.ThrowIfNull(nameof(keyName));
             keyId.ThrowIfNull(nameof(keyId));
             encryptedData.ThrowIfNull(nameof(encryptedData));
-
+            //throw new CustomerKeyStore.Models.KeyAccessException("User does not have access to the key-test remove this line");
             //var keyData = keyStore.GetKey(keyName, keyId);
             //keyData.KeyAuth.CanUserAccessKey(user, keyData);
 
@@ -177,8 +201,12 @@ namespace Microsoft.InformationProtection.Web.Models
                 publicKeyFromUkc.Algorithm = "RS256";
 
                 //CK_OBJECT_HANDLE hKey = new CK_OBJECT_HANDLE(vOut);    
+                _logger.LogInformation("encryptedData.Value = "  + encryptedData.Value);
 
-                byte[] plainData = Encoding.UTF8.GetBytes(encryptedData.Value);
+
+                    //byte[] plainData = Encoding.UTF8.GetBytes(encryptedData.Value);
+                    byte[] plainData = Convert.FromBase64String(encryptedData.Value);
+
 
                     Console.WriteLine("Set RSA padding params");
                     CK_RSA_PKCS_OAEP_PARAMS oaepParams = new CK_RSA_PKCS_OAEP_PARAMS();
@@ -188,19 +216,19 @@ namespace Microsoft.InformationProtection.Web.Models
                       // Encrypt Data
                     //System.out.println("Encrypt Data");
                     
-                    Library.C_EncryptInit(session, mech_rsa, publicTest);
-                    byte[] encrypted = Library.C_Encrypt(session, plainData);
+                    //Library.C_EncryptInit(session, mech_rsa, publicTest);
+                    //byte[] encrypted = Library.C_Encrypt(session, plainData);
 
                     // Decrypt Data
                     //System.out.println("Decrypt Data");
                     Library.C_DecryptInit(session, mech_rsa, foundKeyHandles[0]);
-                    byte[] decrypted = Library.C_Decrypt(session, encrypted);
+                    byte[] decrypted = Library.C_Decrypt(session, plainData);
 
 
-                    if (!Enumerable.SequenceEqual(plainData, decrypted)) throw new Exception("ENC/DEC mismatch");
-                    ASCIIEncoding ByteConverter = new ASCIIEncoding();
+                    //if (!Enumerable.SequenceEqual(plainData, decrypted)) throw new Exception("ENC/DEC mismatch");
+                    //ASCIIEncoding ByteConverter = new ASCIIEncoding();
 
-                    return new DecryptedData(ByteConverter.GetString(decrypted));
+                    return new DecryptedData(Convert.ToBase64String(decrypted));
 
 
 
@@ -294,6 +322,7 @@ namespace Microsoft.InformationProtection.Web.Models
             //var testEncryptedValue = "CthOUMzRdtSwo+4twgtjCA674G3UosWypUZv5E7uxG7GqYPiIJ+E+Uq7vbElp/bahB1fJrgq1qbdMrUZnSypVqBwYnccSxwablO15OOXl9Rn1e7w9V9fuMxtUqvhn+YZezk1623Qd7f5XTYjf6POwixtrgfZtdA+qh00ktKiVBpQKNG/bxhV94fK9+hb+qnzPmXilr9QF5rSQTd4hYHmYcR2ljVCDDZMV3tCVUTecWjS5HbOA1254ve/q3ulBLoPQTE58g7FwDQUZnd7XBdRSwYnrBWTJh8nmJ0PDfn+mCTGEI86S7HtoFYsE+Hezd24Z523phGEVrdMC9Ob1LlXEA==";
 
             //var decryptedData = keyData.Key.Decrypt(Convert.FromBase64String(encryptedData.Value));
+            _logger.LogInformation("Faild to decrypt");
             throw new Exception("Faild to decrypt");
             //return new DecryptedData("Faild to decrypt");
         }

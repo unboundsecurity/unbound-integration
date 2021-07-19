@@ -180,7 +180,8 @@ namespace CustomerKeyStore
             .UseStartup<Startup>()
             .ConfigureLogging((context, logging) =>
             {
-      
+                logging.ClearProviders();
+                logging.AddConsole();
             });
     }
 }

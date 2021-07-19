@@ -7,15 +7,22 @@ namespace Microsoft.InformationProtection.Web.Models
     using Microsoft.Extensions.Configuration;
     using Microsoft.InformationProtection.Web.Models.Extensions;
     using sg = System.Globalization;
+    using Microsoft.Extensions.Logging;
+    using unbound.cryptoki;
+    using System.Text;
+
+
     public class TestKeyStore : IKeyStore
     {
+        private readonly ILogger _logger;
         private const string KeyType = "RSA";
         private const string Algorithm = "RS256";
         private Dictionary<string, Dictionary<string, KeyStoreData>> keys = new Dictionary<string, Dictionary<string, KeyStoreData>>();
         private Dictionary<string, string> activeKeys = new Dictionary<string, string>();
 
-        public TestKeyStore(IConfiguration configuration)
+        public TestKeyStore(IConfiguration configuration,ILogger<TestKeyStore> logger)
         {
+             _logger = logger;
             configuration.ThrowIfNull(nameof(configuration));
 
             var testKeysSection = configuration.GetSection("TestKeys");
@@ -88,8 +95,9 @@ namespace Microsoft.InformationProtection.Web.Models
                 {
                   throw new System.ArgumentException("The key must have a privatePem");
                 }
+                _logger.LogInformation("testStore constructe will createTestKey with following params:name=" + name +" and id=" + id);
 
-                CreateTestKey(
+                  CreateTestKey(
                     name,
                     id,
                     publicPem,
@@ -98,11 +106,81 @@ namespace Microsoft.InformationProtection.Web.Models
                     Algorithm,
                     keyAuth,
                     expirationTimeInDays);
+            
             }
+////////////////////////////////////////////////////////////////////////////////////////////////
+                //add also key from ukc
+                 //use ukc as keystore
+            byte[] keyNameBytes = Encoding.UTF8.GetBytes("test1");
+            //byte[] keyIDBytes = Encoding.UTF8.GetBytes("6a31bf60705cd8b9");
+            //ulong answer = Convert.ToInt64("6a31bf60705cd8b9",16);
+            //ulong keyUID = (ulong)Convert.ToUInt64("6a31bf60705cd8b9",16);
+
+            Library.C_Initialize();
+            CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
+            CK_SLOT_ID slot = slots[0];
+            CK_SESSION_HANDLE session = Library.C_OpenSession(slot);
+
+            Library.C_FindObjectsInit(session, new CK_ATTRIBUTE[]
+            {
+                new CK_ATTRIBUTE(CK.CKA_TOKEN, true),
+                new CK_ATTRIBUTE(CK.CKA_CLASS, CK.CKO_PRIVATE_KEY),
+                new CK_ATTRIBUTE(CK.CKA_KEY_TYPE, CK.CKK_RSA),
+                new CK_ATTRIBUTE(CK.CKA_ID, keyNameBytes),
+                //new CK_ATTRIBUTE(CK.DYCKA_UID , keyUID)
+            });
+
+            CK_OBJECT_HANDLE[] foundKeyHandles = Library.C_FindObjects(session, 1);
+            Library.C_FindObjectsFinal(session);
+
+            CK_ATTRIBUTE n =  new CK_ATTRIBUTE(CK.CKA_MODULUS);
+            CK_ATTRIBUTE e = new CK_ATTRIBUTE(CK.CKA_PUBLIC_EXPONENT);
+            CK_ATTRIBUTE privateKeyUid =  new CK_ATTRIBUTE(CK.DYCKA_UID); 
+
+            if(foundKeyHandles.Length > 0)
+            {
+
+                //get public key
+                Library.C_GetAttributeValue(session, foundKeyHandles[0],new CK_ATTRIBUTE[]
+                {
+                    n,
+                    e,
+                    privateKeyUid
+                });
+
+                string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
+                string uid = "9b456af8aac4fbb7";
+                //string vOut = (UInt64)privateKeyUid.pValue;
+
+
+                //build the public key obj
+                var publicKeyFromUkc = new PublicKey(nStrBase64,65537);
+                
+                //publicKeyFromUkc.KeyId = ((UInt64)privateKeyUid.pValue).ToString();
+                publicKeyFromUkc.KeyType = "RSA";
+                publicKeyFromUkc.Algorithm = "RS256";
+
+                  CreateTestKey(
+                    "test1",
+                    uid,
+                    nStrBase64,
+                    nStrBase64,
+                    publicKeyFromUkc.KeyType,
+                    publicKeyFromUkc.Algorithm,
+                    keyAuth,
+                    null);
+            }
+
+
+            
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
         }
 
         public KeyStoreData GetActiveKey(string keyName)
         {
+             _logger.LogInformation("call GetActiveKey from testStore class with keyName:" + keyName);
             Dictionary<string, KeyStoreData> keys;
             string activeKey;
             KeyStoreData foundKey;
@@ -117,6 +195,9 @@ namespace Microsoft.InformationProtection.Web.Models
 
         public KeyStoreData GetKey(string keyName, string keyId)
         {
+            Console.WriteLine("GetKey function in testStore");
+            _logger.LogInformation("call GetKey function in testStore with keyName=" + keyName + "and keyId" + keyId);
+
             Dictionary<string, KeyStoreData> keys;
             KeyStoreData foundKey;
             if(!this.keys.TryGetValue(keyName, out keys) ||
@@ -139,6 +220,7 @@ namespace Microsoft.InformationProtection.Web.Models
             int? expirationTimeInDays)
         {
             keyAuth.ThrowIfNull(nameof(keyAuth));
+             _logger.LogInformation("call CreateTestKey function in testStore with keyName=" + keyName + "and keyId" + keyId);
 
             keys.Add(keyName, new Dictionary<string, KeyStoreData>());
 
