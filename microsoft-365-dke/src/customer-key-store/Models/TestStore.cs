@@ -14,6 +14,8 @@ namespace Microsoft.InformationProtection.Web.Models
 
     public class TestKeyStore : IKeyStore
     {
+        private const string ukcKeyName="test1";
+        private const string ukcKeyUid="9b456af8aac4fbb7";
         private readonly ILogger _logger;
         private const string KeyType = "RSA";
         private const string Algorithm = "RS256";
@@ -108,13 +110,9 @@ namespace Microsoft.InformationProtection.Web.Models
                     expirationTimeInDays);
             
             }
-////////////////////////////////////////////////////////////////////////////////////////////////
-                //add also key from ukc
-                 //use ukc as keystore
-            byte[] keyNameBytes = Encoding.UTF8.GetBytes("test1");
-            //byte[] keyIDBytes = Encoding.UTF8.GetBytes("6a31bf60705cd8b9");
-            //ulong answer = Convert.ToInt64("6a31bf60705cd8b9",16);
-            //ulong keyUID = (ulong)Convert.ToUInt64("6a31bf60705cd8b9",16);
+
+            //use ukc as keystore - add also the key from ukc
+            byte[] keyNameBytes = Encoding.UTF8.GetBytes(ukcKeyName);
 
             Library.C_Initialize();
             CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
@@ -139,7 +137,6 @@ namespace Microsoft.InformationProtection.Web.Models
 
             if(foundKeyHandles.Length > 0)
             {
-
                 //get public key
                 Library.C_GetAttributeValue(session, foundKeyHandles[0],new CK_ATTRIBUTE[]
                 {
@@ -149,7 +146,7 @@ namespace Microsoft.InformationProtection.Web.Models
                 });
 
                 string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
-                string uid = "9b456af8aac4fbb7";
+                string uid = ukcKeyUid;
                 //string vOut = (UInt64)privateKeyUid.pValue;
 
 
@@ -161,7 +158,7 @@ namespace Microsoft.InformationProtection.Web.Models
                 publicKeyFromUkc.Algorithm = "RS256";
 
                   CreateTestKey(
-                    "test1",
+                    ukcKeyName,
                     uid,
                     nStrBase64,
                     nStrBase64,
@@ -171,16 +168,11 @@ namespace Microsoft.InformationProtection.Web.Models
                     null);
             }
 
-
-            
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
         }
 
         public KeyStoreData GetActiveKey(string keyName)
         {
-             _logger.LogInformation("call GetActiveKey from testStore class with keyName:" + keyName);
+             _logger.LogInformation("call GetActiveKey from testStore class with keyName : " + keyName);
             Dictionary<string, KeyStoreData> keys;
             string activeKey;
             KeyStoreData foundKey;
@@ -220,7 +212,7 @@ namespace Microsoft.InformationProtection.Web.Models
             int? expirationTimeInDays)
         {
             keyAuth.ThrowIfNull(nameof(keyAuth));
-             _logger.LogInformation("call CreateTestKey function in testStore with keyName=" + keyName + "and keyId" + keyId);
+             _logger.LogInformation("call CreateTestKey function in testStore with keyName = " + keyName + " and keyId = " + keyId);
 
             keys.Add(keyName, new Dictionary<string, KeyStoreData>());
 

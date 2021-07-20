@@ -99,9 +99,9 @@ ENV ASPNETCORE_URLS "http://*:${PORT}"
 #ENTRYPOINT ["dotnet", "/root/data/published/customerkeystore.dll"]
 #ENTRYPOINT ["/bin/bash", "/root/data/start_test.sh"]
 #CMD "/root/data/start.sh"
- CMD ["bash"]
+CMD ["bash"]
 
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
-ENTRYPOINT ["/root/data/start2.sh"]
+ENTRYPOINT ["/root/data/start.sh"]
 
 

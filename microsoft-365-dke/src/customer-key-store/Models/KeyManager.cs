@@ -26,16 +26,12 @@ namespace Microsoft.InformationProtection.Web.Models
 
         public KeyData GetPublicKey(Uri requestUri, string keyName)
         {
-            _logger.LogInformation("get public key:" + keyName );
+            _logger.LogInformation("get public key : " + keyName );
             //requestUri.ThrowIfNull(nameof(requestUri));
             keyName.ThrowIfNull(nameof(keyName));
             PublicKeyCache cache = null;
-            ///////////////////////////////////////////////
-            //use ukc as keystore
+            //use ukc to search the key
             byte[] keyNameBytes = Encoding.UTF8.GetBytes(keyName);
-            //byte[] keyIDBytes = Encoding.UTF8.GetBytes("6a31bf60705cd8b9");
-            //ulong answer = Convert.ToInt64("6a31bf60705cd8b9",16);
-            //ulong keyUID = (ulong)Convert.ToUInt64("6a31bf60705cd8b9",16);
 
             Library.C_Initialize();
             CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
@@ -70,84 +66,40 @@ namespace Microsoft.InformationProtection.Web.Models
                 });
 
                 string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
-                //string uid = (UInt64)privateKeyUid.pValue;
-                //string vOut = (UInt64)privateKeyUid.pValue;
+                var key = keyStore.GetActiveKey(keyName);
+                var publicKey = new PublicKey(nStrBase64,65537);
 
+                publicKey.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + key.KeyId;
+                publicKey.KeyType = key.KeyType;
+                publicKey.Algorithm = key.SupportedAlgorithm;
 
-                //build the public key obj
-                var publicKeyFromUkc = new PublicKey(nStrBase64,65537);
-                
-                //publicKeyFromUkc.KeyId = ((UInt64)privateKeyUid.pValue).ToString();
-                publicKeyFromUkc.KeyType = "RSA";
-                publicKeyFromUkc.Algorithm = "RS256";
+                if(key.ExpirationTimeInDays.HasValue)
+                {
+                    cache = new PublicKeyCache(
+                        DateTime.UtcNow.AddDays(
+                            key.ExpirationTimeInDays.Value).ToString("yyyy-MM-ddTHH:mm:ss", sg.CultureInfo.InvariantCulture));
+                }
 
-                //return new KeyData(publicKeyFromUkc, cache);
-                
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            var key2 = keyStore.GetActiveKey(keyName);
-            var publicKey2 = new PublicKey(nStrBase64,65537);
-
-            publicKey2.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + key2.KeyId;
-            publicKey2.KeyType = key2.KeyType;
-            publicKey2.Algorithm = key2.SupportedAlgorithm;
-
-            if(key2.ExpirationTimeInDays.HasValue)
-            {
-                cache = new PublicKeyCache(
-                    DateTime.UtcNow.AddDays(
-                        key2.ExpirationTimeInDays.Value).ToString("yyyy-MM-ddTHH:mm:ss", sg.CultureInfo.InvariantCulture));
-            }
-
-            return new KeyData(publicKey2, cache);
+                return new KeyData(publicKey, cache);
 
             }
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //TODO: should remove this(microsoft code)
-            var key = keyStore.GetActiveKey(keyName);
-            var publicKey = key.Key.GetPublicKey();
-
-            publicKey.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + key.KeyId;
-            publicKey.KeyType = key.KeyType;
-            publicKey.Algorithm = key.SupportedAlgorithm;
-
-            if(key.ExpirationTimeInDays.HasValue)
-            {
-                cache = new PublicKeyCache(
-                    DateTime.UtcNow.AddDays(
-                        key.ExpirationTimeInDays.Value).ToString("yyyy-MM-ddTHH:mm:ss", sg.CultureInfo.InvariantCulture));
-            }
-
-            return new KeyData(publicKey, cache);
-            ////////////////////////////////////////////////
         }
 
         public DecryptedData Decrypt(ClaimsPrincipal user, string keyName, string keyId, EncryptedData encryptedData)
         {
-            _logger.LogInformation("decrypt called from key manager class for keyName: " + keyName + " and keyID:" + keyId );
+            _logger.LogInformation("decrypt called from key manager class for keyName : " + keyName + " and keyID : " + keyId );
             Console.WriteLine("decrypt called");
             user.ThrowIfNull(nameof(user));
             keyName.ThrowIfNull(nameof(keyName));
             keyId.ThrowIfNull(nameof(keyId));
             encryptedData.ThrowIfNull(nameof(encryptedData));
-            //throw new CustomerKeyStore.Models.KeyAccessException("User does not have access to the key-test remove this line");
-            //var keyData = keyStore.GetKey(keyName, keyId);
-            //keyData.KeyAuth.CanUserAccessKey(user, keyData);
-
-
-            /////////////////////////////////////////
-            //get key data from ukc
-             ///////////////////////////////////////////////
-            //keyName="key1";
-            //use ukc as keystore
+            //use ukc to decrypt
             byte[] keyNameBytes = Encoding.UTF8.GetBytes(keyName);
             ulong keyUID = (ulong)Convert.ToUInt64(keyId,16);
 
              CK_OBJECT_HANDLE pubKey;
              CK_OBJECT_HANDLE prvKey;
              CK_OBJECT_HANDLE publicTest;
-
 
             Library.C_Initialize();
             CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
@@ -173,7 +125,6 @@ namespace Microsoft.InformationProtection.Web.Models
 
             if(foundKeyHandles.Length > 0)
             {
-
                 //get public key
                 Library.C_GetAttributeValue(session, foundKeyHandles[0],new CK_ATTRIBUTE[]
                 {
@@ -204,127 +155,33 @@ namespace Microsoft.InformationProtection.Web.Models
                 _logger.LogInformation("encryptedData.Value = "  + encryptedData.Value);
 
 
-                    //byte[] plainData = Encoding.UTF8.GetBytes(encryptedData.Value);
-                    byte[] plainData = Convert.FromBase64String(encryptedData.Value);
+                //byte[] plainData = Encoding.UTF8.GetBytes(encryptedData.Value);
+                byte[] plainData = Convert.FromBase64String(encryptedData.Value);
 
+                Console.WriteLine("Set RSA padding params");
+                CK_RSA_PKCS_OAEP_PARAMS oaepParams = new CK_RSA_PKCS_OAEP_PARAMS();
+                oaepParams.hashAlg = CK.CKM_SHA256;
+                oaepParams.mgf = CK.CKG_MGF1_SHA256;
+                CK_MECHANISM mech_rsa = new CK_MECHANISM(CK.CKM_RSA_PKCS_OAEP, oaepParams);
+                // Encrypt Data
+                //System.out.println("Encrypt Data");
+                
+                //Library.C_EncryptInit(session, mech_rsa, publicTest);
+                //byte[] encrypted = Library.C_Encrypt(session, plainData);
 
-                    Console.WriteLine("Set RSA padding params");
-                    CK_RSA_PKCS_OAEP_PARAMS oaepParams = new CK_RSA_PKCS_OAEP_PARAMS();
-                    oaepParams.hashAlg = CK.CKM_SHA256;
-                    oaepParams.mgf = CK.CKG_MGF1_SHA256;
-                    CK_MECHANISM mech_rsa = new CK_MECHANISM(CK.CKM_RSA_PKCS_OAEP, oaepParams);
-                      // Encrypt Data
-                    //System.out.println("Encrypt Data");
-                    
-                    //Library.C_EncryptInit(session, mech_rsa, publicTest);
-                    //byte[] encrypted = Library.C_Encrypt(session, plainData);
+                // Decrypt Data
+                //System.out.println("Decrypt Data");
+                Library.C_DecryptInit(session, mech_rsa, foundKeyHandles[0]);
+                byte[] decrypted = Library.C_Decrypt(session, plainData);
 
-                    // Decrypt Data
-                    //System.out.println("Decrypt Data");
-                    Library.C_DecryptInit(session, mech_rsa, foundKeyHandles[0]);
-                    byte[] decrypted = Library.C_Decrypt(session, plainData);
+                //if (!Enumerable.SequenceEqual(plainData, decrypted)) throw new Exception("ENC/DEC mismatch");
+                //ASCIIEncoding ByteConverter = new ASCIIEncoding();
 
-
-                    //if (!Enumerable.SequenceEqual(plainData, decrypted)) throw new Exception("ENC/DEC mismatch");
-                    //ASCIIEncoding ByteConverter = new ASCIIEncoding();
-
-                    return new DecryptedData(Convert.ToBase64String(decrypted));
-
-
-
+                return new DecryptedData(Convert.ToBase64String(decrypted));
             }
 
-
-            //////////////////////////////////////////
-
-            //keyData.KeyAuth.CanUserAccessKey(user, keyData);
-
-            // if (encryptedData.Algorithm != "RSA-OAEP-256")
-            // {
-            //     throw new ArgumentException(encryptedData.Algorithm + " is not supported");
-            // }
-
-            //Create a UnicodeEncoder to convert between byte array and string.
-             //ASCIIEncoding ByteConverter = new ASCIIEncoding();
-
-            // string dataString = encryptedData.Value;
-
-            // //Create byte arrays to hold original, encrypted, and decrypted data.
-            // byte[] dataToEncrypt = ByteConverter.GetBytes(dataString);
-            // byte[] encryptedData2;
-            // byte[] decryptedData2;
-
-            // //Create a new instance of the RSACryptoServiceProvider class
-            // // and automatically create a new key-pair.
-            // RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
-
-            // //Display the origianl data to the console.
-            // Console.WriteLine("Original Data: {0}", dataString);
-
-            // //Encrypt the byte array and specify no OAEP padding.
-            // //OAEP padding is only available on Microsoft Windows XP or
-            // //later.
-            // encryptedData2 = RSAalg.Encrypt(dataToEncrypt, false);
-
-            // //Display the encrypted data to the console.
-            // Console.WriteLine("Encrypted Data: {0}", ByteConverter.GetString(encryptedData2));
-
-            // //Pass the data to ENCRYPT and boolean flag specifying
-            // //no OAEP padding.
-            // decryptedData2 = RSAalg.Decrypt(encryptedData2, false);
-
-            // //Display the decrypted plaintext to the console.
-            // Console.WriteLine("Decrypted plaintext: {0}", ByteConverter.GetString(decryptedData2));
-            
-
-            // //try encrpt with ukc
-            // Library.C_Initialize();
-            // CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
-            // CK_SLOT_ID slot = slots[0];
-            // CK_SESSION_HANDLE session = Library.C_OpenSession(slot);
-            // CK_OBJECT_HANDLE pubKey;
-            // CK_OBJECT_HANDLE prvKey;
-            // byte[] keyName2 = Encoding.UTF8.GetBytes("key1");
-
-
-            //   // Generate key pair
-            //     //System.out.println("Generate key pair");
-            //     Library.C_GenerateKeyPair(session,
-            //     new CK_MECHANISM(CK.CKM_RSA_PKCS_KEY_PAIR_GEN), // RSA generation mechanism
-            //     new CK_ATTRIBUTE[]
-            //     {
-            //         new CK_ATTRIBUTE(CK.CKA_TOKEN, false),
-            //         new CK_ATTRIBUTE(CK.CKA_MODULUS_BITS, 2048), // RSA key size
-            //     },
-            //     new CK_ATTRIBUTE[]
-            //     {
-            //         new CK_ATTRIBUTE(CK.CKA_TOKEN, true),
-            //         new CK_ATTRIBUTE(CK.CKA_ID, keyName2),
-            //     },out pubKey,out prvKey);
-            //     //int pubKey = keyHandles[0];
-            //     //int prvKey = keyHandles[1];
-
-
-
-            // byte[] plainData = Encoding.UTF8.GetBytes("TEST PLAIN DATA");
-
-            // Console.WriteLine("Set RSA padding params");
-            //     CK_RSA_PKCS_OAEP_PARAMS oaepParams = new CK_RSA_PKCS_OAEP_PARAMS();
-            //     oaepParams.hashAlg = CK.CKM_SHA256;
-            //     oaepParams.mgf = CK.CKG_MGF1_SHA256;
-            //     CK_MECHANISM mech_rsa = new CK_MECHANISM(CK.CKM_RSA_PKCS_OAEP, oaepParams);
-            //       // Encrypt Data
-            //     //System.out.println("Encrypt Data");
-                
-            //     Library.C_EncryptInit(session, mech_rsa, pubKey);
-            //     byte[] encrypted = Library.C_Encrypt(session, plainData);
-
-            //var testEncryptedValue = "CthOUMzRdtSwo+4twgtjCA674G3UosWypUZv5E7uxG7GqYPiIJ+E+Uq7vbElp/bahB1fJrgq1qbdMrUZnSypVqBwYnccSxwablO15OOXl9Rn1e7w9V9fuMxtUqvhn+YZezk1623Qd7f5XTYjf6POwixtrgfZtdA+qh00ktKiVBpQKNG/bxhV94fK9+hb+qnzPmXilr9QF5rSQTd4hYHmYcR2ljVCDDZMV3tCVUTecWjS5HbOA1254ve/q3ulBLoPQTE58g7FwDQUZnd7XBdRSwYnrBWTJh8nmJ0PDfn+mCTGEI86S7HtoFYsE+Hezd24Z523phGEVrdMC9Ob1LlXEA==";
-
-            //var decryptedData = keyData.Key.Decrypt(Convert.FromBase64String(encryptedData.Value));
             _logger.LogInformation("Faild to decrypt");
             throw new Exception("Faild to decrypt");
-            //return new DecryptedData("Faild to decrypt");
         }
     }
 }

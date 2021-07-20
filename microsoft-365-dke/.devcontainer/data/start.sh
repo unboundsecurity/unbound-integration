@@ -1,12 +1,32 @@
 #!/bin/bash
-# This script is used in the postCreateCommand of the Visual Studio Code Dev Container
-set -x
+set -e
 
-export PORT=8080
+# Common utilities and clean
+echo 'alias ll="ls -l"' >> ~/.bashrc
+    apt-get update -y 
+    apt-get install curl 
+    apt-get install -y policycoreutils-python-utils 
+    apt-get install libssl-dev
+    apt-get clean -y
 
-export ASPNETCORE_URLS=http://*:$PORT
+# JQ - Json parser
+curl -LO# https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64; \
+    mv ./jq-linux64 ./jq
+    chmod +x ./jq
+    mv jq /usr/bin    
 
-# configure env params
+echo "installing UKC client"
+cd "/home/site/wwwroot/data"
+dpkg -i ekm-client_2.0.2010.38476.deb9_amd64.deb
+echo "UKC Client Installed successfully"
+
+apt-get update 
+apt-get install -y --allow-unauthenticated libc6-dev 
+apt-get install -y --allow-unauthenticated libgdiplus 
+apt-get install -y --allow-unauthenticated libx11-dev  
+rm -rf /var/lib/apt/lists/*
+
+# params for ukc
 export EP_HOST_NAME="ep1"
 export KC_CRYPTO_USER="encrypter"
 export UKC_CRYPTO_USER_PASSWORD="Password1!"
@@ -18,20 +38,19 @@ echo "servers=$EP_HOST_NAME">/etc/ekm/client.conf
 
 echo "54.174.121.27 ep1" >> /etc/hosts
 
-# Wait until UKC is ready
-sh /root/data/wait_for_ukc_cluster_to_start.sh
+sh wait_for_ukc_cluster_to_start.sh
+sh create_partition.sh
+sh register_new_client.sh
+cd "/home/site/wwwroot/"
 
-sh /root/data/create_partition.sh
-# Register UKC client - establish secure connection with PKCS11 
-#sh /root/data/register_new_client_ephemeral.sh
-sh /root/data/register_new_client.sh
-cd /root/data/published
 
-service ssh start
+##############
 
-#dotnet customerkeystore.dll
+export PORT=8080
 
-#
-#sh /root/data/run_encrypt_demo.sh
+export ASPNETCORE_URLS=http://*:$PORT
 
-#tail -f /dev/null #keep container running
+echo Trying to find the startup DLL name...
+echo Found the startup D name: customerkeystore.dll
+echo 'Running the command: dotnet "customerkeystore.dll"'
+dotnet "customerkeystore.dll"
