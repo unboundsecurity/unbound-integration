@@ -4,7 +4,7 @@ This sample code implements a CASP Data Collector that returns a risk score comp
 
 **CASP data collectors** are independent components that calculate policy related attribute templates for transaction signing. Each data collector is associated with an attribute template group that contains the attribute templates.
 
-Unlike participants, which can be human and require no development, data collectors by definition require development by the customer. See the [CASP Java SDK](https://www.unboundtech.com/docs/CASP/CASP_Developers_Guide-HTML/Content/Products/CASP/CASP_Participant_SDK/CASP_Java_SDK.htm) in the UKC Developers Guide for more information on creating the data collector client.
+Unlike participants, which can be human and require no development, data collectors by definition require development by the customer. See the [CASP Java SDK](https://www.unboundsecurity.com/docs/CASP/CASP_Developers_Guide/Content/Products/CASP/CASP_Participant_SDK/CASP_Java_SDK.htm) in the UKC Developers Guide for more information on creating the data collector client.
 
 ## Prerequisites
 The following components are required:

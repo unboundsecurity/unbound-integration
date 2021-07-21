@@ -2,7 +2,7 @@
 
 This repository uses [Apache Jmeter](https://jmeter.apache.org/) to test the performance of UKC and CoT.
 
-See [Developing in Java](https://www.unboundtech.com/docs/UKC/UKC_Developers_Guide/HTML/Content/Products/UKC-EKM/UKC_Developers_Guide/DevelopingInJava/Developing_in_Java.htm) for more information about configuring the Java environment.
+See [Developing in Java](https://www.unboundsecurity.com/docs/UKC/UKC_Developers_Guide/HTML/Content/Products/UKC-EKM/UKC_Developers_Guide/DevelopingInJava/Developing_in_Java.htm) for more information about configuring the Java environment.
 
 ## Prerequisites for UKC Performance tests
 
