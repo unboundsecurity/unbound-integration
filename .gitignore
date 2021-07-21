@@ -550,6 +550,8 @@ StyleCopReport.xml
 *.exe
 *.Exe
 *.dll
+*.rpm
+*.deb
 
 # Chutzpah Test files
 _Chutzpah*
