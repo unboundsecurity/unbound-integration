@@ -54,8 +54,8 @@ namespace Microsoft.InformationProtection.Web.Models
             CK_ATTRIBUTE e = new CK_ATTRIBUTE(CK.CKA_PUBLIC_EXPONENT);
             CK_ATTRIBUTE privateKeyUid =  new CK_ATTRIBUTE(CK.DYCKA_UID); 
 
-            if(foundKeyHandles.Length > 0)
-            {
+            if(foundKeyHandles.Length == 0) throw new Exception("key" + keyName + " not found");
+            
 
                 //get public key
                 Library.C_GetAttributeValue(session, foundKeyHandles[0],new CK_ATTRIBUTE[]
@@ -65,24 +65,33 @@ namespace Microsoft.InformationProtection.Web.Models
                     privateKeyUid
                 });
 
-                string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
-                var key = keyStore.GetActiveKey(keyName);
-                var publicKey = new PublicKey(nStrBase64,65537);
+            string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
+            var KeyId = Convert.ToString((long)privateKeyUid.pValue,16);
 
-                publicKey.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + key.KeyId;
-                publicKey.KeyType = key.KeyType;
-                publicKey.Algorithm = key.SupportedAlgorithm;
+            //var key = keyStore.GetActiveKey(keyName);
+            var publicKey = new PublicKey(nStrBase64,65537);
 
-                if(key.ExpirationTimeInDays.HasValue)
-                {
-                    cache = new PublicKeyCache(
-                        DateTime.UtcNow.AddDays(
-                            key.ExpirationTimeInDays.Value).ToString("yyyy-MM-ddTHH:mm:ss", sg.CultureInfo.InvariantCulture));
-                }
+            //publicKey.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + KeyId;
 
-                return new KeyData(publicKey, cache);
-
+            publicKey.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + KeyId;
+            string keyUrl =  requestUri.GetLeftPart(UriPartial.Path) + "/" + KeyId;
+            if(!publicKey.KeyId.Contains("https"))
+            {
+                publicKey.KeyId = publicKey.KeyId.Replace("http","https");
             }
+            publicKey.KeyType = "RSA";
+            publicKey.Algorithm = "RS256";
+
+            // if(key.ExpirationTimeInDays.HasValue)
+            // {
+            //     cache = new PublicKeyCache(
+            //         DateTime.UtcNow.AddDays(
+            //             key.ExpirationTimeInDays.Value).ToString("yyyy-MM-ddTHH:mm:ss", sg.CultureInfo.InvariantCulture));
+            // }
+
+            return new KeyData(publicKey, cache);
+
+              
         }
 
         public DecryptedData Decrypt(ClaimsPrincipal user, string keyName, string keyId, EncryptedData encryptedData)
@@ -123,62 +132,25 @@ namespace Microsoft.InformationProtection.Web.Models
             CK_ATTRIBUTE e = new CK_ATTRIBUTE(CK.CKA_PUBLIC_EXPONENT);
             CK_ATTRIBUTE privateKeyUid =  new CK_ATTRIBUTE(CK.DYCKA_UID); 
 
-            if(foundKeyHandles.Length > 0)
-            {
-                //get public key
-                Library.C_GetAttributeValue(session, foundKeyHandles[0],new CK_ATTRIBUTE[]
-                {
-                    n,
-                    e,
-                    privateKeyUid
-                });
+            if(foundKeyHandles.Length == 0) throw new Exception("key" + keyName + " not found");
 
-                string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
-                //string uid = (UInt64)privateKeyUid.pValue;
-                //string vOut = (UInt64)privateKeyUid.pValue;
+            //CK_OBJECT_HANDLE hKey = new CK_OBJECT_HANDLE(vOut);    
+            _logger.LogInformation("encryptedData.Value = "  + encryptedData.Value);
 
-                 publicTest = Library.C_CreateObject(session,new CK_ATTRIBUTE[]
-                {
-                    new CK_ATTRIBUTE(CK.CKA_TOKEN, false),
-                    new CK_ATTRIBUTE(CK.CKA_CLASS, CK.CKO_PUBLIC_KEY),
-                    new CK_ATTRIBUTE(CK.CKA_KEY_TYPE, CK.CKK_RSA),
-                    n,
-                    e
-                });
+            //byte[] plainData = Encoding.UTF8.GetBytes(encryptedData.Value);
+            byte[] plainData = Convert.FromBase64String(encryptedData.Value);
 
-                //build the public key obj
-                var publicKeyFromUkc = new PublicKey(nStrBase64,65537);
-                publicKeyFromUkc.KeyType = "RSA";
-                publicKeyFromUkc.Algorithm = "RS256";
+            Console.WriteLine("Set RSA padding params");
+            CK_RSA_PKCS_OAEP_PARAMS oaepParams = new CK_RSA_PKCS_OAEP_PARAMS();
+            oaepParams.hashAlg = CK.CKM_SHA256;
+            oaepParams.mgf = CK.CKG_MGF1_SHA256;
+            CK_MECHANISM mech_rsa = new CK_MECHANISM(CK.CKM_RSA_PKCS_OAEP, oaepParams);
+            
+            Library.C_DecryptInit(session, mech_rsa, foundKeyHandles[0]);
+            byte[] decrypted = Library.C_Decrypt(session, plainData);
 
-                //CK_OBJECT_HANDLE hKey = new CK_OBJECT_HANDLE(vOut);    
-                _logger.LogInformation("encryptedData.Value = "  + encryptedData.Value);
-
-
-                //byte[] plainData = Encoding.UTF8.GetBytes(encryptedData.Value);
-                byte[] plainData = Convert.FromBase64String(encryptedData.Value);
-
-                Console.WriteLine("Set RSA padding params");
-                CK_RSA_PKCS_OAEP_PARAMS oaepParams = new CK_RSA_PKCS_OAEP_PARAMS();
-                oaepParams.hashAlg = CK.CKM_SHA256;
-                oaepParams.mgf = CK.CKG_MGF1_SHA256;
-                CK_MECHANISM mech_rsa = new CK_MECHANISM(CK.CKM_RSA_PKCS_OAEP, oaepParams);
-                // Encrypt Data
-                //System.out.println("Encrypt Data");
-                
-                //Library.C_EncryptInit(session, mech_rsa, publicTest);
-                //byte[] encrypted = Library.C_Encrypt(session, plainData);
-
-                // Decrypt Data
-                //System.out.println("Decrypt Data");
-                Library.C_DecryptInit(session, mech_rsa, foundKeyHandles[0]);
-                byte[] decrypted = Library.C_Decrypt(session, plainData);
-
-                //if (!Enumerable.SequenceEqual(plainData, decrypted)) throw new Exception("ENC/DEC mismatch");
-                //ASCIIEncoding ByteConverter = new ASCIIEncoding();
-
-                return new DecryptedData(Convert.ToBase64String(decrypted));
-            }
+            return new DecryptedData(Convert.ToBase64String(decrypted));
+            
 
             _logger.LogInformation("Faild to decrypt");
             throw new Exception("Faild to decrypt");

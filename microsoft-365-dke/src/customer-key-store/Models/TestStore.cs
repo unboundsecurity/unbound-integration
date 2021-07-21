@@ -14,8 +14,6 @@ namespace Microsoft.InformationProtection.Web.Models
 
     public class TestKeyStore : IKeyStore
     {
-        private const string ukcKeyName="test1";
-        private const string ukcKeyUid="9b456af8aac4fbb7";
         private readonly ILogger _logger;
         private const string KeyType = "RSA";
         private const string Algorithm = "RS256";
@@ -111,62 +109,62 @@ namespace Microsoft.InformationProtection.Web.Models
             
             }
 
-            //use ukc as keystore - add also the key from ukc
-            byte[] keyNameBytes = Encoding.UTF8.GetBytes(ukcKeyName);
+            // //use ukc as keystore - add also the key from ukc
+            // byte[] keyNameBytes = Encoding.UTF8.GetBytes(ukcKeyName);
 
-            Library.C_Initialize();
-            CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
-            CK_SLOT_ID slot = slots[0];
-            CK_SESSION_HANDLE session = Library.C_OpenSession(slot);
+            // Library.C_Initialize();
+            // CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
+            // CK_SLOT_ID slot = slots[0];
+            // CK_SESSION_HANDLE session = Library.C_OpenSession(slot);
 
-            Library.C_FindObjectsInit(session, new CK_ATTRIBUTE[]
-            {
-                new CK_ATTRIBUTE(CK.CKA_TOKEN, true),
-                new CK_ATTRIBUTE(CK.CKA_CLASS, CK.CKO_PRIVATE_KEY),
-                new CK_ATTRIBUTE(CK.CKA_KEY_TYPE, CK.CKK_RSA),
-                new CK_ATTRIBUTE(CK.CKA_ID, keyNameBytes),
-                //new CK_ATTRIBUTE(CK.DYCKA_UID , keyUID)
-            });
+            // Library.C_FindObjectsInit(session, new CK_ATTRIBUTE[]
+            // {
+            //     new CK_ATTRIBUTE(CK.CKA_TOKEN, true),
+            //     new CK_ATTRIBUTE(CK.CKA_CLASS, CK.CKO_PRIVATE_KEY),
+            //     new CK_ATTRIBUTE(CK.CKA_KEY_TYPE, CK.CKK_RSA),
+            //     new CK_ATTRIBUTE(CK.CKA_ID, keyNameBytes),
+            //     //new CK_ATTRIBUTE(CK.DYCKA_UID , keyUID)
+            // });
 
-            CK_OBJECT_HANDLE[] foundKeyHandles = Library.C_FindObjects(session, 1);
-            Library.C_FindObjectsFinal(session);
+            // CK_OBJECT_HANDLE[] foundKeyHandles = Library.C_FindObjects(session, 1);
+            // Library.C_FindObjectsFinal(session);
 
-            CK_ATTRIBUTE n =  new CK_ATTRIBUTE(CK.CKA_MODULUS);
-            CK_ATTRIBUTE e = new CK_ATTRIBUTE(CK.CKA_PUBLIC_EXPONENT);
-            CK_ATTRIBUTE privateKeyUid =  new CK_ATTRIBUTE(CK.DYCKA_UID); 
+            // CK_ATTRIBUTE n =  new CK_ATTRIBUTE(CK.CKA_MODULUS);
+            // CK_ATTRIBUTE e = new CK_ATTRIBUTE(CK.CKA_PUBLIC_EXPONENT);
+            // CK_ATTRIBUTE privateKeyUid =  new CK_ATTRIBUTE(CK.DYCKA_UID); 
 
-            if(foundKeyHandles.Length > 0)
-            {
-                //get public key
-                Library.C_GetAttributeValue(session, foundKeyHandles[0],new CK_ATTRIBUTE[]
-                {
-                    n,
-                    e,
-                    privateKeyUid
-                });
+            // if(foundKeyHandles.Length > 0)
+            // {
+            //     //get public key
+            //     Library.C_GetAttributeValue(session, foundKeyHandles[0],new CK_ATTRIBUTE[]
+            //     {
+            //         n,
+            //         e,
+            //         privateKeyUid
+            //     });
 
-                string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
-                string uid = ukcKeyUid;
-                //string vOut = (UInt64)privateKeyUid.pValue;
+            //     string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
+            //     string uid = ukcKeyUid;
+            //     //string vOut = (UInt64)privateKeyUid.pValue;
 
 
-                //build the public key obj
-                var publicKeyFromUkc = new PublicKey(nStrBase64,65537);
+            //     //build the public key obj
+            //     var publicKeyFromUkc = new PublicKey(nStrBase64,65537);
                 
-                //publicKeyFromUkc.KeyId = ((UInt64)privateKeyUid.pValue).ToString();
-                publicKeyFromUkc.KeyType = "RSA";
-                publicKeyFromUkc.Algorithm = "RS256";
+            //     //publicKeyFromUkc.KeyId = ((UInt64)privateKeyUid.pValue).ToString();
+            //     publicKeyFromUkc.KeyType = "RSA";
+            //     publicKeyFromUkc.Algorithm = "RS256";
 
-                  CreateTestKey(
-                    ukcKeyName,
-                    uid,
-                    nStrBase64,
-                    nStrBase64,
-                    publicKeyFromUkc.KeyType,
-                    publicKeyFromUkc.Algorithm,
-                    keyAuth,
-                    null);
-            }
+            //       CreateTestKey(
+            //         ukcKeyName,
+            //         uid,
+            //         nStrBase64,
+            //         nStrBase64,
+            //         publicKeyFromUkc.KeyType,
+            //         publicKeyFromUkc.Algorithm,
+            //         keyAuth,
+            //         null);
+            // }
 
         }
 

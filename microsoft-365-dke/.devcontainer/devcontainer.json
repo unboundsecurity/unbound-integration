@@ -43,7 +43,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	 "forwardPorts": [8080, 8000],
 
-	 "postCreateCommand": "sh /root/data/start.sh"
+	 "postCreateCommand": "sh /root/data/start_for_container.sh"
 
 
 	// [Optional] To reuse of your local HTTPS dev cert:
