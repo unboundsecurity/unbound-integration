@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace CustomerKeyStore
+namespace UnboundKeyStore
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -66,7 +66,6 @@ namespace CustomerKeyStore
                 options.MinimumSameSitePolicy = SameSiteMode.Strict;
             });
 
-            services.AddSingleton<ippw.IKeyStore, ippw.TestKeyStore>();
 
             services.AddTransient<ippw.KeyManager, ippw.KeyManager>();
             services.AddMvc(options => options.EnableEndpointRouting = false);

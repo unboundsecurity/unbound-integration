@@ -82,9 +82,7 @@ Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-83
 
 # Build the project
 
-1. goto : /src/customer-key-store/Models/TestStore.cs Line 17,18
-replace ukcKeyName="<key_name>";
-        ukcKeyUid="<key_uid>";
+
 3. open appsettings.json file
  a. Locate the ValidIssuers setting and replace <tenant_ID> with your tenant ID. You can locate your tenant ID by going to the Azure portal and viewing the tenant properties. for example  "https://sts.windows.net/<tenant_ID>/"
  b. Locate the JwtAudience setting and replace  <yourhostname> with the hostname of the machine where the DKE service will run

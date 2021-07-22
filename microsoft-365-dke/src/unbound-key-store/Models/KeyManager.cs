@@ -14,13 +14,9 @@ namespace Microsoft.InformationProtection.Web.Models
 
     public class KeyManager
     {
-        private readonly IKeyStore keyStore;
         private readonly ILogger _logger;
-
-
-        public KeyManager(IKeyStore keyStore,ILogger<KeyManager> logger)
+        public KeyManager(ILogger<KeyManager> logger)
         {
-            this.keyStore = keyStore;
              _logger = logger;
         }
 
@@ -56,23 +52,17 @@ namespace Microsoft.InformationProtection.Web.Models
 
             if(foundKeyHandles.Length == 0) throw new Exception("key" + keyName + " not found");
             
-
-                //get public key
-                Library.C_GetAttributeValue(session, foundKeyHandles[0],new CK_ATTRIBUTE[]
-                {
-                    n,
-                    e,
-                    privateKeyUid
-                });
+            //get public key
+            Library.C_GetAttributeValue(session, foundKeyHandles[0],new CK_ATTRIBUTE[]
+            {
+                n,
+                e,
+                privateKeyUid
+            });
 
             string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
             var KeyId = Convert.ToString((long)privateKeyUid.pValue,16);
-
-            //var key = keyStore.GetActiveKey(keyName);
             var publicKey = new PublicKey(nStrBase64,65537);
-
-            //publicKey.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + KeyId;
-
             publicKey.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + KeyId;
             string keyUrl =  requestUri.GetLeftPart(UriPartial.Path) + "/" + KeyId;
             if(!publicKey.KeyId.Contains("https"))
@@ -82,15 +72,7 @@ namespace Microsoft.InformationProtection.Web.Models
             publicKey.KeyType = "RSA";
             publicKey.Algorithm = "RS256";
 
-            // if(key.ExpirationTimeInDays.HasValue)
-            // {
-            //     cache = new PublicKeyCache(
-            //         DateTime.UtcNow.AddDays(
-            //             key.ExpirationTimeInDays.Value).ToString("yyyy-MM-ddTHH:mm:ss", sg.CultureInfo.InvariantCulture));
-            // }
-
             return new KeyData(publicKey, cache);
-
               
         }
 
@@ -106,9 +88,9 @@ namespace Microsoft.InformationProtection.Web.Models
             byte[] keyNameBytes = Encoding.UTF8.GetBytes(keyName);
             ulong keyUID = (ulong)Convert.ToUInt64(keyId,16);
 
-             CK_OBJECT_HANDLE pubKey;
-             CK_OBJECT_HANDLE prvKey;
-             CK_OBJECT_HANDLE publicTest;
+            CK_OBJECT_HANDLE pubKey;
+            CK_OBJECT_HANDLE prvKey;
+            CK_OBJECT_HANDLE publicTest;
 
             Library.C_Initialize();
             CK_SLOT_ID[] slots = Library.C_GetSlotList(true);
@@ -134,10 +116,8 @@ namespace Microsoft.InformationProtection.Web.Models
 
             if(foundKeyHandles.Length == 0) throw new Exception("key" + keyName + " not found");
 
-            //CK_OBJECT_HANDLE hKey = new CK_OBJECT_HANDLE(vOut);    
             _logger.LogInformation("encryptedData.Value = "  + encryptedData.Value);
 
-            //byte[] plainData = Encoding.UTF8.GetBytes(encryptedData.Value);
             byte[] plainData = Convert.FromBase64String(encryptedData.Value);
 
             Console.WriteLine("Set RSA padding params");
@@ -151,7 +131,6 @@ namespace Microsoft.InformationProtection.Web.Models
 
             return new DecryptedData(Convert.ToBase64String(decrypted));
             
-
             _logger.LogInformation("Faild to decrypt");
             throw new Exception("Faild to decrypt");
         }

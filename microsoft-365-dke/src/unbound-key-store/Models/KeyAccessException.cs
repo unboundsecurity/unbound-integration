@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace CustomerKeyStore.Models
+namespace UnboundKeyStore.Models
 {
     using System;
     public class KeyAccessException : Exception

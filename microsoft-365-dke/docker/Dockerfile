@@ -22,21 +22,19 @@ RUN curl -LO# https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
     mv jq /usr/bin    
 
 RUN mkdir /root/data
-COPY data /root/data
+COPY . /root/data
 
 ARG UKC_CLIENT_INSTALLER_URL
-RUN echo "Downloading UKC client install file: $UKC_CLIENT_INSTALLER_URL";
-
-RUN  sudo apt install /root/data/ekm-client_2.0.2010.38476.deb9_amd64.deb; \
-    rm $(basename /root/data/ekm-client_2.0.2010.38476.deb9_amd64.deb); \
+RUN echo "Downloading ${UKC_CLIENT_INSTALLER_URL}"; \
+    curl -O#  "${UKC_CLIENT_INSTALLER_URL}"; \
+    echo "Installing $(basename ${UKC_CLIENT_INSTALLER_URL})"; \
+    sudo apt install $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
+    rm $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
     echo "UKC Client Installed successfully"
 
+ 
+
 RUN chmod +x /root/data/*.sh;
-
-#RUN mkdir /root/demo
-#COPY ./src /root/demo/
-
-
 
 ######################################   
 
@@ -55,23 +53,12 @@ RUN apt-get update \
 
 COPY sshd_config /etc/ssh/
 
-
-#COPY netcoreapp3.1 /root/data
-RUN mkdir /root/data/published
-COPY publish /root/data/published
-
 ENV PORT 8080
 
 EXPOSE 2222 8080
 
 ENV ASPNETCORE_URLS "http://*:${PORT}"
 
-#ENTRYPOINT ["dotnet", "/root/data/published/customerkeystore.dll"]
-#ENTRYPOINT ["/bin/bash", "/root/data/start_test.sh"]
-CMD "/root/data/start_for_container.sh"
-#CMD ["bash"]
-
-#ENTRYPOINT ["tail", "-f", "/dev/null"]
-#ENTRYPOINT ["/root/data/start_for_container.sh"]
+CMD "/root/data/start.sh"
 
 

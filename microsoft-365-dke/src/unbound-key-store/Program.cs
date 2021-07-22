@@ -4,7 +4,7 @@ using System.Text;
 using unbound.cryptoki;
 
 
-namespace CustomerKeyStore
+namespace UnboundKeyStore
 {
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
