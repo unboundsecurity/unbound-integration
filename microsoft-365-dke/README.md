@@ -3,28 +3,99 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
 
 # Prerequisites
 
-1. Make sure you have permissions to access Microsoft azure portal, and also can click the create new app service and create new app registration buttons. link: https://portal.azure.com/ 
+1. Make sure you can access [Microsoft Azure portal](https://portal.azure.com/), and have the following permmisions:
+    
+    a. Create new app service.
 
-2. Make sure you have permission to access Microsoft 365 compliance and you can click the create new label button : https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabels 
+    b. Create new app registration.
 
-3. make sure you have Microsoft 365 E5 license.
+2. Make sure you can access access [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabels) and you have the following permmisions:
+
+    a. Create new label.
+    
+    b. Publish a label.  
+
+3. Make sure you have Microsoft 365 E5 license.
 
 4. From UKC server:
- a. create a partition "test"
- b. create an RSA key in partition "test" with the following command : ucl generate -t RSA -n <key_name> -p test.
+
+    a. Create a partition name "test".
+
+    b. Create an RSA key in partition "test" using the following command : ucl generate -t RSA -n <key_name> -p test.
 
 # Create new app service in azure portal
 
-1. Goto azure portal -> App Services -> Create
+1. Go to [Microsoft Azure portal](https://portal.azure.com/) -> App Services -> Create
 2. Select your subscription and resource group and define the following instance details:
-Runtime stack -> Net Core 3.1
-Operation System -> Linux
-3. At the bottom of the page, select Review + create, and then select Add.
-4. goto Configuration -> general setttings -> under Startup Command enter "/home/site/wwwroot/data/start.sh"
+
+    Publish ->Docker container 
+
+    Operation System -> Linux
+
+3. At the bottom of the page, select Next: Docker 
+
+4. Fill with the following details:
+
+     Image Source -> Docker Hub
+
+     Access type -> public
+
+     Image and tag -> unboundukc/ms-dke-service:latest
+
+ 5. Click on Review + create button.  
+
+ 6. Wait for the deployment to finish and then click "Go to resource".  
+
+ 7. On the sidebar click on Configuration -> Application setttings -> "Advanced edit" button -> add the following application settings to the json :
+ 
+        a. EP_HOST_NAME - EP server name.
+
+        b. UKC_PARTITION - UKC partition name.
+
+        c. UKC_PASSWORD - The password used to login with 'so' user for the selected partition.
+
+        d. UKC_SERVER_IP - UKC server ip. 
+
+        e. UKC_SO_PASSWORD - UKC so password.
+
+   For example:
+
+        {
+            "name": "EP_HOST_NAME",
+            "value": "ep1",
+            "slotSetting": false
+        },
+        {
+            "name": "UKC_PARTITION",
+            "value": "test",
+            "slotSetting": false
+        },
+        {
+            "name": "UKC_PASSWORD",
+            "value": "Unbound1!",
+            "slotSetting": false
+        },
+        {
+            "name": "UKC_SERVER_IP",
+            "value": "54.174.121.27",
+            "slotSetting": false
+        },
+        {
+            "name": "UKC_SO_PASSWORD",
+            "value": "Unbound1!",
+            "slotSetting": false
+        }
+     
+
+ 
+ 
+    Alterntavly, you can add them manually by clicking the "New application settings" button.
+
+    NOTE: Click save at top of the page when you done.
 
 # Register your app service
 
-1. In your browser, open the Microsoft Azure portal, and go to All Services > Identity > App Registrations.
+1. In your browser, open the [Microsoft Azure portal](https://portal.azure.com/), and go to All Services > Identity > App Registrations.
 
 2. Select New registration, and enter a meaningful name.
 
@@ -44,15 +115,14 @@ If you're using Microsoft Azure with a non-custom domain, such as onmicrosoft.co
 
 For example: https://unbound-dke.azurewebsites.net
 
-The URL you enter must match the hostname where your DKE service is deployed.
- the scheme must be https.
+The URL you enter must match the hostname where your DKE service is deployed and the scheme must be https.
 Ensure the hostname exactly matches your App Service hostname. 
 
 9. Under Implicit grant, select the ID tokens checkbox.
 
-10. Select Save to save your changes.
+10. Select Configure button when done.
 
-11. On the left pane, select Expose an API, then next to Application ID URI, select Set.
+11. On the left pane, select Expose an API, then next to Application ID URI, select Set and Save.
 
 12. Still on the Expose an API page, in the Scopes defined by this API area, select Add a scope. In the new scope:
 
@@ -64,8 +134,6 @@ Ensure the hostname exactly matches your App Service hostname.
 
  d. Select Add scope.
 
- e. Select Save at the top to save your changes.
-
 13. Still on the Expose an API page, in the Authorized client applications area, select Add a client application.
 
 In the new client application:
@@ -74,62 +142,48 @@ In the new client application:
 
  b. Under Authorized scopes, select the user_impersonation scope.
 
- c. Select Add application.
-
- d. Select Save at the top to save your changes.
+ c. Select Add client application.
 
 Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-832b-029040e7db99. This value is the Azure Information Protection unified labeling client ID.
 
-# Build the project
+# Create new label
 
-1. goto : /src/customer-key-store/Models/TestStore.cs Line 17,18
-replace ukcKeyName="<key_name>";
-        ukcKeyUid="<key_uid>";
-3. open appsettings.json file
- a. Locate the ValidIssuers setting and replace <tenant_ID> with your tenant ID. You can locate your tenant ID by going to the Azure portal and viewing the tenant properties. for example  "https://sts.windows.net/<tenant_ID>/"
- b. Locate the JwtAudience setting and replace  <yourhostname> with the hostname of the machine where the DKE service will run
- (you can view it on youre created app service page). for example https://unbound-dke-container.azurewebsites.net/
- c. locate the AuthorizedEmailAddress setting. 
- Add the email address or addresses that you want to authorize. Separate multiple email addresses with double quotes and commas.
+1. Open [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabels) and click on the create new label button.
 
-# publish the program to the app service 
-1. go to the program src folder and run: Dotnet publish
+2. Fill the relevant details and click Next.
 
-2. zip the created “publish” folder. For example: “publish.zip”
+3. Mark the "Files & emails" checkbox and click Next.
 
-3. To create connection to your app service run : az webapp create-remote-connection --subscription '<subscription_id>' --resource-group <resource_group_name> -n <app_service_name>
-For example : az webapp create-remote-connection --subscription 'c2727d11-526c-4244-8434-797dc6046f5e' --resource-group W_R -n "unbound-dkeV2"
-then,  ssh root@127.0.0.1 -p <port>
+4. Mark the "Encrypt files and emails" checkbox and click Next.
 
-4. to publish the zip folder: az webapp deployment source config-zip --resource-group <resource_group_name> --name "<app_service_name>" --src <zip_file>
-For example: az webapp deployment source config-zip --resource-group W_R -n "unbound-dkeV2" --name "unbound-dkeV2" --src publish.zip
+5. Chose the "Configure encryption settings radio button.
 
-5. goto <yourhostname>/<key_name> and check if you see the key details.
-for example: https://unbound-dke.azurewebsites.net/test1
+6. In the "Assign permissions now or let users decide?" dropdown Choose "assign permmision now".
 
-# create new label
+7. In the "Allow offline access" choose never.
 
-1. open Microsoft 365 compliance and create new label.
+8. Under "Assign permissions to specific users and groups", click assign permmisions-> choose and fill the relevant data.
 
-2. mark the checkbox of “use double key encryption” and enter the app service url with the key you use fro encryption . For example : https://unbound-dkev2.azurewebsites.net/my_key
+9. Mark the checkbox of “use double key encryption” and enter the app service url with the key you will use to encrypt/decrypt the files with .
+ For example : https://unbound-dke.azurewebsites.net/test1 and click Next.
 
-3. choose the permmssion you like
+10. Click the Next button 3 more times and then click Create label.
 
-# publish the label
+# Publish the label
 
-1. open Microsoft 365 compliance and publish the labels created.
+1. Open [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabelpolicies) and click on the Publish label button.
 
+2. Click choose sesitivity labels to publish and choose the the created label.
+
+3. Click the Next button 5 times.
+
+4. Fill the relevant data and click Next.
+
+5. Click the submit button.
 # How to use the created label with office app?
 
-1. install Microsoft Azure Information Protection from here: Azure Information Protection 
+1. Install Microsoft Azure Information Protection from [here](https://www.microsoft.com/en-us/download/details.aspx?id=53018) 
 
-2. open an office app like word/excel…
+2. Open an office app like word/excel…
 
-3. choose sensitivity->choose your created label->edit the document->save.
-
-# Instructions to run in dev container 
-
-1. open in devcontainer to build the container(or run the dockerFile)
-2. build the project(run the build task)
-3. start the program
-4. navigate to https://localhost:5001/test1 
+3. Choose sensitivity->choose your created label->edit the document->save.
