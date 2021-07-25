@@ -17,10 +17,20 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
 
 1. Goto azure portal -> App Services -> Create
 2. Select your subscription and resource group and define the following instance details:
-Runtime stack -> Net Core 3.1
+Publish ->Docker container 
 Operation System -> Linux
-3. At the bottom of the page, select Review + create, and then select Add.
-4. goto Configuration -> general setttings -> under Startup Command enter "/home/site/wwwroot/data/start.sh"
+3. At the bottom of the page, select Next: Docker 
+4. Fill with the following details:
+     Image Source -> Docker Hub
+     Access type -> public
+     Image and tag -> unboundukc/ms-dke-service:latest
+ 5. Click on Review + create button .    
+4. goto Configuration -> Application setttings -> add the following application settings:
+    a. EP_HOST_NAME - EP server name.
+    b. UKC_PARTITION - UKC partition name.
+    c. UKC_PASSWORD - The password used to login with 'so' user for the selected partition.
+    d. UKC_SERVER_IP - UKC server ip. 
+    e. UKC_SO_PASSWORD - UKC so password.
 
 # Register your app service
 

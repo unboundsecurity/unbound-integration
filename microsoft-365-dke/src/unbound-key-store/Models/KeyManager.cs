@@ -15,6 +15,7 @@ namespace Microsoft.InformationProtection.Web.Models
     public class KeyManager
     {
         private readonly ILogger _logger;
+
         public KeyManager(ILogger<KeyManager> logger)
         {
              _logger = logger;
@@ -23,6 +24,7 @@ namespace Microsoft.InformationProtection.Web.Models
         public KeyData GetPublicKey(Uri requestUri, string keyName)
         {
             _logger.LogInformation("get public key : " + keyName );
+
             //requestUri.ThrowIfNull(nameof(requestUri));
             keyName.ThrowIfNull(nameof(keyName));
             PublicKeyCache cache = null;
@@ -63,12 +65,8 @@ namespace Microsoft.InformationProtection.Web.Models
             string nStrBase64 = Convert.ToBase64String((byte[])n.pValue);
             var KeyId = Convert.ToString((long)privateKeyUid.pValue,16);
             var publicKey = new PublicKey(nStrBase64,65537);
-            publicKey.KeyId = requestUri.GetLeftPart(UriPartial.Path) + "/" + KeyId;
-            string keyUrl =  requestUri.GetLeftPart(UriPartial.Path) + "/" + KeyId;
-            if(!publicKey.KeyId.Contains("https"))
-            {
-                publicKey.KeyId = publicKey.KeyId.Replace("http","https");
-            }
+            string websiteHostName = System.Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
+            publicKey.KeyId = "https://" + websiteHostName + "/" + KeyId;
             publicKey.KeyType = "RSA";
             publicKey.Algorithm = "RS256";
 
@@ -79,7 +77,6 @@ namespace Microsoft.InformationProtection.Web.Models
         public DecryptedData Decrypt(ClaimsPrincipal user, string keyName, string keyId, EncryptedData encryptedData)
         {
             _logger.LogInformation("decrypt called from key manager class for keyName : " + keyName + " and keyID : " + keyId );
-            Console.WriteLine("decrypt called");
             user.ThrowIfNull(nameof(user));
             keyName.ThrowIfNull(nameof(keyName));
             keyId.ThrowIfNull(nameof(keyId));
@@ -120,7 +117,6 @@ namespace Microsoft.InformationProtection.Web.Models
 
             byte[] plainData = Convert.FromBase64String(encryptedData.Value);
 
-            Console.WriteLine("Set RSA padding params");
             CK_RSA_PKCS_OAEP_PARAMS oaepParams = new CK_RSA_PKCS_OAEP_PARAMS();
             oaepParams.hashAlg = CK.CKM_SHA256;
             oaepParams.mgf = CK.CKG_MGF1_SHA256;
@@ -129,10 +125,7 @@ namespace Microsoft.InformationProtection.Web.Models
             Library.C_DecryptInit(session, mech_rsa, foundKeyHandles[0]);
             byte[] decrypted = Library.C_Decrypt(session, plainData);
 
-            return new DecryptedData(Convert.ToBase64String(decrypted));
-            
-            _logger.LogInformation("Faild to decrypt");
-            throw new Exception("Faild to decrypt");
+            return new DecryptedData(Convert.ToBase64String(decrypted));        
         }
     }
 }
