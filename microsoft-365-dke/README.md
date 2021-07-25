@@ -169,7 +169,7 @@ Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-83
 
 10. Click the Next button 3 more times and then click Create label.
 
-# publish the label
+# Publish the label
 
 1. Open [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabelpolicies) and click on the Publish label button.
 
