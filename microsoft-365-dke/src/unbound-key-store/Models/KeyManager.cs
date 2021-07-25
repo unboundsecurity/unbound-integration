@@ -27,7 +27,6 @@ namespace Microsoft.InformationProtection.Web.Models
 
             //requestUri.ThrowIfNull(nameof(requestUri));
             keyName.ThrowIfNull(nameof(keyName));
-            PublicKeyCache cache = null;
             //use ukc to search the key
             byte[] keyNameBytes = Encoding.UTF8.GetBytes(keyName);
 
@@ -70,7 +69,7 @@ namespace Microsoft.InformationProtection.Web.Models
             publicKey.KeyType = "RSA";
             publicKey.Algorithm = "RS256";
 
-            return new KeyData(publicKey, cache);
+            return new KeyData(publicKey);
               
         }
 
