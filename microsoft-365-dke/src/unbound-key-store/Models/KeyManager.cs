@@ -65,7 +65,7 @@ namespace Microsoft.InformationProtection.Web.Models
             var KeyId = Convert.ToString((long)privateKeyUid.pValue,16);
             var publicKey = new PublicKey(nStrBase64,65537);
             string websiteHostName = System.Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
-            publicKey.KeyId = "https://" + websiteHostName + "/" + KeyId;
+            publicKey.KeyId = "https://" + websiteHostName + "/" + keyName  + "/" + KeyId;
             publicKey.KeyType = "RSA";
             publicKey.Algorithm = "RS256";
 
