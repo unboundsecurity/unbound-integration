@@ -14,7 +14,7 @@ namespace UnboundKeyStore
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using ippw = Microsoft.InformationProtection.Web.Models;
+    using ippw = Unbound.Web.Models;
 
     public class Startup
     {

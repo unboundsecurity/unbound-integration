@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Microsoft.InformationProtection.Web.Models
+namespace Unbound.Web.Models
 {
     using System.Collections.Generic;
     using System.Security.Claims;
 
-    using Microsoft.InformationProtection.Web.Models.Extensions;
+    using Unbound.Web.Models.Extensions;
     public class EmailAuthorizer : IAuthorizer
     {
         private const string EmailClaim = ClaimTypes.Email;

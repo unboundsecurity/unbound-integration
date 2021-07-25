@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Microsoft.InformationProtection.Web.Models
+namespace Unbound.Web.Models
 {
     using System;
     using System.Security.Claims;
-    using Microsoft.InformationProtection.Web.Models.Extensions;
+    using Unbound.Web.Models.Extensions;
     using sg = System.Globalization;
     using unbound.cryptoki;
     using System.Linq;

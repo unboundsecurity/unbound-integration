@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Microsoft.InformationProtection.Web.Models.Extensions
+namespace Unbound.Web.Models.Extensions
   {
     public static class ExceptionExtensions
     {

@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Microsoft.InformationProtection.Web.Models
+namespace Unbound.Web.Models
 {
     //The classes in this file implement the format of public key data returned for a key
     //Changing the returned data can break consuming clients

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Microsoft.InformationProtection.Web.Controllers
+namespace Unbound.Web.Controllers
 {
     using System;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http.Extensions;
     using Microsoft.AspNetCore.Mvc;
-    using ippw = Microsoft.InformationProtection.Web.Models;
+    using ippw = Unbound.Web.Models;
     //https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration
     public class KeysController : Controller
     {
@@ -57,7 +57,7 @@ namespace Microsoft.InformationProtection.Web.Controllers
             }
         }
 
-        private static Uri GetRequestUri(AspNetCore.Http.HttpRequest request)
+        private static Uri GetRequestUri(Microsoft.AspNetCore.Http.HttpRequest request)
         {
             return new Uri(request.GetDisplayUrl());
         }

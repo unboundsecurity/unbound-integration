@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-namespace Microsoft.InformationProtection.Web.Models
+namespace Unbound.Web.Models
 {
     using System.Security.Claims;
     public interface IAuthorizer

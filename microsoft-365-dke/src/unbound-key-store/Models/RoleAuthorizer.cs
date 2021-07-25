@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-namespace Microsoft.InformationProtection.Web.Models
+namespace Unbound.Web.Models
 {
     using System.Collections.Generic;
     using System.DirectoryServices;
     using System.Security.Claims;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.InformationProtection.Web.Models.Extensions;
+    using Unbound.Web.Models.Extensions;
     public class RoleAuthorizer : IAuthorizer
     {
         private const string SidClaim = "onprem_sid";
