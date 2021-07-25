@@ -112,7 +112,7 @@ namespace Unbound.Web.Models
 
             if(foundKeyHandles.Length == 0) throw new Exception("key" + keyName + " not found");
 
-            _logger.LogInformation("encryptedData.Value = "  + encryptedData.Value);
+            //_logger.LogInformation("encryptedData.Value = "  + encryptedData.Value);
 
             byte[] plainData = Convert.FromBase64String(encryptedData.Value);
 
