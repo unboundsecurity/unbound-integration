@@ -3,41 +3,50 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
 
 # Prerequisites
 
-1. Make sure you can access [Microsoft azure portal](https://portal.azure.com/), and have the following permmisions:
+1. Make sure you can access [Microsoft Azure portal](https://portal.azure.com/), and have the following permmisions:
     
     a. Create new app service.
 
     b. Create new app registration.
 
-    b. Create new app service.
-
 2. Make sure you can access access [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabels) and you have the following permmisions:
 
     a. Create new label.
     
-    b. publish a label.  
+    b. Publish a label.  
 
 3. Make sure you have Microsoft 365 E5 license.
 
 4. From UKC server:
 
     a. Create a partition name "test".
+
     b. Create an RSA key in partition "test" using the following command : ucl generate -t RSA -n <key_name> -p test.
 
 # Create new app service in azure portal
 
-1. Goto azure portal -> App Services -> Create
+1. Go to [Microsoft Azure portal](https://portal.azure.com/) -> App Services -> Create
 2. Select your subscription and resource group and define the following instance details:
-Publish ->Docker container 
-Operation System -> Linux
+
+    Publish ->Docker container 
+
+    Operation System -> Linux
+
 3. At the bottom of the page, select Next: Docker 
+
 4. Fill with the following details:
+
      Image Source -> Docker Hub
+
      Access type -> public
+
      Image and tag -> unboundukc/ms-dke-service:latest
- 5. Click on Review + create button .  
+
+ 5. Click on Review + create button.  
+
  6. Wait for the deployment to finish and then click "Go to resource".  
- 7. On the sidebar click on Configuration -> Application setttings -> "Advanced edit" button -> add the following application settings to the json:
+
+ 7. On the sidebar click on Configuration -> Application setttings -> "Advanced edit" button -> add the following application settings to the json :
  
         a. EP_HOST_NAME - EP server name.
 
@@ -51,7 +60,7 @@ Operation System -> Linux
 
    For example:
 
-   .......
+   ```.......
         {
             "name": "EP_HOST_NAME",
             "value": "ep1",
@@ -77,7 +86,7 @@ Operation System -> Linux
             "value": "Unbound1!",
             "slotSetting": false
         }
-    .........
+    .........```
  
  
     Alterntavly, you can add them manually by clicking the "New application settings" button.
@@ -86,7 +95,7 @@ Operation System -> Linux
 
 # Register your app service
 
-1. In your browser, open the Microsoft Azure portal, and go to All Services > Identity > App Registrations.
+1. In your browser, open the [Microsoft Azure portal](https://portal.azure.com/), and go to All Services > Identity > App Registrations.
 
 2. Select New registration, and enter a meaningful name.
 
@@ -143,7 +152,7 @@ Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-83
 
 2. Fill the relevant details and click Next.
 
-3. mark the "Files & emails" checkbox and click Next.
+3. Mark the "Files & emails" checkbox and click Next.
 
 4. Mark the "Encrypt files and emails" checkbox and click Next.
 
@@ -178,10 +187,3 @@ Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-83
 2. Open an office app like word/excel…
 
 3. Choose sensitivity->choose your created label->edit the document->save.
-
-# Instructions to run in dev container 
-
-1. open in devcontainer to build the container(or run the dockerFile)
-2. build the project(run the build task)
-3. start the program
-4. navigate to https://localhost:5001/test1 
