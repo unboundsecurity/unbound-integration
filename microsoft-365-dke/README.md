@@ -60,7 +60,8 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
 
    For example:
 
-   ```.......
+   ```
+   {
         {
             "name": "EP_HOST_NAME",
             "value": "ep1",
@@ -85,9 +86,9 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
             "name": "UKC_SO_PASSWORD",
             "value": "Unbound1!",
             "slotSetting": false
-        }
-    ......... 
-    ```
+        } 
+    }
+     ```
  
  
     Alterntavly, you can add them manually by clicking the "New application settings" button.
