@@ -86,7 +86,8 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
             "value": "Unbound1!",
             "slotSetting": false
         }
-    .........```
+    ......... 
+    ```
  
  
     Alterntavly, you can add them manually by clicking the "New application settings" button.
