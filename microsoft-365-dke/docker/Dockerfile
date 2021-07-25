@@ -22,22 +22,17 @@ RUN curl -LO# https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
     mv jq /usr/bin    
 
 RUN mkdir /root/data
-COPY data /root/data
+COPY . /root/data
 
-# ARG UKC_CLIENT_INSTALLER_URL
-# RUN echo "Downloading ${UKC_CLIENT_INSTALLER_URL}"; \
-#     curl -O#  "${UKC_CLIENT_INSTALLER_URL}"; \
-#     echo "Installing $(basename ${UKC_CLIENT_INSTALLER_URL})"; \
-#     sudo apt install $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
-#     rm $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
-#     echo "UKC Client Installed successfully"
-
-#########################################################################
-#TODO: REMOVE THIS
-RUN  sudo apt install /root/data/ekm_2.0.2103.39708.deb9_amd64.deb; \
-    rm  /root/data/ekm_2.0.2103.39708.deb9_amd64.deb; \
+ARG UKC_CLIENT_INSTALLER_URL
+RUN echo "Downloading ${UKC_CLIENT_INSTALLER_URL}"; \
+    curl -O#  "${UKC_CLIENT_INSTALLER_URL}"; \
+    echo "Installing $(basename ${UKC_CLIENT_INSTALLER_URL})"; \
+    sudo apt install $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
+    rm $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
     echo "UKC Client Installed successfully"
-#########################################################################    
+
+ 
 
 RUN chmod +x /root/data/*.sh;
 
