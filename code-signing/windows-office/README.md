@@ -1,5 +1,5 @@
-# Unbound Tech MS-Windows code signing demo
-This repo contains examples showing how to use Unbound Tech UKC for the following MS-Windows code signing use cases:
+# Unbound Security MS-Windows code signing demo
+This repo contains examples showing how to use Unbound Security UKC for the following MS-Windows code signing use cases:
 * Signing binary code: EXE and DLL files 
 * Signing PowerShell scripts 
 * Signing embedded macros code in MS-Office Word and Excel documents

@@ -160,7 +160,7 @@ Use the following procedure to verify the certificate.
             Validity
                 Not Before: May 29 00:00:00 2018 GMT
                 Not After : Jun  2 12:00:00 2021 GMT
-            Subject: jurisdictionC = IL, businessCategory = Private Organization, serialNumber = 514944917, C = IL, L = Petah Tiqwa, O = Unbound Tech LTD, CN = Unbound Tech LTD
+            Subject: jurisdictionC = IL, businessCategory = Private Organization, serialNumber = 514944917, C = IL, L = Petah Tiqwa, O = Unbound Security LTD, CN = Unbound Security LTD
             Subject Public Key Info:
                 Public Key Algorithm: rsaEncryption
                     RSA Public-Key: (2048 bit)
