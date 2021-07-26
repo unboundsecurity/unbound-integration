@@ -25,7 +25,7 @@ rv, session = c_open_session(slot, CKF_SERIAL_SESSION | CKF_RW_SESSION)
 assert rv == CKR_OK
 rv = login(session, 0, userPin)
 assert rv == CKR_OK
-csrSubj = 'C=IL, L=Petah Tikva, O=Unbound Tech Ltd, OU=Test1, CN=www.unboundtech.com'
+csrSubj = 'C=IL, L=Petah Tikva, O=Unbound Security Ltd, OU=Test1, CN=www.unboundsecurity.com'
 pbkey_template, prkey_template = (
     CKM_RSA_PKCS_KEY_PAIR_GEN_PUBTEMP, CKM_RSA_PKCS_KEY_PAIR_GEN_PRIVTEMP)
 pbkey_template[CKA_LABEL] = b'DemoPublicKey'
@@ -40,7 +40,7 @@ ret, csrDer = dyc_create_x509_request(session, priv_key, CKM_SHA256, csrSubj)
 assert rv == CKR_OK
 csr = base64.b64encode(csrDer)
 
-orderCert = {'certificate': {'common_name': 'www.unboundtech.com', 'csr': csr.decode("utf-8"), 'signature_hash': 'sha256'},
+orderCert = {'certificate': {'common_name': 'www.unboundsecurity.com', 'csr': csr.decode("utf-8"), 'signature_hash': 'sha256'},
              'organization': {'id': organizationId}, 'validity_years': 2}
 body = json.dumps(orderCert)
 

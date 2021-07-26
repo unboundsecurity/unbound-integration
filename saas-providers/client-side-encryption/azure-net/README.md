@@ -1,5 +1,5 @@
 # ub-azure-storage-net
-Unbound-tech Azure Storage .Net Client implementation
+Unbound-security Azure Storage .Net Client implementation
 
 
 ## Prerequisites

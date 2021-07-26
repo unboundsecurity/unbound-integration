@@ -1,7 +1,7 @@
 #!/bin/bash -xe
 
 PQDN=lb22googlecloud
-FQDN=${PQDN}.unboundtech.com
+FQDN=${PQDN}.unboundsecurity.com
 NETWORK_NAME=ekm-network
 REGION_01=europe-west1
 REGION_02=europe-west2

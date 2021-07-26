@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Eth DC sample" default="all" basedir=".">
+    <description>
+        Build file for Unbound CASPBot Sample
+    </description>
+    <property name="ver" value="1.0"/>
+    <property environment="env"/>
+    <property name="mvn" value="mvn"/>
+
+    <target name="build">
+        <exec executable="${mvn}" failonerror="true">
+			<arg value="-Dunbound-version=${version}" />
+            <arg value="clean" />
+            <arg value="compile" />
+            <arg value="package" />
+		</exec>
+    </target>
+
+    <target name="sign" depends="build">
+        <if>
+            <available file="${sign.keystore}"/>
+            <then>
+                <signjar alias="${sign.alias}" keystore="${sign.keystore}" storepass="${sign.storepass}"
+                         tsaurl="http://timestamp.digicert.com">
+                    <path>
+                        <fileset dir="target" includes="**/*.jar"/>
+                    </path>
+                </signjar>
+            </then>
+            <else>
+                <echo message="no keystore found, didn't sign"/>
+            </else>
+        </if>
+    </target>
+
+    <target name="all" description="rebuilds all from scratch" depends="sign"/>
+
+</project>

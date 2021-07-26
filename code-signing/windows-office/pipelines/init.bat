@@ -1,5 +1,5 @@
 @echo off
-echo You are about to run the initialization script for Unbound Tech code-signing Demo.
+echo You are about to run the initialization script for Unbound Security code-signing Demo.
 echo The following steps will be executed: & echo.
 echo 1. Delete previoulsy created files and keys in UKC
 echo 2. Import a pre-created key and certificates to UKC

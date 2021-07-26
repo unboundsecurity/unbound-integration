@@ -113,7 +113,7 @@ The control is totally on your side without any further engagement with the UKC 
     --cert_validity <Validity period of each derived certificate>
     ```
     
-    The output of this command is <ACTIVATION_CODE>. Together with the <TEMPLATE_NAME> they will let Tessera to obtain its SSL client certificate (refer to [UKC User Guide](https://www.unboundtech.com/docs/UKC/UKC_User_Guide/HTML/Content/Products/UKC-EKM/UKC_User_Guide/PartitionBindings/EnrollAC.html#h3_4)).
+    The output of this command is <ACTIVATION_CODE>. Together with the <TEMPLATE_NAME> they will let Tessera to obtain its SSL client certificate (refer to [UKC User Guide](https://www.unboundsecurity.com/docs/UKC/UKC_User_Guide/HTML/Content/Products/UKC-EKM/UKC_User_Guide/PartitionBindings/EnrollAC.html#h3_4)).
     
  1. To obtain the UKC SSL trust certificate (ukc_ca.p7b) run the following command on the EP server.
    

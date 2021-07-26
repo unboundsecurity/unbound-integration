@@ -66,7 +66,7 @@ Use the following procedure to verify the package.
 	<?xml version="1.0"?>
 	<!DOCTYPE Policy SYSTEM "https://www.debian.org/debsig/1.0/policy.dtd">
 	<Policy xmlns="http://www.debian.org/debsig/1.0/"> 
-    <Origin Name="test" id="8C96D305FA28E1EF" Description="UnboundTech"/>
+    <Origin Name="test" id="8C96D305FA28E1EF" Description="UnboundSecurity"/>
     <Selection>
 	    <Required Type="origin" File="debsig.gpg" id="8C96D305FA28E1EF"/>    
 	</Selection>
@@ -83,7 +83,7 @@ Use the following procedure to verify the package.
         <?xml version="1.0"?>
         <!DOCTYPE Policy SYSTEM "https://www.debian.org/debsig/1.0/policy.dtd">
         <Policy xmlns="https://www.debian.org/debsig/1.0/"> 
-    <Origin Name="test" id="8C96D305FA28E1EF" Description="UnboundTech"/>
+    <Origin Name="test" id="8C96D305FA28E1EF" Description="UnboundSecurity"/>
     <Selection>
             <Required Type="origin" File="debsig.gpg" id="8C96D305FA28E1EF"/>
         </Selection>
@@ -111,7 +111,7 @@ Use the following procedure to verify the package.
 	debsig:     Checking Verification group(s).
 	debsig:       Processing 'origin' key...
 	debsig:     Verification group(s) passed, deb is validated.
-	debsig: Verified package from 'UnboundTech' 
+	debsig: Verified package from 'UnboundSecurity' 
     ```
 
 ## Troubleshooting Debian Validation 
@@ -160,7 +160,7 @@ Use the following procedure to verify the certificate.
             Validity
                 Not Before: May 29 00:00:00 2018 GMT
                 Not After : Jun  2 12:00:00 2021 GMT
-            Subject: jurisdictionC = IL, businessCategory = Private Organization, serialNumber = 514944917, C = IL, L = Petah Tiqwa, O = Unbound Tech LTD, CN = Unbound Tech LTD
+            Subject: jurisdictionC = IL, businessCategory = Private Organization, serialNumber = 514944917, C = IL, L = Petah Tiqwa, O = Unbound Security LTD, CN = Unbound Security LTD
             Subject Public Key Info:
                 Public Key Algorithm: rsaEncryption
                     RSA Public-Key: (2048 bit)
