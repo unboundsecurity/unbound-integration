@@ -1,56 +1,48 @@
 # Unbound key-store service for Microsoft 365 DKE
-https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
+[Microsoft Double Key Encryption (DKE)](https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption) provides strong protection for sensitive data in Office 365 applications by using encryption keys which are stored in an external keystore.  
+
+This repo provides an implementation which uses Unbound Core KMS as the keystore.  
+The keystore is available as a docker image that implements DKE API and connects it to Unbound CORE KMS server (UKC).
+
+The following sections specify the steps required for configuring and using Unbound DKE keystore service. 
+These instructions use Azure as the service deployment platform. It is possible if needed to deploy the service on other platforms too, or on-prem. 
 
 # Prerequisites
 
-1. Make sure you can access [Microsoft Azure portal](https://portal.azure.com/), and have the following permmisions:
-    
-    a. Create new app service.
+1. A Running Unbound UKC (Unbound CORE KMS) server with a user partition that has:
+    1. An RSA key for encryption. [See here how to create it](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/KeyTab.html#h2_1)  
+       The size of the key must be 256bits.  
+       You will need to use the name of the key for the DKE service configuration below. 
+    3. An Ephemeral Client Template. [See here how to create one](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/ClientsTab.html#Multi-us).  
+       You will need the *name* of the client and its *activation code* for the DKE service configuration below.
 
-    b. Create new app registration.
 
-2. Make sure you can access access [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabels) and you have the following permmisions:
+2. Access to [Microsoft Azure portal](https://portal.azure.com/), with the following permissions:
+    * Create new app service.
+    * Create new app registration.
 
-    a. Create new label.
-    
-    b. Publish a label.  
+2. Access to [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabels) with the following permissions:
+    * Create new label.
+    * Publish a label.  
 
-3. Make sure you have Microsoft 365 E5 license.
+3. Microsoft 365 with "Microsoft 365 E5" license.
 
-4. From UKC you need to have the following:
+# Azure app service configuration
+The following sections will guide you through the process of configuring an publishing our DKE service as an Azure web app service
 
-    a. partition with name <partition_name>
-    
-    b. RSA key, size 256 name <key_name>
-
-    c. Ephemeral client template name <client_template_name> and the <client_template_activation_code>
-
-   NOTE: we will use the <key_name> and the <partition_name> in the next stages.
-   
-# Create new app service in azure portal
-
+## Create a new app service in Azure portal
 1. Go to [Microsoft Azure portal](https://portal.azure.com/) -> App Services -> Create
-2. Select your subscription and resource group and define the following instance details:
-
-    Publish ->Docker container 
-
-    Operation System -> Linux
-
-3. At the bottom of the page, select Next: Docker 
-
+2. Select your subscription and resource group and select the following options for the instance details:
+    * Publish: Docker container 
+    * Operation System: Linux
+3. At the bottom of the page, select *Next: Docker* 
 4. Fill with the following details:
-
-     Image Source -> Docker Hub
-
-     Access type -> public
-
-     Image and tag -> unboundukc/ms-dke-service:latest
-
- 5. Click on Review + create button.  
-
- 6. Wait for the deployment to finish and then click "Go to resource".  
-
- 7. On the sidebar click on Configuration -> Application setttings -> "Advanced edit" button -> add the following application settings to the json :
+    * Image Source: Docker Hub
+    * Access type: Public
+    * Image and tag: `unboundukc/ms-dke-service:latest`
+5. Click on the *Review + create* button
+6. Wait for the deployment to finish and then click *Go to resource*
+7. On the sidebar click on *Configuration* -> *Application setttings* -> *Advanced edit* button -> add the following application settings to the json :
  
         a. EP_HOST_NAME - EP server name.
 
@@ -99,7 +91,7 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
 
     NOTE: Click save at top of the page when you done.
 
-# Register your app service
+## Register your app service
 
 1. In your browser, open the [Microsoft Azure portal](https://portal.azure.com/), and go to All Services > Identity > App Registrations.
 
@@ -152,7 +144,8 @@ In the new client application:
 
 Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-832b-029040e7db99. This value is the Azure Information Protection unified labeling client ID.
 
-# Create new label
+# Sensitivity labels configuration (Microsoft 365)
+## Create new label
 
 1. Open [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabels) and click on the create new label button.
 
@@ -175,7 +168,7 @@ Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-83
 
 10. Click the Next button 3 more times and then click Create label.
 
-# Publish the label
+## Publish the label
 
 1. Open [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabelpolicies) and click on the Publish label button.
 
@@ -186,7 +179,7 @@ Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-83
 4. Fill the relevant data and click Next.
 
 5. Click the submit button.
-# How to use the created label with office app?
+## How to use the created label with office app?
 
 1. Install Microsoft Azure Information Protection from [here](https://www.microsoft.com/en-us/download/details.aspx?id=53018) 
 
