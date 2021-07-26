@@ -101,7 +101,7 @@
         </ResultCollector>
         <hashTree/>
 
-        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Sign RSA" enabled="false">
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="Sign RSA" enabled="true">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
