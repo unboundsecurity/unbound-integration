@@ -56,11 +56,7 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
 
         b. UKC_PARTITION - UKC partition name.
 
-        c. UKC_PASSWORD - The password used to login with 'so' user for the selected partition.
-
         d. UKC_SERVER_IP - UKC server ip. 
-
-        e. UKC_SO_PASSWORD - UKC so password.
 
         f. CLIENT_TEMPLATE_NAME - Ephemeral client template name.
 
@@ -79,18 +75,8 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
             "slotSetting": false
         },
         {
-            "name": "UKC_PASSWORD",
-            "value": "Unbound1!",
-            "slotSetting": false
-        },
-        {
             "name": "UKC_SERVER_IP",
             "value": "54.174.121.27",
-            "slotSetting": false
-        },
-        {
-            "name": "UKC_SO_PASSWORD",
-            "value": "Unbound1!",
             "slotSetting": false
         },
         {
