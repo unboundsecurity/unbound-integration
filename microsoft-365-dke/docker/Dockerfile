@@ -22,7 +22,7 @@ RUN curl -LO# https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
     mv jq /usr/bin    
 
 RUN mkdir /root/data
-COPY . /root/data
+COPY data /root/data
 
 ARG UKC_CLIENT_INSTALLER_URL
 RUN echo "Downloading ${UKC_CLIENT_INSTALLER_URL}"; \

@@ -17,7 +17,13 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
 
 3. Make sure you have Microsoft 365 E5 license.
 
-4. From UKC you need to have a RSA key, size 256.
+4. From UKC you need to have the following:
+
+    a. partition with name <partition_name>
+    
+    b. RSA key, size 256 name <key_name>
+
+    c. Ephemeral client template name <client_template_name> and the <client_template_activation_code>
 
    NOTE: we will use the <key_name> and the <partition_name> in the next stages.
    
@@ -56,6 +62,10 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
 
         e. UKC_SO_PASSWORD - UKC so password.
 
+        f. CLIENT_TEMPLATE_NAME - Ephemeral client template name.
+
+        g. CLIENT_TEMPLATE_ACTIVATION_CODE - Ephemeral client template activation code.
+
    For example:
 
         {
@@ -82,7 +92,19 @@ https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption
             "name": "UKC_SO_PASSWORD",
             "value": "Unbound1!",
             "slotSetting": false
+        },
+        {
+            "name": "CLIENT_TEMPLATE_NAME",
+            "value": "template1",
+            "slotSetting": false
+        },
+        {
+            "name": "CLIENT_TEMPLATE_ACTIVATION_CODE",
+            "value": "2595287639032430",
+            "slotSetting": false
         }
+
+        
      
 
  
