@@ -10,7 +10,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>CASP Bot signer</name>
-    <url>https://www.unboundtech.com/casp</url>
+    <url>https://www.unboundsecurity.com/solutions/crypto-asset-security/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

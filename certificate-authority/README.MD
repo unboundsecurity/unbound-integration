@@ -10,11 +10,11 @@ The SSL certificate is obtaind from DigiCert via the REST API.
 
 ### Prerequisites
 You need the following package for this integration:
-- [Unbound PKCS11 Python package](https://github.com/unbound-tech/unbound-pypkcs11 "Unbound PKCS#11 Python package")
+- [Unbound PKCS11 Python package](https://github.com/unboundsecurity/unbound-pypkcs11 "Unbound PKCS#11 Python package")
 
 ### Documentation
 The following links provide information that may be helpful for this integation:
-- [UnboundTech Python interface to PKCS#11](http://unbound-pypkcs11.readthedocs.io/en/latest/ "UnboundTech Python interface to PKCS#11")
+- [UnboundSecurity Python interface to PKCS#11](http://unbound-pypkcs11.readthedocs.io/en/latest/ "UnboundSecurity Python interface to PKCS#11")
 - [DigiCert Web Services API](https://www.digicert.com/services/v2/documentation "DigiCert Services API")
 - [SSL Certificate Validation Process from DigiCert ](https://www.digicert.com/ssl-validation-process.htm "SSL Certificate Validation Process from DigiCert ")
 

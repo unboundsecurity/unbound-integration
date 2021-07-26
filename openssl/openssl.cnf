@@ -3,7 +3,7 @@
 # This is mostly being used for generation of certificate requests.
 #
 # Updated to work with Unbound Key Control. 
-# www.unboundtech.com
+# www.unboundsecurity.com
 
 openssl_conf = openssl_init
 #
