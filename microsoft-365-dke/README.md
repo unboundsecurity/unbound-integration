@@ -11,7 +11,7 @@ These instructions use Azure as the service deployment platform. It is possible 
 
 1. A Running Unbound UKC (Unbound CORE KMS) server with a user partition that has:
     1. An RSA key for encryption. [See here how to create it](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/KeyTab.html#h2_1)  
-       The size of the key must be 256bits.  
+       The size of the key must be 2048 bits.  
        You will need to use the name of the key for the DKE service configuration below. 
     3. An Ephemeral Client Template. [See here how to create one](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/ClientsTab.html#Multi-us).  
        You will need the *name* of the client and its *activation code* for the DKE service configuration below.
