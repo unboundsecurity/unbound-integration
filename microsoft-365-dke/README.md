@@ -180,19 +180,13 @@ Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-83
 
 5. Click the submit button.
 
-NOTE: It might take up to 24 hours for the label to become available.
+After creating the label it can be used in Office applications. Note that the label cannot be used for encryption for up to 24 hours after creating it (until Microsoft approves it). This means that you cannot save files using this label for up to 24 hours.
 
 ## How to use the created label with office app?
 
 1. Install Microsoft Azure Information Protection from [here](https://www.microsoft.com/en-us/download/details.aspx?id=53018) 
 
-2. Ensure DKE is enabled for your client by checking/adding the following registry keys:
-
- `[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\MSIPC\flighting]
-   "DoubleKeyProtection"=dword:00000001
-
- [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSIPC\flighting]
-   "DoubleKeyProtection"=dword:00000001`
+2. Enable DKE for your client by downloading and installing the following registry key from [here](https://github.com/unboundsecurity/unbound-integration/blob/master/microsoft-365-dke/enable_dke_windows.reg)
 
 3. Open an office app like word/excel…
 

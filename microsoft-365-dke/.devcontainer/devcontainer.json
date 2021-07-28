@@ -3,8 +3,6 @@
 	"build": {
 		"dockerfile": "Dockerfile_Dev",
 		"args": { 
-			"INSTALL_NODE": "true",
-			"NODE_VERSION": "lts/*",
 			"INSTALL_AZURE_CLI": "true"
 		}
 	},
@@ -13,8 +11,8 @@
 		"EP_HOST_NAME": "ep1",
 		"UKC_PARTITION":"part1",
 		"UKC_SERVER_IP":"54.174.121.27",
-		"CLIENT_TEMPLATE_ACTIVATION_CODE":"9905879503203732",
-		"CLIENT_TEMPLATE_NAME":"template3"
+		"CLIENT_TEMPLATE_ACTIVATION_CODE":"8776496990657163",
+		"CLIENT_TEMPLATE_NAME":"template6"
 	},
 
 	// Set *default* container specific settings.json values on container create.
