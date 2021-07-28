@@ -32,13 +32,11 @@ RUN echo "Downloading ${UKC_CLIENT_INSTALLER_URL}"; \
     rm $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
     echo "UKC Client Installed successfully"
 
- 
 
 RUN chmod +x /root/data/*.sh;
 
 ######################################   
 
-# install System.Drawing native dependencies
 RUN apt-get update \
     && apt-get install -y --allow-unauthenticated \
         libc6-dev \
@@ -47,15 +45,15 @@ RUN apt-get update \
      && rm -rf /var/lib/apt/lists/*
 
 #install ssh
-RUN apt-get update \
-&& apt-get install -y --no-install-recommends openssh-server \
-&& echo "root:Docker!" | chpasswd
+# RUN apt-get update \
+# && apt-get install -y --no-install-recommends openssh-server \
+# && echo "root:Docker!" | chpasswd
 
-COPY sshd_config /etc/ssh/
+# COPY sshd_config /etc/ssh/
 
 ENV PORT 8080
 
-EXPOSE 2222 8080
+EXPOSE 8080
 
 ENV ASPNETCORE_URLS "http://*:${PORT}"
 

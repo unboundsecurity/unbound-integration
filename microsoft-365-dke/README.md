@@ -179,10 +179,29 @@ Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-83
 4. Fill the relevant data and click Next.
 
 5. Click the submit button.
+
+NOTE: It might take up to 24 hours for the label to become available.
+
 ## How to use the created label with office app?
 
 1. Install Microsoft Azure Information Protection from [here](https://www.microsoft.com/en-us/download/details.aspx?id=53018) 
 
-2. Open an office app like word/excel…
+2. Ensure DKE is enabled for your client by checking/adding the following registry keys:
 
-3. Choose sensitivity->choose your created label->edit the document->save.
+ `[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\MSIPC\flighting]
+   "DoubleKeyProtection"=dword:00000001
+
+ [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSIPC\flighting]
+   "DoubleKeyProtection"=dword:00000001`
+
+3. Open an office app like word/excel…
+
+4. Choose sensitivity->choose your created label->edit the document->save.
+
+## How to run the project with visual code dev container ?
+
+1. Open 'devcontainer.json' file and edit the "containerEnv" section with the relevant data.
+
+2. run "open in container" from visual studio.
+
+3. open in browser http://localhost:8080/<key_name>

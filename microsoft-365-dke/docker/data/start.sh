@@ -33,6 +33,4 @@ sh /root/data/register_new_client_ephemeral.sh
 
 cd /root/data/publish
 
-service ssh start
-
 dotnet unboundkeystore.dll

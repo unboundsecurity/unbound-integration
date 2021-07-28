@@ -1,0 +1,2 @@
+FROM unboundukc/ms-dke-service:latest
+CMD "/root/data/start.sh"
