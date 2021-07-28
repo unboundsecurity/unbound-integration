@@ -186,7 +186,7 @@ After creating the label it can be used in Office applications. Note that the la
 
 1. Install Microsoft Azure Information Protection from [here](https://www.microsoft.com/en-us/download/details.aspx?id=53018) 
 
-2. Enable DKE for your client by downloading and installing the following registry key from [here](https://github.com/unboundsecurity/unbound-integration/blob/master/microsoft-365-dke/enable_dke_windows.reg)
+2. Enable DKE for your client by downloading and installing the following registry key from <a href="https://github.com/unboundsecurity/unbound-integration/blob/master/microsoft-365-dke/enable_dke_windows.reg" download>Here</a>
 
 3. Open an office app like word/excel…
 
