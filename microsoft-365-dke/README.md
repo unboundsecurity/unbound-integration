@@ -1,4 +1,7 @@
 # Unbound integration with Microsoft DKE
+
+** Important: This is an alpha version not yet fully tested for production **
+
 [Microsoft Double Key Encryption (DKE)](https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption) provides strong protection for sensitive data in Office 365 applications by using encryption keys which are stored in an external keystore.  
 
 This repo provides an implementation which uses Unbound Core KMS as the keystore.  
