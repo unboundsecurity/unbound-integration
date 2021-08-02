@@ -1,4 +1,4 @@
-# Unbound key-store service for Microsoft 365 DKE
+# Unbound integration with Microsoft DKE
 [Microsoft Double Key Encryption (DKE)](https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption) provides strong protection for sensitive data in Office 365 applications by using encryption keys which are stored in an external keystore.  
 
 This repo provides an implementation which uses Unbound Core KMS as the keystore.  
@@ -12,9 +12,9 @@ These instructions use Azure as the service deployment platform. It is possible 
 1. A Running Unbound UKC (Unbound CORE KMS) server with a user partition that has:
     1. An RSA key for encryption. [See here how to create it](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/KeyTab.html#h2_1)  
        The size of the key must be 2048 bits.  
-       You will need to use the name of the key for the DKE service configuration below. 
+       You'll need to use the **name of the key** for the DKE service configuration below. 
     3. An Ephemeral Client Template. [See here how to create one](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/ClientsTab.html#Multi-us).  
-       You will need the *name* of the client and its *activation code* for the DKE service configuration below.
+       You'll need the **name of the client and its *activation code*** for the DKE service configuration below.
 
 
 2. Access to [Microsoft Azure portal](https://portal.azure.com/), with the following permissions:
@@ -28,7 +28,7 @@ These instructions use Azure as the service deployment platform. It is possible 
 3. Microsoft 365 with "Microsoft 365 E5" license.
 
 # Azure app service configuration
-The following sections will guide you through the process of configuring an publishing our DKE service as an Azure web app service
+The following sections guide you through the process of configuring an publishing Unbound DKE service as an Azure web app service
 
 ## Create a new app service in Azure portal
 1. Go to [Microsoft Azure portal](https://portal.azure.com/) -> App Services -> Create
@@ -145,7 +145,7 @@ In the new client application:
 Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-832b-029040e7db99. This value is the Azure Information Protection unified labeling client ID.
 
 # Sensitivity labels configuration (Microsoft 365)
-## Create new label
+## Create a new label
 
 1. Open [Microsoft 365 compliance](https://compliance.microsoft.com/informationprotection?viewid=sensitivitylabels) and click on the create new label button.
 
@@ -180,9 +180,10 @@ Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-83
 
 5. Click the submit button.
 
-After creating the label it can be used in Office applications. Note that the label cannot be used for encryption for up to 24 hours after creating it (until Microsoft approves it). This means that you cannot save files using this label for up to 24 hours.
+After creating the label it can be used in Office applications.  
+Note that the label cannot be used for encryption for up to 24 hours after creating it (until Microsoft approves it). This means that you cannot save files using this label for up to 24 hours.
 
-## How to use the created label with office app?
+## Using sensitivity labels with Office applications
 
 1. Install Microsoft Azure Information Protection from [here](https://www.microsoft.com/en-us/download/details.aspx?id=53018) 
 
