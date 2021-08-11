@@ -85,7 +85,6 @@ You need to have a running Unbound CORE and [generate an RSA key](https://www.un
 
 1. Install the kubernetes portieris service. It blocks all unsigned containers.
     ```
-    helm delete -n portieris portieris || true
     helm install portieris --create-namespace --namespace portieris ./portieris --set IBMContainerService=false --debug
     ```
 
