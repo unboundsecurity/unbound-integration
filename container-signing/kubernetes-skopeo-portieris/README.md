@@ -2,6 +2,8 @@
 
 This integration uses Unbound CORE and Skopeo to sign a container and then IBM Portieris to verify the signature before running the container in a Kubernetes cluster.
 
+![Skopeo Portieris System Overview](skopeo-portieris-system.png)
+
 The system has the following parts:
 
 1. [Skopeo](https://github.com/containers/skopeo) - a container copying and signing command line tool.
@@ -24,7 +26,7 @@ First, the following steps are executed one time.
 1. Generate an RSA key pair used to sign containers in Unbound CORE.
 1. Export the public pair of the signing key (generated in step 1).
 1. Store the public key (generated in step 2) as a secret in the Kubernetes cluster.
-1. Configure ``skopeo`` to work with Unbound CORE.
+1. Configure ``skopeo`` to work with Unbound CORE (using gpg).
 1. Generate ``portieris`` template to validate all containers for signatures in the NGINX server.
 1. Start ``portieris`` and check that everything is working and container signatures are enforced.
 
@@ -33,28 +35,28 @@ Second, the following steps are executed for every new container on the **signin
 1. Copy the generated signature file to the ``NGINX`` web server used to serve static files.
 
 ## Prerequisites
-You need to have a running Unbound CORE and generate an RSA key that will be used for signing.
+You need to have a running Unbound CORE and [generate an RSA key](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/cliKeyManagement/uclGenerate.html#h3_4) that will be used for signing.
 
 
 ## On the Management Device
 
 1. Export the public key from CORE. See [here](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/cliKeyManagement/uclExport.html#h3_5) for the command.
-2. Create a Kubernetes secret from the ```public.gpg``` file.
+1. Create a Kubernetes secret from the ```public.gpg``` file.
     ```
     kubectl create secret generic signing-pubkey --from-file=key=public.gpg
     ```
 
-2. Start the **nginx** container to serve static signatures.
+1. Start the **nginx** container to serve static signatures.
     ```
     docker run --rm  -v `pwd`/sigstore:/usr/share/nginx/html --name nginx -p 1280:80 -d nginx
     ```
 
-3. Download and prepare portieris as described [here](https://github.com/IBM/portieris).
+1. Download and prepare portieris as described [here](https://github.com/IBM/portieris).
     ```
     sh ./portieris/gencerts
     ```
 
-4. Edit ```portieris/templates/policies.yaml```.
+1. Edit ```portieris/templates/policies.yaml```.
 
     Change the last policy to be similiar to:
 
@@ -81,7 +83,7 @@ You need to have a running Unbound CORE and generate an RSA key that will be use
     This url is used to point to NGINX (listening on port 1280) and downloads the signatures. 
     The *keySecret* specifies the name of the public key, so that signatures can be verified.
 
-5. Install the kubernetes portieris service. It blocks all unsigned containers.
+1. Install the kubernetes portieris service. It blocks all unsigned containers.
     ```
     helm delete -n portieris portieris || true
     helm install portieris --create-namespace --namespace portieris ./portieris --set IBMContainerService=false --debug
