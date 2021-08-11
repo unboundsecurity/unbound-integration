@@ -92,7 +92,7 @@ You need to have a running Unbound CORE and [generate an RSA key](https://www.un
 ## On the Signing Device
 This step can be done with a Docker container.
 
-1. Install all required packages. For example, on CentOS 8:
+1. Install all required packages (OpenSSL, Java, wget, GPG, and skopeo). For example, on CentOS 8:
     ```
     yum -y install jq less vim openssl java java-devel wget gpg
     RUN dnf -y install skopeo
