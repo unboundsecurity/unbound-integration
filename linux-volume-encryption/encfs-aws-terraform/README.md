@@ -4,19 +4,9 @@
 
 By default, all FUSE-based filesystems are visible only to the user who mounted them. This way, we can automatically prevent the **root** user from viewing and changing unencrypted files.
 
-### How it works
-Most of the interesting code is found in the ``userdata.sh`` file used for EC2 VM setup. It works as following:
-
-1. Create and mount '/data' partition pointing to external volume - provided by AWS.
-2. Install needed packages (wget, fuse, jq, openssl, tinyxml2, fuse-encfs).
-3. Download and install ekm-client rpm package.
-4. Register ephemeral client.
-5. Setup Unboundsecurity OpenSSL support
-6. Decrypt the ``passphrase`` using the OpenSSL Unboundsecurity engine and use it for the ``encfs``.
-
 ## Prerequisites
 
-1. Create a partition and sign-in to it
+1. Create a UKC partition and sign-in to it
 1. Create an RSA key in Unbound UI
 1. Create an Ephemeral Client
 1. Get activation code and use it in the VM setup
@@ -31,6 +21,16 @@ Most of the interesting code is found in the ``userdata.sh`` file used for EC2 V
    ```
 1. Update the `variables.tf` file.
 1. Run the ``terraform init`` command.
+
+### How it works
+Most of the interesting code is found in the ``userdata.sh`` file used for EC2 VM setup. It works as following:
+
+1. Create and mount '/data' path pointing to external volume - provided by AWS.
+2. Install needed packages (wget, fuse, jq, openssl, tinyxml2, fuse-encfs).
+3. Download and install ekm-client rpm package.
+4. Register ephemeral client.
+5. Setup Unbound Security OpenSSL support
+6. Decrypt the ``passphrase`` using the OpenSSL Unboundsecurity engine and use it for the ``encfs``.
 
 ## Setup
 
