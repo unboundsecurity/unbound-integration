@@ -12,7 +12,7 @@ Most of the interesting code is found in the ``userdata.sh`` file used for EC2 V
 3. Download and install ekm-client rpm package.
 4. Register ephemeral client.
 5. Setup Unboundsecurity OpenSSL support
-6. Decrypt the ``key phase`` using the OpenSSL Unboundsecurity engine and use it for the ``encfs``.
+6. Decrypt the ``passphrase`` using the OpenSSL Unboundsecurity engine and use it for the ``encfs``.
 
 ## Prerequisites
 
@@ -21,9 +21,9 @@ Most of the interesting code is found in the ``userdata.sh`` file used for EC2 V
 1. Create an Ephemeral Client
 1. Get activation code and use it in the VM setup
 1. Export public key using ucl command: ``ucl export -n key-name --output cert.pub``
-1. Generate an encrypted key phase:
-   1. Generate a random key (key phase): ``head -c 128 /dev/random``
-   2. Encrypt the key phrase: ``openssl rsautl -encrypt -pubin -inkey ./cert.pub -oaep``
+1. Generate an encrypted passphrase:
+   1. Generate a random key (passphrase): ``head -c 128 /dev/random``
+   2. Encrypt the passphrase: ``openssl rsautl -encrypt -pubin -inkey ./cert.pub -oaep``
    3. Convert to base 64 printable format: ``base64``
    4. In one command:
    ```
