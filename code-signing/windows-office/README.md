@@ -14,7 +14,7 @@ You need to have the client configured on partion name "test" with USER without 
 	
 	1. It is enough to check only "signing tools..." during installation
 
-3. Microsoft Visual C++ 2010 Redistributable Package (x86) - strictly this version: https://www.microsoft.com/en-us/download/details.aspx?id=5555
+3. Microsoft Visual C++ 2010 Redistributable Package (x86) - strictly this version: https://www.microsoft.com/en-us/download/details.aspx?id=26999
 	
 4. Microsoft Office Subject Interface Packages for Digitally Signing VBA Projects
 
