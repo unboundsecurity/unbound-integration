@@ -8,7 +8,7 @@ To achieve this integration, we use Unbound CORE's *clientless* mode for the Unb
 
 The following instructions describe how to develop an AWS Lamda function that works with CORE and the Unbound Java Provider. 
 
-**As an example, it demostrates tokenization and detokenization of an email address.**
+**As an example, it demonstrates tokenization and detokenization of an email address.**
 
 ## Prerequisites
 
@@ -28,21 +28,24 @@ The following are required for this integration:
 1. Download the code from the GitHub repo, found [here](https://github.com/unboundsecurity/unbound-integration/tree/master/saas-providers/aws-lambda).
 2. Uncompress the zip archive.
 3. Run the following command to build the code:
-    `mvn clean package shade:shade`
+    ```
+    mvn clean package shade:shade
+    ```
 
 ## Create the AWS Lambda Function
 
 Create 2 functions in AWS Lambda, as described [here](https://docs.aws.amazon.com/lambda/latest/dg/getting-started.html). One function is for tokenization and one function is for detokenization.
 
-Notes: 
+When creating the functions, use the following: 
 1. This example was tested using Java 8 on Amazon Linux 1.
 2. Set the handler methods to these names:
     - com.unbound.TokenizeHandler
     - com.unbound.DeTokenizeHandler
+3. Load the jar file created in the *Download and Build* section.
 
 ## Environment Variables 
 
-The CORE clientless provider depends on a set of environment variables that defines the needed properties to connect to CORE. These variables are set in the AWS Lambda interface.
+The CORE clientless provider depends on a set of environment variables that defines the properties needed to connect to CORE. These variables are set in the AWS Lambda interface.
 
 - UKC_SERVERS - the hostname of the Entry Point
 - UKC_PARTITION_NAME - the CORE partition
@@ -56,7 +59,7 @@ The CORE clientless provider depends on a set of environment variables that defi
 - UKC_TEMPLATE_NAME - the template client name
 - UKC_ACTIVATION_CODE - activation code used for registration
 
-Here is an example of the environment variables:
+The following is an example of the environment variables:
 ```
 UKC_ACTIVATION_CODE: '3073800115123577'
 UKC_CA_DATA: >-
