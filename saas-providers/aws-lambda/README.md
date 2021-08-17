@@ -6,7 +6,9 @@ To achieve this integration, we use Unbound CORE's *clientless* mode for the Unb
 
 ## Configuration
 
-The following instructions describe how to develop an AWS Lamda function works with CORE. As an example, it uses the Unbound Java Provider for tokenization and detokenization of an email address.
+The following instructions describe how to develop an AWS Lamda function works with CORE. 
+
+**As an example, it uses the Unbound Java Provider for tokenization and detokenization of an email address.**
 
 ## Prerequisites
 
