@@ -11,8 +11,11 @@
 		"EP_HOST_NAME": "ep1",
 		"UKC_PARTITION":"part1",
 		"UKC_SERVER_IP":"54.174.121.27",
-		"CLIENT_TEMPLATE_ACTIVATION_CODE":"8776496990657163",
-		"CLIENT_TEMPLATE_NAME":"template6"
+		"UKC_PASSWORD": "Password1!",
+		"CLIENT_TEMPLATE_ACTIVATION_CODE":"5233929705324093",
+		"CLIENT_TEMPLATE_NAME":"template13",
+		"ENV": "dev",
+		"websiteHostName": "unboundkeystore.azurewebsites.net"
 	},
 
 	// Set *default* container specific settings.json values on container create.
@@ -29,6 +32,6 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	 "forwardPorts": [8080, 8000],
 
-	 "postCreateCommand": "cd /root/data && ./start.sh"
+	 "postCreateCommand": "cd /root/data && ./start_dev.sh"
 
 	}
