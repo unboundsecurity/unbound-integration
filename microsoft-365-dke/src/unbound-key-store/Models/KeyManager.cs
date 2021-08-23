@@ -104,7 +104,7 @@ namespace Unbound.Web.Models
 
         }
 
-        public  byte[] HexStringToHex(string inputHex)
+        public  byte[] HexStringToBin(string inputHex)
         {
             var resultantArray = new byte[inputHex.Length / 2];
             for (var i = 0; i < resultantArray.Length; i++)
@@ -117,7 +117,7 @@ namespace Unbound.Web.Models
 
         public string HexString2B64String(string input)
         {
-            return System.Convert.ToBase64String(HexStringToHex(input));
+            return System.Convert.ToBase64String(HexStringToBin(input));
         }
 
         public KeyData GetPublicKey(string accessToken, string keyName)
@@ -164,7 +164,10 @@ namespace Unbound.Web.Models
             JObject json = JObject.Parse(myResponse2);
             string publicExponent = (string)json.SelectToken("pkInfo.rsa.publicExponent");
             string modulus = (string)json.SelectToken("pkInfo.rsa.modulus");
-            string nStrBase64 = HexString2B64String(modulus.Replace(":",""));
+            string hexstr = modulus.Replace(":","");
+            string hexstrWithoutPrefixZero = hexstr.Substring(2,hexstr.Length-2);
+            string nStrBase64 = HexString2B64String(hexstrWithoutPrefixZero);
+
 
             //string nStrBase64 = Convert.ToBase64String(Encoding.ASCII.GetBytes(modulus));
 
