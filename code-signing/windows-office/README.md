@@ -49,6 +49,8 @@ The script input files are located in `files_to_sign` directory and the signed o
 
 5. `04-sign_large_number_of_macros.bat` - sign MS Word document macros in loop for performance testing
 
+6. `05-sign_ms_office_macros_docs_V3.bat` - sign and verify Microsoft Office macros contained withing MS Word and Excel files (V3 Secure signature). The signer used in this example allows sighning with a specific UKC user.
+
 
 ## Sign a VBA macro in MS office document manually inside MS office programs
 Follow the instructions in "Digitally sign a macro project in Excel, PowerPoint, Publisher, Visio, Outlook, or Word section" in this link
