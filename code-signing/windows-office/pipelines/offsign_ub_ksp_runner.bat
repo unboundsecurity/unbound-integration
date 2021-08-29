@@ -1,5 +1,4 @@
 @echo off
-
 rem ==========================================================================
 rem
 rem
@@ -15,6 +14,7 @@ rem     -c          signing certificate name in store
 rem		-p			partition     	(optional)
 rem     -u          UKC username	(optional)
 rem		-w          UKC password	(optional)
+rem		-t          timestamp URL	(optional)
 rem
 rem  Example:
 rem     offsign_ub_ksp_runner.bat -i mydoc.docx -c DEV -p test -u user -w 123456
@@ -48,6 +48,7 @@ set ErrNo_CERTIFICATE_PARAM=11
 rem ==========================================================================
 
 rem Set CMD parameters
+set source_dir=%~dp0
 
 :loop
 IF NOT "%1"=="" (
@@ -71,6 +72,10 @@ IF NOT "%1"=="" (
         SET password=%2
         SHIFT
     )
+	IF "%1"=="-t" (
+        SET timestamp=%2
+        SHIFT
+    )
 	IF "%1"=="-h" (
         goto LUsage
     )
@@ -83,7 +88,6 @@ IF NOT "%1"=="" (
     SHIFT
     GOTO :loop
 )
-
 
 if "%input%"=="" (
 	set ACTION=%E_INPUT_PARAM%
@@ -120,7 +124,7 @@ rem Find if OffClearSig.exe is located in the same path as OffSign.bat
 
 :LFindOffClearSig
 set offclearsig=offclearsig.exe
-set offclearsigPath="%~dp0%offclearsig%"
+set offclearsigPath="%source_dir%%offclearsig%"
 IF EXIST %offclearsigPath% (
 	goto LRunCommand
 )
@@ -157,11 +161,17 @@ if not "%password%"=="" (
 	set sign_cmd=%sign_cmd% -w %password%
 )
 
-set sign_cmd=%sign_cmd% %signtoolPath% sign /v /t http://timestamp.digicert.com /fd sha256 /n %cert% %input%
+if not "%timestamp%"=="" (
+	set timestamp_cmd=/t %timestamp%
+)
+
+set sign_cmd=%sign_cmd% %signtoolPath% sign /v %timestamp_cmd% /fd sha256 /n %cert% %input%
 
 rem echo sign_cmd=%sign_cmd%
 
-call %ub_ksp_runner% %sign_cmd% 
+%ub_ksp_runner% %sign_cmd% 
+rem echo errorcode=%errorlevel%
+
 if %errorlevel%==0 (
 	goto LRun2ndSign
 ) else (
@@ -200,6 +210,7 @@ echo		-c		signing certificate name in store
 echo		-p		partition	(optional)
 echo		-u		UKC username	(optional)
 echo		-w		UKC password	(optional)
+echo		-t		Timestamp URL	(optional)
 goto EOF
 
 :LFail
