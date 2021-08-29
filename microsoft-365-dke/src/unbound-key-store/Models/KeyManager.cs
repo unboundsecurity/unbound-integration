@@ -3,6 +3,8 @@
 namespace Unbound.Web.Models
 {
     using System;
+    using System.Web;
+
     using System.Security.Claims;
     using Unbound.Web.Models.Extensions;
     using sg = System.Globalization;
@@ -11,18 +13,16 @@ namespace Unbound.Web.Models
     using System.Linq;
     using System.Text;
     using Microsoft.Extensions.Logging;
-         using System.Net.Http;
+    using System.Net.Http;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Logging;
-         using System.Net;
+    using System.Net;
     using System.IO;
-     using Newtonsoft.Json.Linq;
-     using System.Text.Json;
-
-     using System.Text.Json.Serialization;
-     using Newtonsoft.Json;
-
+    using Newtonsoft.Json.Linq;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+    using Newtonsoft.Json;
+    using System.Web.Http;
 
 
     public class KeyManager
@@ -31,23 +31,73 @@ namespace Unbound.Web.Models
 
         public KeyManager(ILogger<KeyManager> logger)
         {
-             _logger = logger;
+            _logger = logger;
+        }
+
+        public string getTokenFromHeaders(Microsoft.AspNetCore.Http.HttpRequest request, Boolean shouldSearchMicrosoftToken)
+        {
+            var accessToken = "";
+            foreach (var header in request.Headers)
+            {
+                if (header.Key == "X-MS-TOKEN-AAD-ID-TOKEN" && shouldSearchMicrosoftToken)
+                {
+                    accessToken = "Bearer " + header.Value;
+                    _logger.LogInformation("Found token from microsoft : " + accessToken);
+
+                }
+                else if (header.Key == "Authorization")
+                {
+                    accessToken = header.Value;
+                }
+            }
+
+            return accessToken;
+        }
+
+        public string getToken(Microsoft.AspNetCore.Http.HttpRequest request)
+        {
+            string accessToken = "";
+            if (System.Environment.GetEnvironmentVariable("USE_MICROSOFT_TOKEN") == "TRUE")
+            {
+                _logger.LogInformation("USING MICROSOFT TOKEN");
+                accessToken = getTokenFromHeaders(request, true);
+
+            }
+            else
+            {
+                accessToken = getTokenFromHeaders(request, false);
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    accessToken = getUkcToken();
+                }
+            }
+
+
+            if (!accessToken.Contains("Bearer"))
+            {
+                accessToken = "Bearer " + accessToken;
+            }
+
+            return accessToken;
+
         }
 
         public String getUkcToken()
         {
             string websiteHostName = System.Environment.GetEnvironmentVariable("UKC_SERVER_IP");
-            string partition =  System.Environment.GetEnvironmentVariable("UKC_PARTITION");
-            string password =  System.Environment.GetEnvironmentVariable("UKC_PASSWORD");
+            string partition = System.Environment.GetEnvironmentVariable("UKC_PARTITION");
+            string password = System.Environment.GetEnvironmentVariable("UKC_PASSWORD");
+            string userName = System.Environment.GetEnvironmentVariable("UKC_USER_NAME");
 
-            
+
+
             var postData = "grant_type=" + Uri.EscapeDataString("password");
-            postData += "&username=" + Uri.EscapeDataString("so@" + partition);
+            postData += "&username=" + Uri.EscapeDataString(userName + "@" + partition);
             postData += "&password=" + Uri.EscapeDataString(password);
 
             var data = Encoding.ASCII.GetBytes(postData);
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://" + websiteHostName + "/api/v1/token" );
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://" + websiteHostName + "/api/v1/token");
             request.Method = "POST";
             request.KeepAlive = true;
             //request.ContentType = "appication/json";
@@ -63,7 +113,7 @@ namespace Unbound.Web.Models
             }
 
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            
+
             string myResponse = "";
             using (System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream()))
             {
@@ -74,13 +124,13 @@ namespace Unbound.Web.Models
             string accessToken = "";
             foreach (var e in json)
             {
-                if(e.Key=="access_token")
+                if (e.Key == "access_token")
                 {
                     accessToken = e.Value.ToString();
                 }
             }
 
-                return accessToken;        
+            return accessToken;
 
         }
 
@@ -104,7 +154,7 @@ namespace Unbound.Web.Models
 
         }
 
-        public  byte[] HexStringToBin(string inputHex)
+        public byte[] HexStringToBin(string inputHex)
         {
             var resultantArray = new byte[inputHex.Length / 2];
             for (var i = 0; i < resultantArray.Length; i++)
@@ -120,87 +170,114 @@ namespace Unbound.Web.Models
             return System.Convert.ToBase64String(HexStringToBin(input));
         }
 
-        public KeyData GetPublicKey(string accessToken, string keyName)
+        public JArray ListKeys(Microsoft.AspNetCore.Http.HttpRequest request)
         {
-            _logger.LogInformation("get public key : " + keyName );
 
-            //requestUri.ThrowIfNull(nameof(requestUri));
-            keyName.ThrowIfNull(nameof(keyName));
-            // if(System.Environment.GetEnvironmentVariable("ENV")=="dev")
-            // {
-            //     _logger.LogInformation("USING UKC TOKEN FOR DEV");
-            //     accessToken = getUkcToken();
-            // }
-            
-            ////////////GET KEY FROM UKC USING REST//////////////////////////////////
             string websiteHostName = System.Environment.GetEnvironmentVariable("UKC_SERVER_IP");
-            //TODO: get this uid from ListKeys API
-            var keyUid = "0x00b0071ba7dc79f9bf";
-            string partition =  System.Environment.GetEnvironmentVariable("UKC_PARTITION");
+            string partition = System.Environment.GetEnvironmentVariable("UKC_PARTITION");
 
-            HttpWebRequest request2 = (HttpWebRequest)WebRequest.Create("https://" + websiteHostName + "/api/v1/keys/" + keyUid + "?partitionId=" + partition);
+            HttpWebRequest request2 = (HttpWebRequest)WebRequest.Create("https://" + websiteHostName + "/api/v1/keys?partitionId=" + partition);
             request2.Method = "GET";
             request2.KeepAlive = true;
-            //request.ContentType = "appication/json";
-            //request.ContentType = "application/x-www-form-urlencoded";
-            //request.ContentLength = data.Length;
-            //request.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-            //request.ContentType = "application/x-www-form-urlencoded";
             request2.PreAuthenticate = true;
-            request2.Headers.Add("Authorization", accessToken);
+            request2.Headers.Add("Authorization", getToken(request));
             request2.Accept = "application/json";
 
             request2.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
 
             HttpWebResponse response2 = (HttpWebResponse)request2.GetResponse();
-            
+
             string myResponse2 = "";
             using (System.IO.StreamReader sr = new System.IO.StreamReader(response2.GetResponseStream()))
             {
                 myResponse2 = sr.ReadToEnd();
             }
-             _logger.LogInformation("UKC response to getKey : " + myResponse2);
+            _logger.LogInformation("UKC response to getKey : " + myResponse2);
+
+            JObject json = JObject.Parse(myResponse2);
+            JArray items = (JArray)json["items"];
+
+            return items;
+
+
+        }
+
+        public KeyData GetPublicKey(Microsoft.AspNetCore.Http.HttpRequest request, string keyName)
+        {
+            string keyUid = "";
+            _logger.LogInformation("get public key : " + keyName);
+            keyName.ThrowIfNull(nameof(keyName));
+
+            //get the UID of the key by searching in list keys
+            JArray listKeys = ListKeys(request);
+
+            foreach (JObject item in listKeys)
+            {
+                string itemKeyName = item.GetValue("id").ToString();
+                if (itemKeyName == keyName)
+                {
+                    keyUid = item.GetValue("uid").ToString();
+                }
+            }
+
+            string websiteHostName = System.Environment.GetEnvironmentVariable("UKC_SERVER_IP");
+            string partition = System.Environment.GetEnvironmentVariable("UKC_PARTITION");
+
+            HttpWebRequest request2 = (HttpWebRequest)WebRequest.Create("https://" + websiteHostName + "/api/v1/keys/" + keyUid + "?partitionId=" + partition);
+            request2.Method = "GET";
+            request2.KeepAlive = true;
+            request2.PreAuthenticate = true;
+
+            request2.Headers.Add("Authorization", getToken(request));
+            request2.Accept = "application/json";
+
+            request2.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+
+            HttpWebResponse response2 = (HttpWebResponse)request2.GetResponse();
+
+            string myResponse2 = "";
+            using (System.IO.StreamReader sr = new System.IO.StreamReader(response2.GetResponseStream()))
+            {
+                myResponse2 = sr.ReadToEnd();
+            }
+            _logger.LogInformation("UKC response to getKey : " + myResponse2);
 
             JObject json = JObject.Parse(myResponse2);
             string publicExponent = (string)json.SelectToken("pkInfo.rsa.publicExponent");
             string modulus = (string)json.SelectToken("pkInfo.rsa.modulus");
-            string hexstr = modulus.Replace(":","");
-            string hexstrWithoutPrefixZero = hexstr.Substring(2,hexstr.Length-2);
+            string hexstr = modulus.Replace(":", "");
+            string hexstrWithoutPrefixZero = hexstr.Substring(2, hexstr.Length - 2);
             string nStrBase64 = HexString2B64String(hexstrWithoutPrefixZero);
 
 
             //string nStrBase64 = Convert.ToBase64String(Encoding.ASCII.GetBytes(modulus));
 
-           // string nStrBase64 = "quZmxXahDC8x1tlbWw2+UV5jbZeCmQMzru3VftfIaxLvJQ8ft0fuaQo5LlPxtzxXNuPe3Ew55Qgxx0dLf24zwWA3cfnfUhxuNnTWaSGgrT18TKH8hD0wJ/d6QNSDmtSdnZyinp+XHixe0ifn+MydgtKjYp0UKBIMVS7e8GIwJPK48SFqWxmmGIxTW5+sMLosAJ28Co/00+vqPolXHX7uDnNfkoYfWfAgkdWIfK4ScKfu/1JmMxQTr4MFBLv1SmusR3ypyIp/mLL+MYPevYmqVFmCHK+yjNvAIPpissZ+tlzcpx8hqzdb2uDrTd9DkWa0OWGFGKv1qsoySfiZtuEUHw==";
-            var publicKey = new PublicKey(nStrBase64,65537);
+            // string nStrBase64 = "quZmxXahDC8x1tlbWw2+UV5jbZeCmQMzru3VftfIaxLvJQ8ft0fuaQo5LlPxtzxXNuPe3Ew55Qgxx0dLf24zwWA3cfnfUhxuNnTWaSGgrT18TKH8hD0wJ/d6QNSDmtSdnZyinp+XHixe0ifn+MydgtKjYp0UKBIMVS7e8GIwJPK48SFqWxmmGIxTW5+sMLosAJ28Co/00+vqPolXHX7uDnNfkoYfWfAgkdWIfK4ScKfu/1JmMxQTr4MFBLv1SmusR3ypyIp/mLL+MYPevYmqVFmCHK+yjNvAIPpissZ+tlzcpx8hqzdb2uDrTd9DkWa0OWGFGKv1qsoySfiZtuEUHw==";
+            var publicKey = new PublicKey(nStrBase64, 65537);
             websiteHostName = System.Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
-            publicKey.KeyId = "https://" + websiteHostName + "/" + keyName  + "/" + keyUid;
+            publicKey.KeyId = "https://" + websiteHostName + "/" + keyName + "/" + keyUid;
             publicKey.KeyType = "RSA";
             publicKey.Algorithm = "RS256";
 
             return new KeyData(publicKey);
-              
+
         }
 
-        public DecryptedData Decrypt(string accessToken, string keyName, string keyId, EncryptedData encryptedData)
+        public DecryptedData Decrypt(Microsoft.AspNetCore.Http.HttpRequest httpRequest, string keyName, string keyId, EncryptedData encryptedData)
         {
-            _logger.LogInformation("decrypt called from key manager class for keyName : " + keyName + " and keyID : " + keyId );
+
+            _logger.LogInformation("decrypt called from key manager class for keyName : " + keyName + " and keyID : " + keyId);
             //user.ThrowIfNull(nameof(user));
             string myResponse = "";
-            string clearText="";
+            string clearText = "";
 
-            // if(System.Environment.GetEnvironmentVariable("ENV")=="dev")
-            // {
-            //     _logger.LogInformation("USING UKC TOKEN FOR DEV");
-            //     accessToken = "eyJraWQiOiIweDAwNWY4ZmZjZDczYTA4MTNlYSIsImFsZyI6IkVTMjU2In0.eyJwYXJ0aXRpb25zIjp7InBhcnQxIjpbImRrZSJdfSwic3ViIjoibWljaGFlbEB1bmJvdW5kbGFiLm9ubWljcm9zb2Z0LmNvbUBwYXJ0MSIsIm9yaWciOiI4Ny43MS4xNjYuNzEiLCJpc3MiOiJVTkJPVU5EIiwiaXNfcmVmcmVzaCI6ZmFsc2UsInVzZV9lcGhlbWVyYWwiOnRydWUsImV4cCI6MTYyOTYzNTc2OSwiaWF0IjoxNjI5NjMzOTY5LCJqdGkiOiJjNGVhODUyOS04Mjg0LTQ5YjUtODExOS03MDNkMjE1NGFhODYifQ.OlQEhaBvxV8oPGbEJ33JQGGHMbeqsAg_hRNONTmOTU0S4I6TOEFkZ3slmDwjJTXHuZWqWzZuDK743k-sl4M-iA";
-            // }
 
             keyName.ThrowIfNull(nameof(keyName));
             keyId.ThrowIfNull(nameof(keyId));
             encryptedData.ThrowIfNull(nameof(encryptedData));
 
             string websiteHostName = System.Environment.GetEnvironmentVariable("UKC_SERVER_IP");
-            string partition =  System.Environment.GetEnvironmentVariable("UKC_PARTITION");
+            string partition = System.Environment.GetEnvironmentVariable("UKC_PARTITION");
             //string cipherTextBase64 = "CSYMkVvmsD9e/bLxPoT2c7CSPwM/Y+qJ5PU4vATLRccSdKhECzPg1gNHw67os6o2/H3Y41VN4nR+Augo2aNytqvvc4STqch6PZhF8z8SZgf/MW04KfgVFQQYIEDFQ+QI0B2SrY44wqnqpBN0cClcl1JAJoXAwWDVLm72AML45e3yRJbv7rgWgmLw9uYXrW66E2u9X2nyb5doW+Cxc3/Rrv8b6nGVnhtwnAPj2o0QdDsc7lnLPT2UAG8vImfa5bsG6xHYIe8J723VG6Wm7RqzdHPb9LG1e9EiWG331K+4lPpGInPzgnwsUse0T4NMswo+qcFTVEbC0LFUpgNMmGqhOw==";
             string cipherTextBase64 = encryptedData.Value;
 
@@ -210,14 +287,14 @@ namespace Unbound.Web.Models
             {
                 cipher = new
                 {
-                    cipherTextBase64 = cipherTextBase64                   
+                    cipherTextBase64 = cipherTextBase64
                 },
                 aSymmetricParams = new
                 {
                     padding = new
                     {
                         type = "OAEP",
-                        oaep = new 
+                        oaep = new
                         {
                             mgf = "SHA256"
                         }
@@ -225,52 +302,55 @@ namespace Unbound.Web.Models
                 },
                 outputEncoding = "BASE64"
             };
-           // JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
-           // string json = JsonSerializer.Serialize(body);
+            // JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
+            // string json = JsonSerializer.Serialize(body);
             var json = JsonConvert.SerializeObject(body);
             var data = Encoding.ASCII.GetBytes(json);
             //var keyUid = "b0071ba7dc79f9bf";
 
-            try{
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://" + websiteHostName + "/api/v1/keys/" + keyId + "/decrypt" + "?partitionId=" + partition);
-            request.Method = "POST";
-            request.ContentType = "application/json; charset=utf-8";
-            request.KeepAlive = true;
-            request.PreAuthenticate = true;
-            request.Headers.Add("Authorization", accessToken);
-            request.Accept = "application/json";
-            //request.ContentType = "application/x-www-form-urlencoded";
-            //request.ContentLength = data.Length;
-            request.Headers.Add("Accept", "application/json");
-            //request.ContentType = "application/x-www-form-urlencoded";
-            request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-
-            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+            try
             {
-                //string json = "{ \"method\" : \"guru.test\", \"params\" : [ \"Guru\" ], \"id\" : 123 }";
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://" + websiteHostName + "/api/v1/keys/" + keyId + "/decrypt" + "?partitionId=" + partition);
+                request.Method = "POST";
+                request.ContentType = "application/json; charset=utf-8";
+                request.KeepAlive = true;
+                request.PreAuthenticate = true;
+                request.Headers.Add("Authorization", getToken(httpRequest));
+                request.Accept = "application/json";
+                //request.ContentType = "application/x-www-form-urlencoded";
+                //request.ContentLength = data.Length;
+                request.Headers.Add("Accept", "application/json");
+                //request.ContentType = "application/x-www-form-urlencoded";
+                request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
 
-                streamWriter.Write(json);
-                streamWriter.Flush();
+                using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+                {
+                    //string json = "{ \"method\" : \"guru.test\", \"params\" : [ \"Guru\" ], \"id\" : 123 }";
+
+                    streamWriter.Write(json);
+                    streamWriter.Flush();
+                }
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                using (System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream()))
+                {
+                    myResponse = sr.ReadToEnd();
+                }
+                Console.Write(myResponse);
+
+                JObject jsonObj = JObject.Parse(myResponse);
+                clearText = (string)jsonObj.SelectToken("clearText");
+                //string modulus = (string)jsonObj.SelectToken("pkInfo.rsa.modulus");
             }
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            
-            using (System.IO.StreamReader sr = new System.IO.StreamReader(response.GetResponseStream()))
+            catch (WebException e)
             {
-                myResponse = sr.ReadToEnd();
-            }
-            Console.Write(myResponse);
-
-            JObject jsonObj = JObject.Parse(myResponse);
-            clearText = (string)jsonObj.SelectToken("clearText");
-            //string modulus = (string)jsonObj.SelectToken("pkInfo.rsa.modulus");
-            }
-            catch(WebException e) {
-                 _logger.LogInformation("This program is expected to throw WebException on successful run."+
-                                    "\n\nException Message :" + e.Message);
-                if(e.Status == WebExceptionStatus.ProtocolError) {
-                     _logger.LogInformation("Status Code : {0}", ((HttpWebResponse)e.Response).StatusCode);
-                     _logger.LogInformation("Status Description : {0}", ((HttpWebResponse)e.Response).StatusDescription);
+                _logger.LogInformation("This program is expected to throw WebException on successful run." +
+                                   "\n\nException Message :" + e.Message);
+                if (e.Status == WebExceptionStatus.ProtocolError)
+                {
+                    _logger.LogInformation("Status Code : {0}", ((HttpWebResponse)e.Response).StatusCode);
+                    _logger.LogInformation("Status Description : {0}", ((HttpWebResponse)e.Response).StatusDescription);
                     throw e;
                 }
             }
@@ -325,14 +405,14 @@ namespace Unbound.Web.Models
             // oaepParams.hashAlg = CK.CKM_SHA256;
             // oaepParams.mgf = CK.CKG_MGF1_SHA256;
             // CK_MECHANISM mech_rsa = new CK_MECHANISM(CK.CKM_RSA_PKCS_OAEP, oaepParams);
-            
+
             // Library.C_DecryptInit(session, mech_rsa, foundKeyHandles[0]);
 
             // byte[] decrypted = Library.C_Decrypt(session, plainData);
 
 
 
-            return new DecryptedData(clearText);        
+            return new DecryptedData(clearText);
         }
     }
 }

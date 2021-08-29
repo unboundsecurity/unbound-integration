@@ -12,17 +12,12 @@ namespace Unbound.Web.Controllers
     using System.Collections.Specialized;
     using System.Text;
     using System.Security.Claims;
-        using System.Net.Http;
+    using System.Net.Http;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Logging;
-         using System.Net;
+    using System.Net;
     using System.IO;
-
-
-
     using ippw = Unbound.Web.Models;
-    //https://docs.microsoft.com/azure/active-directory/develop/scenario-protected-web-api-app-configuration
     public class KeysController : Controller
     {
         private readonly ippw.KeyManager keyManager;
@@ -35,26 +30,6 @@ namespace Unbound.Web.Controllers
             this.keyManager = keyManager;
             _logger = logger;
 
-        }
-
-        public string getTokenFromHeaders()
-        {
-            var accessToken="";
-             foreach (var header in Request.Headers)
-                {
-                    if(header.Key=="X-MS-TOKEN-AAD-ID-TOKEN")
-                    {
-                        accessToken = "Bearer " + header.Value;
-                    }
-
-                    if(header.Key=="Authorization")
-                    {
-                        accessToken = header.Value;
-                    }
-                }
-
-            _logger.LogInformation("Found token from microsoft : " + accessToken);
-             return accessToken;
         }
 
          public void PrintRequestHeaders()
@@ -85,8 +60,7 @@ namespace Unbound.Web.Controllers
             {
                 PrintRequestHeaders(); 
                 PrintUserClaims();
-                var accessToken = getTokenFromHeaders();   
-                var publicKey = keyManager.GetPublicKey(accessToken, keyName);
+                var publicKey = keyManager.GetPublicKey(Request,keyName);
 
                 return Ok(publicKey);
             }
@@ -108,8 +82,7 @@ namespace Unbound.Web.Controllers
             {
                 PrintRequestHeaders(); 
                 PrintUserClaims(); 
-                var accessToken = getTokenFromHeaders();   
-                var decryptedData = keyManager.Decrypt(accessToken, keyName, keyId, encryptedData);
+                var decryptedData = keyManager.Decrypt(Request,keyName, keyId, encryptedData);
                 return Ok(decryptedData);
             }
             catch(UnboundKeyStore.Models.KeyAccessException)
