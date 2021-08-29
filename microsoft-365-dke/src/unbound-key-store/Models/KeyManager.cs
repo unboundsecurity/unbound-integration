@@ -8,7 +8,6 @@ namespace Unbound.Web.Models
     using System.Security.Claims;
     using Unbound.Web.Models.Extensions;
     using sg = System.Globalization;
-    using unbound.cryptoki;
 
     using System.Linq;
     using System.Text;
@@ -22,7 +21,6 @@ namespace Unbound.Web.Models
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using Newtonsoft.Json;
-    using System.Web.Http;
 
 
     public class KeyManager
