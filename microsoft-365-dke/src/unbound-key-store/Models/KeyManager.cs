@@ -89,8 +89,6 @@ namespace Unbound.Web.Models
             string password = System.Environment.GetEnvironmentVariable("UKC_PASSWORD");
             string userName = System.Environment.GetEnvironmentVariable("UKC_USER_NAME");
 
-
-
             var postData = "grant_type=" + Uri.EscapeDataString("password");
             postData += "&username=" + Uri.EscapeDataString(userName + "@" + partition);
             postData += "&password=" + Uri.EscapeDataString(password);
@@ -131,26 +129,6 @@ namespace Unbound.Web.Models
             }
 
             return accessToken;
-
-        }
-
-        public string ASCIITOHex(string ascii)
-
-        {
-
-            StringBuilder sb = new StringBuilder();
-
-            byte[] inputBytes = Encoding.UTF8.GetBytes(ascii);
-
-            foreach (byte b in inputBytes)
-
-            {
-
-                sb.Append(string.Format("{0:x2}", b));
-
-            }
-
-            return sb.ToString();
 
         }
 
