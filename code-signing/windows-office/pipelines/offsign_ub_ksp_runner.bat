@@ -9,12 +9,10 @@ rem  the tool will call coffclearsig.exe to remove any existing signatures in th
 rem  signing, please ensure the offsign.bat and offclearsig.exe are in the same directory.
 rem
 rem  Paremeters:
-rem     -i 			input file to sign
-rem     -c          signing certificate name in store
+rem     -c          subcommand to signer
 rem		-p			partition     	(optional)
 rem     -u          UKC username	(optional)
 rem		-w          UKC password	(optional)
-rem		-t          timestamp URL	(optional)
 rem
 rem  Example:
 rem     offsign_ub_ksp_runner.bat -i mydoc.docx -c DEV -p test -u user -w 123456
@@ -25,8 +23,7 @@ set helpCmd=help
 set ACTION=ERROR
 set errNo=0
 
-set E_INPUT_PARAM="Input file (-i) must be provided."
-set E_CERTIFICATE_PARAM="Signing certificate (-c) must be provided."
+set E_COMMAND_PARAM="Signer command (-c) must be provided."
 
 set E_SIGN_NOT_FOUND="Failed when searching signtool.exe."
 set E_CLEAR_NOT_FOUND="Failed when searching offclearsig.exe."
@@ -43,7 +40,7 @@ set ErrNo_FAIL_2ND_SIGN=6
 set ErrNo_FAIL_3RD_SIGN=8
 
 set ErrNo_INPUT_PARAM=10
-set ErrNo_CERTIFICATE_PARAM=11
+set ErrNo_COMMAND_PARAM=11
 
 rem ==========================================================================
 
@@ -52,12 +49,8 @@ set source_dir=%~dp0
 
 :loop
 IF NOT "%1"=="" (
-    IF "%1"=="-i" (
-        SET input=%2
-        SHIFT
-    )
 	IF "%1"=="-c" (
-        SET cert=%2
+        SET command=%~2
         SHIFT
     )
 	IF "%1"=="-p" (
@@ -70,10 +63,6 @@ IF NOT "%1"=="" (
     )
 	IF "%1"=="-w" (
         SET password=%2
-        SHIFT
-    )
-	IF "%1"=="-t" (
-        SET timestamp=%2
         SHIFT
     )
 	IF "%1"=="-h" (
@@ -89,16 +78,11 @@ IF NOT "%1"=="" (
     GOTO :loop
 )
 
-if "%input%"=="" (
-	set ACTION=%E_INPUT_PARAM%
-	set errNo=%ErrNo_INPUT_PARAM%
-	goto LUsage
-)
 
-if "%cert%"=="" (
-	set ACTION=%E_CERTIFICATE_PARAM%
-	set errNo=%ErrNo_CERTIFICATE_PARAM%
-	goto LUsage
+if "%command%"=="" (
+	set ACTION=%E_COMMAND_PARAM%
+	set errNo=%ErrNo_COMMAND_PARAM%
+	goto LFail
 )
 
 rem =================== CHANGE THIS ACCORDING TO YOUR ENVIRONMENT ======================================
@@ -161,13 +145,10 @@ if not "%password%"=="" (
 	set sign_cmd=%sign_cmd% -w %password%
 )
 
-if not "%timestamp%"=="" (
-	set timestamp_cmd=/t %timestamp%
-)
 
-set sign_cmd=%sign_cmd% %signtoolPath% sign /v %timestamp_cmd% /fd sha256 /n %cert% %input%
+rem set sign_cmd=%sign_cmd% %signtoolPath% sign /v %timestamp_cmd% /fd sha256 /n %cert% %input%
+set sign_cmd=%sign_cmd% %signtoolPath% %command%
 
-rem echo sign_cmd=%sign_cmd%
 
 %ub_ksp_runner% %sign_cmd% 
 rem echo errorcode=%errorlevel%
@@ -200,19 +181,6 @@ if %errorlevel%==0 (
 	goto LFail
 )
 
-:LUsage
-echo.
-echo offsign_ub_ksp_runner.bat -- signing and verification of signatures for VBA projects contained in Office files.
-echo.
-echo Usage:
-echo		-i		input file to sign
-echo		-c		signing certificate name in store
-echo		-p		partition	(optional)
-echo		-u		UKC username	(optional)
-echo		-w		UKC password	(optional)
-echo		-t		Timestamp URL	(optional)
-goto EOF
-
 :LFail
 echo Error!
 echo %ACTION:"=%
@@ -224,8 +192,22 @@ if %ACTION%==%E_CLEAR_NOT_FOUND% (
 	echo The wrong path:
 	echo 	%offclearsigPath%
 )
+if %ACTION%==%E_COMMAND_PARAM% (
+	goto LUsage
+)
 echo You should fix the problem and re-run OffSign.
 echo.
+goto EOF
+
+:LUsage
+echo.
+echo offsign_ub_ksp_runner.bat -- signing and verification of signatures for VBA projects contained in Office files.
+echo.
+echo Usage:
+echo		-c		subcommand to signer
+echo		-p		partition	(optional)
+echo		-u		UKC username	(optional)
+echo		-w		UKC password	(optional)
 goto EOF
 
 :LDone
