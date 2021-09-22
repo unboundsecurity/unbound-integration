@@ -1,8 +1,8 @@
 @echo off
 rem If you are using your own certificate, edit this varialbe with the value of its unique "Issued To" field
-set cert=RaboBankDemo
+set cert=DEV
 
-set my_signtool="C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x86\signtool.exe"
+set my_signtool="C:\Program Files (x86)\Windows Kits\10\bin\10.0.20348.0\x86\signtool.exe"
 
 if not exist "..\signed_files" mkdir "..\signed_files"
 

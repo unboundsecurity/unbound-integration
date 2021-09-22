@@ -27,5 +27,5 @@ ucl import -i "..\init_files\server.crt" -n codesignCA -p test
 
 rem Sync the certificate with Windows Certificate Manager for the current user
 echo Sync the certificate with Windows Certificate Manager for the current user
-ucl sync-cert -n codesign
-ucl sync-cert -n codesignCA
+ucl sync-cert -n codesign -p test
+ucl sync-cert -n codesignCA -p test

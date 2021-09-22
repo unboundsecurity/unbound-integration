@@ -70,67 +70,54 @@ The following sections guide you through the process of configuring an publishin
             "value": "54.174.121.27",
             "slotSetting": false
         }
-
-        
-     
+    ```
  
- 
-    Alterntavly, you can add them manually by clicking the "New application settings" button.
+    Alternatively, you can add them manually by clicking the "New application settings" button.
 
-    NOTE: Click save at top of the page when you done.
+    Note: Click save at top of the page when you done.
 
 ## Register your app service
 
 1. In your browser, open the [Microsoft Azure portal](https://portal.azure.com/), and go to All Services > Identity > App Registrations.
-
 2. Select New registration, and enter a meaningful name.
-
 3. Select an account type from the options displayed.
 
-If you're using Microsoft Azure with a non-custom domain, such as onmicrosoft.com, select Accounts in this organizational directory only (Microsoft only - Single tenant).
-
+    If you're using Microsoft Azure with a non-custom domain, such as *onmicrosoft.com*, select Accounts in this organizational directory only (Microsoft only - Single tenant).
 4. At the bottom of the page, select Register to create the new App Registration.
-
 5. In your new App Registration, in the left pane, under Manage, select Authentication.
-
 6. Select Add a platform.
-
 7. On the Configure platforms popup, select Web.
-
 8. Under Redirect URIs, enter the URI of your double key encryption service(you can view it on the app service page). Enter the App Service URL, including both the hostname and domain.
 
-For example: https://unbound-dke.azurewebsites.net
-
-The URL you enter must match the hostname where your DKE service is deployed and the scheme must be https.
-Ensure the hostname exactly matches your App Service hostname. 
-
+    For example: https://unbound-dke.azurewebsites.net
+	
+    The URL you enter must match the hostname where your DKE service is deployed and the scheme must be https.
+	
+    Ensure the hostname exactly matches your App Service hostname. 
 9. Under Implicit grant, select the ID tokens checkbox.
-
 10. Select Configure button when done.
-
 11. On the left pane, select Expose an API, then next to Application ID URI, select Set and Save.
-
 12. Still on the Expose an API page, in the Scopes defined by this API area, select Add a scope. In the new scope:
 
- a. Define the scope name as user_impersonation.
-
- b. Select the administrators and users who can consent.
-
- c. Define any remaining values required.
-
- d. Select Add scope.
-
+     a. Define the scope name as user_impersonation.
+     
+     b. Select the administrators and users who can consent.
+     
+     c. Define any remaining values required.
+     
+     d. Select Add scope.
+     
 13. Still on the Expose an API page, in the Authorized client applications area, select Add a client application.
-
-In the new client application:
-
- a. Define the Client ID as d3590ed6-52b3-4102-aeff-aad2292ab01c. This value is the Microsoft Office client ID, and enables Office to obtain an access token for your key store.
-
- b. Under Authorized scopes, select the user_impersonation scope.
-
- c. Select Add client application.
-
-Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-832b-029040e7db99. This value is the Azure Information Protection unified labeling client ID.
+14. 
+    In the new client application:
+    
+     a. Define the Client ID as d3590ed6-52b3-4102-aeff-aad2292ab01c. This value is the Microsoft Office client ID, and enables Office to obtain an access token for your key store.
+     
+     b. Under Authorized scopes, select the user_impersonation scope.
+     
+     c. Select Add client application.
+	 
+    Repeat these steps, but this time, define the client ID as c00e9d32-3c8d-4a7d-832b-029040e7db99. This value is the Azure Information Protection unified labeling client ID.
 
 # Sensitivity labels configuration (Microsoft 365)
 ## Create a new label

@@ -14,7 +14,7 @@ You need to have the client configured on partion name "test" with USER without 
 	
 	1. It is enough to check only "signing tools..." during installation
 
-3. Microsoft Visual C++ 2010 Redistributable Package (x86) - strictly this version: https://www.microsoft.com/en-us/download/details.aspx?id=5555
+3. Microsoft Visual C++ 2010 Redistributable Package (x86) - strictly this version: https://www.microsoft.com/en-us/download/details.aspx?id=26999
 	
 4. Microsoft Office Subject Interface Packages for Digitally Signing VBA Projects
 
@@ -48,6 +48,8 @@ The script input files are located in `files_to_sign` directory and the signed o
 4. `03-sign_ms_office_macros_docs.bat` - sign and verify Microsoft Office macros contained withing MS Word and Excel files
 
 5. `04-sign_large_number_of_macros.bat` - sign MS Word document macros in loop for performance testing
+
+6. `05-sign_ms_office_macros_docs_V3.bat` - sign and verify Microsoft Office macros contained withing MS Word and Excel files (V3 Secure signature). The signer used in this example allows sighning with a specific UKC user.
 
 
 ## Sign a VBA macro in MS office document manually inside MS office programs
