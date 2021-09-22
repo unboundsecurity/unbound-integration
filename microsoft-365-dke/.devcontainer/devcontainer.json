@@ -13,11 +13,8 @@
 		"UKC_SERVER_IP":"54.174.121.27",
 		"UKC_PASSWORD": "Password1!",
 		"UKC_USER_NAME": "dke_user",
-		"CLIENT_TEMPLATE_ACTIVATION_CODE":"0684428521054411",
-		"CLIENT_TEMPLATE_NAME":"25_08",
 		"ENV": "dev",
 		"websiteHostName": "unboundkeystore.azurewebsites.net",
-		"USE_MICROSOFT_TOKEN" : "FALSE"
 	},
 
 	// Set *default* container specific settings.json values on container create.

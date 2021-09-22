@@ -52,28 +52,29 @@ namespace Unbound.Web.Models
             return accessToken;
         }
 
+        public string getBasicAuth()
+        {
+            string userName = System.Environment.GetEnvironmentVariable("UKC_USER_NAME");
+            string passowrd = System.Environment.GetEnvironmentVariable("UKC_PASSWORD");
+            string partition = System.Environment.GetEnvironmentVariable("UKC_PARTITION");
+
+            string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1")
+                               .GetBytes(userName + "@" + partition + ":" + passowrd));
+
+            
+            return "Basic" + encoded;
+
+        }
+
         public string getToken(Microsoft.AspNetCore.Http.HttpRequest request)
         {
             string accessToken = "";
-            if (System.Environment.GetEnvironmentVariable("USE_MICROSOFT_TOKEN") == "TRUE")
-            {
-                _logger.LogInformation("USING MICROSOFT TOKEN");
-                accessToken = getTokenFromHeaders(request, true);
+ 
 
-            }
-            else
+            accessToken = getTokenFromHeaders(request, false);
+            if (String.IsNullOrEmpty(accessToken))
             {
-                accessToken = getTokenFromHeaders(request, false);
-                if (String.IsNullOrEmpty(accessToken))
-                {
-                    accessToken = getUkcToken();
-                }
-            }
-
-
-            if (!accessToken.Contains("Bearer"))
-            {
-                accessToken = "Bearer " + accessToken;
+                accessToken = getBasicAuth();
             }
 
             return accessToken;
@@ -219,6 +220,7 @@ namespace Unbound.Web.Models
             _logger.LogInformation("UKC response to getKey : " + myResponse2);
 
             JObject json = JObject.Parse(myResponse2);
+            if(json.SelectToken("pkInfo.rsa.publicExponent")==null) throw new System.ArgumentException("key " + keyName + " not found");
             string publicExponent = (string)json.SelectToken("pkInfo.rsa.publicExponent");
             string modulus = (string)json.SelectToken("pkInfo.rsa.modulus");
             string hexstr = modulus.Replace(":", "");

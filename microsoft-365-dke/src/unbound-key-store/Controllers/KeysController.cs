@@ -18,6 +18,8 @@ namespace Unbound.Web.Controllers
     using System.Net;
     using System.IO;
     using ippw = Unbound.Web.Models;
+    using Newtonsoft.Json.Linq;
+    
     public class KeysController : Controller
     {
         private readonly ippw.KeyManager keyManager;
@@ -53,7 +55,6 @@ namespace Unbound.Web.Controllers
          }
 
         [HttpGet]
-       // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult GetKey(string keyName)
         {
             try
@@ -64,18 +65,38 @@ namespace Unbound.Web.Controllers
 
                 return Ok(publicKey);
             }
+            catch(WebException ex)
+            {
+                var errorMessage="";
+                using (var stream = ex.Response.GetResponseStream())
+                using (var reader = new StreamReader(stream))
+                {
+                    JObject json = JObject.Parse(reader.ReadToEnd());
+                    errorMessage = (string)json.SelectToken("message");
+                }
+                 _logger.LogInformation("Error message : " + errorMessage);
+
+                var wRespStatusCode = ((HttpWebResponse)ex.Response).StatusCode;
+                if(wRespStatusCode==HttpStatusCode.Unauthorized)
+                {
+                    _logger.LogInformation("Error in authroization header – sending unauthorized request to UKC. Use env UKC_USER / UKC_PASSWORD");
+                    return StatusCode(401, "Authroization failed – please check the request header credentials");
+                }
+
+                return StatusCode(400,"Invalid configuration or missing parameter. Check with system administrator");
+            }
             catch(UnboundKeyStore.Models.KeyAccessException)
             {
                 return StatusCode(403);
             }
             catch(ArgumentException e)
             {
-                return BadRequest(e);
+                 _logger.LogInformation(e.ToString());
+                return StatusCode(400,e.Message);
             }
         }
 
         [HttpPost]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult Decrypt(string keyName, string keyId, [FromBody] ippw.EncryptedData encryptedData)
         {
             try
@@ -85,13 +106,36 @@ namespace Unbound.Web.Controllers
                 var decryptedData = keyManager.Decrypt(Request,keyName, keyId, encryptedData);
                 return Ok(decryptedData);
             }
+            
+            catch(WebException ex)
+            {
+                var errorMessage="";
+                using (var stream = ex.Response.GetResponseStream())
+                using (var reader = new StreamReader(stream))
+                {
+                    JObject json = JObject.Parse(reader.ReadToEnd());
+                    errorMessage = (string)json.SelectToken("message");
+                }
+                 _logger.LogInformation("Error message : " + errorMessage);
+
+                var wRespStatusCode = ((HttpWebResponse)ex.Response).StatusCode;
+                if(wRespStatusCode==HttpStatusCode.Unauthorized)
+                {
+                     _logger.LogInformation("Error in authroization header – sending unauthorized request to UKC. Use env UKC_USER / UKC_PASSWORD");
+                    return StatusCode(401, "Authroization failed – please check the request header credentials");
+                }
+
+                return StatusCode(400,"Invalid configuration or missing parameter. Check with system administrator");
+            }
+            
             catch(UnboundKeyStore.Models.KeyAccessException)
             {
                 return StatusCode(403);
             }
             catch(ArgumentException e)
             {
-                return BadRequest(e);
+                 _logger.LogInformation(e.ToString());
+                return StatusCode(400,e.Message);
             }
         }
 

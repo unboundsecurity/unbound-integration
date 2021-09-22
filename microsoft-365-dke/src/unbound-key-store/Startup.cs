@@ -76,23 +76,6 @@ namespace UnboundKeyStore
             {
                 sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                Configuration.Bind("AzureAd", options);
-                options.Audience = Configuration["JwtAudience"];
-                options.TokenValidationParameters.ValidateIssuerSigningKey = true;
-                options.Challenge = "Bearer resource=\"" + Configuration["JwtAudience"] + "\", authorization=\"" + Configuration["JwtAuthorization"] + "\", realm=\"" + Configuration["JwtAudience"] + "\"";
-                options.Events = new JwtBearerEvents
-                {
-                    OnChallenge = context =>
-                    {
-                        context.Response.Headers.Add("resource", options.Audience);
-                        context.Response.Headers.Add("authorization", Configuration["JwtAuthorization"]);
-
-                        return Task.CompletedTask;
-                    },
-                };
             });
         }
     }

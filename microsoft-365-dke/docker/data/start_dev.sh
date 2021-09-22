@@ -6,7 +6,7 @@ export PORT=8080
 export ASPNETCORE_URLS=http://*:$PORT
 
 echo "check if all needed application settings are set:"
-required_vars=(EP_HOST_NAME UKC_PARTITION UKC_SERVER_IP CLIENT_TEMPLATE_NAME CLIENT_TEMPLATE_ACTIVATION_CODE)
+required_vars=(EP_HOST_NAME UKC_PARTITION UKC_SERVER_IP)
 
 missing_vars=()
 for i in "${required_vars[@]}"

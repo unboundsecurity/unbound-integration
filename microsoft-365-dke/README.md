@@ -53,10 +53,6 @@ The following sections guide you through the process of configuring an publishin
 
         d. UKC_SERVER_IP - UKC server ip. 
 
-        f. CLIENT_TEMPLATE_NAME - Ephemeral client template name.
-
-        g. CLIENT_TEMPLATE_ACTIVATION_CODE - Ephemeral client template activation code.
-
    For example:
 
         {
@@ -73,21 +69,10 @@ The following sections guide you through the process of configuring an publishin
             "name": "UKC_SERVER_IP",
             "value": "54.174.121.27",
             "slotSetting": false
-        },
-        {
-            "name": "CLIENT_TEMPLATE_NAME",
-            "value": "template1",
-            "slotSetting": false
-        },
-        {
-            "name": "CLIENT_TEMPLATE_ACTIVATION_CODE",
-            "value": "2595287639032430",
-            "slotSetting": false
         }
 
         
      
-
  
  
     Alterntavly, you can add them manually by clicking the "New application settings" button.
