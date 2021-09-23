@@ -3,7 +3,7 @@ variable "aws_region" { default = "eu-north-1" }
 variable "aws_av_zone" { default = "eu-north-1a" }
 
 # SSH key name
-variable "key_name" { default = "%KEYNAME%" }
+variable "ssh_key_name" { default = "%KEYNAME%" }
 
 # Access Key ID from AWS.
 variable "access_key" { default = "" }
@@ -27,7 +27,7 @@ variable "partition" { default = "%PARTITION%" }
 variable "rsa_key_name" { default = "%KEYNAME%" }
 
 # wget ekm-client command
-variable "wget_ekm_client" { default = "wget --no-verbose --no-check-certificate https://XXXXXXX/XXXXXXX.rpm --user=XXX --password='XXXX' -O /tmp/ekm-client.rpm" }
+variable "wget_ekm_client" { default = "wget --no-verbose --no-check-certificate https://unbound-ekm-client.s3.us-west-1.amazonaws.com/ekm-client-2.0.2010.38364.el8.x86_64.rpm -O /tmp/ekm-client.rpm" }
 
 # Generate enceypted keyphase used by encfs
 # 1. Extract public key from Unbound UKC

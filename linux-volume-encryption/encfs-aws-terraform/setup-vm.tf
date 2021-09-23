@@ -39,7 +39,7 @@ resource "aws_instance" "testvm" {
   //}
   availability_zone = "${var.aws_av_zone}"
   ami = "ami-08ec5ec25b9b7d5c5"
-  key_name = "${var.key_name}"
+  key_name = "${var.ssh_key_name}"
   instance_type = "t3.small"
   vpc_security_group_ids = [ aws_security_group.testvm_sg.id ]
   user_data = templatefile("userdata.sh", local.vars)
