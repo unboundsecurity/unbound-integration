@@ -96,7 +96,7 @@ The following sections guide you through the process of configuring an publishin
 As mentioned above, configuring the service with UKC credentials by setting the
 environment variables "UKC_USER_NAME" and "UKC_PASSWORD" will let the service send UKC requests with a Basic auth header.
 
-If the service receive an “Authorization” header(supports both Bearer or Basic auth header) in the request, it will pass it as part of the UKC requests header.
+If the service receives an “Authorization” header (supports both Bearer or Basic auth header) in the request, it will pass it as part of the UKC requests header.
 
 Apart from that, the protection of the service should be provided in the network level, by using the service in a single shared network location only available when in the organization (e.g. only after VPN).
  
