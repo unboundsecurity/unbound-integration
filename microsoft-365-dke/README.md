@@ -51,7 +51,11 @@ The following sections guide you through the process of configuring an publishin
 
         b. UKC_PARTITION - UKC partition name.
 
-        d. UKC_SERVER_IP - UKC server ip. 
+        c. UKC_SERVER_IP - UKC server ip. 
+
+        d. UKC_USER_NAME - the user name that will be sent to the UKC requests with a Basic auth header.
+        
+        e. UKC_PASSWORD - the password that will be sent to the UKC requests with a Basic auth header.
 
    For example:
 
@@ -69,12 +73,33 @@ The following sections guide you through the process of configuring an publishin
             "name": "UKC_SERVER_IP",
             "value": "54.174.121.27",
             "slotSetting": false
-        }
+        },
+        {
+            "name": "UKC_USER_NAME",
+            "value": "dke_user",
+            "slotSetting": false
+        },
+        {
+            "name": "UKC_PASSWORD",
+            "value": "********",
+            "slotSetting": false
+        },
+
     ```
  
     Alternatively, you can add them manually by clicking the "New application settings" button.
 
     Note: Click save at top of the page when you done.
+
+## Integration with UKC
+
+As mentioned above, configuring the service with UKC credentials by setting the
+environment variables "UKC_USER_NAME" and "UKC_PASSWORD" will let the service send UKC requests with a Basic auth header.
+
+If the service receive an “Authorization” header(supports both Bearer or Basic auth header) in the request, it will pass it as part of the UKC requests header.
+
+Apart from that, the protection of the service should be provided in the network level, by using the service in a single shared network location only available when in the organization (e.g. only after VPN).
+ 
 
 ## Register your app service
 
