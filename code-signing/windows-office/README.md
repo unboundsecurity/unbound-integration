@@ -37,19 +37,19 @@ In the pipelines directory you will find the scripts that run the demo.
 
 The script input files are located in `files_to_sign` directory and the signed output is saved in `signed_files` directory.
 
-1. `init.bat` - initializes environment by importing pre-made key, cert and CA into UKC
+1. `init.bat` - initializes the environment by importing pre-made key, cert and CA into UKC
 
-2. `01-sign_exe.bat` - sign windows executables and DLLs. To verify signature 
+2. `01-sign_exe.bat` - sign windows executables and DLLs.
 
-3. `02-sign_powershell_script.bat` - sign Power Shell scripts
+3. `02-sign_powershell_script.bat` - sign PowerShell scripts.
 
-	*signatures generated in 1 and 2 can be verified by right clicking on the appropriate output file in signed_files dir -> properties -> digital signarues
+	*Signatures generated in 1 and 2 can be verified by right-clicking on the appropriate output file in signed_files dir -> properties -> digital signatures*
 
-4. `03-sign_ms_office_macros_docs.bat` - sign and verify Microsoft Office macros contained withing MS Word and Excel files
+4. `03-sign_ms_office_macros_docs.bat` - sign and verify Microsoft Office macros contained within MS Word and Excel files
 
-5. `04-sign_large_number_of_macros.bat` - sign MS Word document macros in loop for performance testing
+5. `04-sign_large_number_of_macros.bat` - sign MS Word document macros in a loop for performance testing
 
-6. `05-sign_ms_office_macros_docs_V3.bat` - sign and verify Microsoft Office macros contained withing MS Word and Excel files (V3 Secure signature). The signer used in this example allows sighning with a specific UKC user.
+6. `05-sign_ms_office_macros_docs_V3.bat` - sign and verify macros contained within Microsoft Word and Excel files (V3 Secure signature). The signer used in this example allows signing with a specific UKC user.
 
 
 ## Sign a VBA macro in MS office document manually inside MS office programs
