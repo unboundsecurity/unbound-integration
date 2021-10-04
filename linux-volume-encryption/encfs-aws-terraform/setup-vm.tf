@@ -17,7 +17,8 @@ resource "aws_ebs_volume" "testvm_disk" {
 locals {
   vars = {
     //some_address = aws_instance.some.private_ip
-    EP_HOST = "${var.ep_host}"
+    EP_HOST_IP = "${var.ep_host_ip}"
+    EP_HOST_NAME = "${var.ep_host_name}"
     WGET_EKM_CLIENT = "${var.wget_ekm_client}"
     PARTITION = "${var.partition}"
     ENC_KEYPHASE = "${var.enc_keyphase}"
@@ -27,16 +28,16 @@ locals {
 }
 
 resource "aws_instance" "testvm" {
-  //provisioner file {
-  //  source      = "${var.ekm_client_rpm}"
-  //  destination = "/home/centos/ekm_client.rpm"
-  //  connection {
-  //    type     = "ssh"
-  //    user     = "centos"
-  //    host     = "${var.host}"
-  //    private_key = "~/.ssh/id_rsa"
-  //  }
-  //}
+  provisioner file {
+    source      = "${var.ekm_client_rpm}"
+    destination = "/tmp/ekm-client.rpm"
+    connection {
+      type     = "ssh"
+      user     = "centos"
+      host = self.public_ip
+      agent         = true
+    }
+  }
   availability_zone = "${var.aws_av_zone}"
   ami = "ami-08ec5ec25b9b7d5c5"
   key_name = "${var.ssh_key_name}"
