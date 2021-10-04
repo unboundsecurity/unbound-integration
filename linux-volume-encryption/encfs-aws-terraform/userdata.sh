@@ -1,9 +1,22 @@
 #!/bin/bash
 
-set -x
-
 DEVICE=$(lsblk  --noheadings --raw | awk '{print substr($0,0,7)}' | uniq -c | grep ' 1' | awk '{print "/dev/"$2}')
 mkfs -t ext4 $DEVICE
+RESULT=$?
+
+for ((n=0; n<60 && $RESULT != 0; n++))
+do
+  DEVICE=$(lsblk  --noheadings --raw | awk '{print substr($0,0,7)}' | uniq -c | grep ' 1' | awk '{print "/dev/"$2}')
+  mkfs -t ext4 $DEVICE
+  RESULT=$?
+  if [ $RESULT != 0 ]; then
+     echo "error in[$n]: DEVICE"
+     sleep 1
+  fi
+done
+
+set -x
+
 mkdir /data
 echo $DEVICE' /data       ext4     defaults,nofail,noatime,barrier=0,data=writeback     0 2' >> /etc/fstab
 mount -a
