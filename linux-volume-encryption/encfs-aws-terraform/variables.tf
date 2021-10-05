@@ -12,7 +12,10 @@ variable "access_key" { default = "" }
 variable "secret_key" { default = "" }
 
 # Unboundsecurity Entrypoint Server Name
-variable "ep_host" { default = "%UNBOUND_EP%" }
+variable "ep_host_name" { default = "%UNBOUND_EP%" }
+
+# Unboundsecurity Entrypoint Server IP
+variable "ep_host_ip" { default = "" }
 
 # Unbound ekm client rpm file name
 variable "ekm_client_rpm" { default = "%RPMFILE%" }
