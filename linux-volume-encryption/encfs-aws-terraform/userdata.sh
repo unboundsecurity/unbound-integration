@@ -29,9 +29,12 @@ wget --no-verbose https://download-ib01.fedoraproject.org/pub/epel/8/Everything/
 rpm -i /tmp/fuse-encfs.rpm
 
 ${WGET_EKM_CLIENT}
-ls -al /tmp/
 
-echo "servers="${EP_HOST} > /tmp/install_props.txt
+if [ ! -z ${EP_HOST_IP} ]; then
+  echo ${EP_HOST_IP}" "${EP_HOST_NAME} >> /etc/hosts
+fi
+
+echo "servers="${EP_HOST_NAME} > /tmp/install_props.txt
 export INSTALL_PROPS=/tmp/install_props.txt
 rpm -i /tmp/ekm-client.rpm
 
@@ -39,15 +42,18 @@ ucl register -t gitlab-demo -p ${PARTITION} -c ${ACTIVATION_CODE}
 ucl list
 
 # set up openssl to work with Unboundsecurity engine
-yes | /etc/ekm/dy_openssl
+#yes | /etc/ekm/dy_openssl
 
 # prepare encrypted keyphase on other host - for example on Terraform
 # ucl export -n aaa --output cert.pub
 # head -c 128 /dev/random | openssl rsautl -encrypt -pubin -inkey ./cert.pub -oaep | base64
 
-echo ${ENC_KEYPHASE} > /data/keyphase.b64
-chown centos:centos /data/keyphase.b64
+echo ${ENC_KEYPHASE} | base64 -d > /data/keyphase.enc
+chown centos:centos /data/keyphase.enc
 mkdir -p /data/{clear,encrypted}
 chown -R centos:centos /data/
 
-sudo su centos -c 'echo | encfs /data/encrypted /data/clear --extpass="cat /data/keyphase.b64 | base64 --decode | openssl rsautl -decrypt -inkey ${RSA_KEY_NAME} -engine dyadicsec -keyform engine -oaep"'
+#sudo su centos -c 'echo | encfs /data/encrypted /data/clear --extpass="cat /data/keyphase.b64 | base64 --decode | openssl rsautl -decrypt -inkey ${RSA_KEY_NAME} -engine dyadicsec -keyform engine -oaep"'
+ucl decrypt -i /data/keyphase.enc -o /data/keyphase
+sudo su centos -c 'echo | encfs /data/encrypted /data/clear --extpass="cat /data/keyphase"'
+rm -rf /data/keyphase
