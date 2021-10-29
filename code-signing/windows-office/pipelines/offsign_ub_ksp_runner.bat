@@ -5,14 +5,14 @@ rem
 rem  This tool is used for signing VBA projects contained in Office files.
 rem
 rem  The tool depends on SignTool.exe (from the Windows SDK) being installed and SIPs being registered. Besides,
-rem  the tool calls coffclearsig.exe to remove any existing signatures in the currently processed file before
+rem  the tool calls offclearsig.exe to remove any existing signatures in the currently processed file before
 rem  signing. Please ensure that offsign.bat and offclearsig.exe are in the same directory.
 rem
-rem  Paremeters:
+rem  Parameters:
 rem     -c      subcommand to signer
-rem	-p	partition     	(optional)
-rem     -u      UKC username	(optional)
-rem	-w      UKC password	(optional)
+rem     -p      partition       (optional)
+rem     -u      UKC username    (optional)
+rem     -w      UKC password    (optional)
 rem
 rem  Example:
 rem     offsign_ub_ksp_runner.bat -c "sign /v /t http://timestamp.digicert.com /fd sha256 /n cert book_with_macro_signed.xlsm" -p test -u username -w password
@@ -204,10 +204,10 @@ echo.
 echo offsign_ub_ksp_runner.bat -- signing VBA projects contained in Office files.
 echo.
 echo Usage:
-echo		-c		subcommand to signer
-echo		-p		partition	(optional)
-echo		-u		UKC username	(optional)
-echo		-w		UKC password	(optional)
+echo        -c      subcommand to signer
+echo        -p      partition    (optional)
+echo        -u      UKC username (optional)
+echo        -w      UKC password (optional)
 goto EOF
 
 :LDone
