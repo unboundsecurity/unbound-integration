@@ -22,21 +22,20 @@ echo $DEVICE' /data       ext4     defaults,nofail,noatime,barrier=0,data=writeb
 mount -a
 df
 
-yum install -y wget fuse jq openssl
+#yum install -y wget fuse jq openssl
+yum install -y wget fuse
 sudo dnf -y --enablerepo=powertools install tinyxml2
 
 wget --no-verbose https://download-ib01.fedoraproject.org/pub/epel/8/Everything/x86_64/Packages/f/fuse-encfs-1.9.5-5.el8.x86_64.rpm -O /tmp/fuse-encfs.rpm
 rpm -i /tmp/fuse-encfs.rpm
 
 ${WGET_EKM_CLIENT}
+rpm -i /tmp/ekm-client.rpm
 
 if [ ! -z ${EP_HOST_IP} ]; then
   echo ${EP_HOST_IP}" "${EP_HOST_NAME} >> /etc/hosts
 fi
-
-echo "servers="${EP_HOST_NAME} > /tmp/install_props.txt
-export INSTALL_PROPS=/tmp/install_props.txt
-rpm -i /tmp/ekm-client.rpm
+echo "servers=${EP_HOST_NAME}" > /etc/ekm/client.conf
 
 ucl register -t gitlab-demo -p ${PARTITION} -c ${ACTIVATION_CODE}
 ucl list
