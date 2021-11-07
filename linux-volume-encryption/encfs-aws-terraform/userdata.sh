@@ -33,11 +33,11 @@ ${WGET_EKM_CLIENT}
 rpm -i /tmp/ekm-client.rpm
 
 if [ ! -z ${EP_HOST_IP} ]; then
-  echo ${EP_HOST_IP}" "${EP_HOST_NAME} >> /etc/hosts
+  echo "${EP_HOST_IP} ${EP_HOST_NAME}" >> /etc/hosts
 fi
 echo "servers=${EP_HOST_NAME}" > /etc/ekm/client.conf
 
-ucl register -t gitlab-demo -p ${PARTITION} -c ${ACTIVATION_CODE}
+ucl register -t ${CLIENT_NAME} -p ${PARTITION} -c ${ACTIVATION_CODE}
 ucl list
 
 # set up openssl to work with Unboundsecurity engine

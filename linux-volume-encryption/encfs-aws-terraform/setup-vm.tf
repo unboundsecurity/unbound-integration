@@ -19,6 +19,7 @@ locals {
     //some_address = aws_instance.some.private_ip
     EP_HOST_IP = "${var.ep_host_ip}"
     EP_HOST_NAME = "${var.ep_host_name}"
+    CLIENT_NAME = "${var.client_name}"
     WGET_EKM_CLIENT = "${var.wget_ekm_client}"
     PARTITION = "${var.partition}"
     ENC_KEYPHASE = "${var.enc_keyphase}"
