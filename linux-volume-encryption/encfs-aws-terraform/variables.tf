@@ -20,6 +20,9 @@ variable "ep_host_ip" { default = "" }
 # Unbound ekm client rpm file name
 variable "ekm_client_rpm" { default = "%RPMFILE%" }
 
+# Unboundsecurity client name
+variable "client_name" { default = "client-name" }
+
 # Unboundsecurity client activation code
 variable "activation_code" { default = "123456789" }
 
