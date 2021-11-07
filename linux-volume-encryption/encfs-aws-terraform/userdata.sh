@@ -54,6 +54,5 @@ mkdir -p /data/{clear,encrypted}
 chown -R centos:centos /data/
 
 #sudo su centos -c 'echo | encfs /data/encrypted /data/clear --extpass="cat /data/keyphase.b64 | base64 --decode | openssl rsautl -decrypt -inkey ${RSA_KEY_NAME} -engine dyadicsec -keyform engine -oaep"'
-ucl decrypt -i /data/keyphase.enc -o /data/keyphase
-sudo su centos -c 'echo | encfs /data/encrypted /data/clear --extpass="cat /data/keyphase"'
-rm -rf /data/keyphase
+#ucl decrypt -i /data/keyphase.enc -o /data/keyphase
+sudo su centos -c 'echo | encfs /data/encrypted /data/clear --extpass="ucl decrypt -i /data/keyphase.enc -o /dev/stdout"'
