@@ -53,4 +53,5 @@ Run the ``terraform apply`` command.
 1. Run the ``terraform init`` command.
 
 Command used to decrypt the key:
+
 ``cat /data/keyphase.b64 | base64 --decode | openssl rsautl -decrypt -inkey ${RSA_KEY_NAME} -engine dyadicsec -keyform engine -oaep``
