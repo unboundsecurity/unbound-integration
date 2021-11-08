@@ -24,7 +24,7 @@ Most of the interesting code is found in the ``userdata.sh`` file used for EC2 V
 2. Install needed packages (wget, fuse, tinyxml2, fuse-encfs).
 3. Download and install ekm-client rpm package.
 4. Register **ephemeral client**.
-6. Decrypt the ``passphrase`` using the ``ucl decrypt -i /data/keyphase.enc -o /dev/stdout`` command and use it for the ``encfs``.
+6. Decrypt the ``passphrase`` using the ``ucl decrypt -i /data/keyphase.enc -o /dev/stdout`` and use output as a key for the ``encfs``.
 
 ## Setup
 
