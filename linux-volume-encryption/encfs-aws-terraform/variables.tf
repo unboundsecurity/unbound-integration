@@ -29,9 +29,6 @@ variable "activation_code" { default = "123456789" }
 # Unboundsecurity partition name
 variable "partition" { default = "%PARTITION%" }
 
-# Unboundsecurtity key name
-variable "rsa_key_name" { default = "%KEYNAME%" }
-
 # wget ekm-client command
 variable "wget_ekm_client" { default = "wget --no-verbose --no-check-certificate https://unbound-ekm-client.s3.us-west-1.amazonaws.com/ekm-client-2.0.2010.38364.el8.x86_64.rpm -O /tmp/ekm-client.rpm" }
 
