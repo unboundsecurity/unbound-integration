@@ -13,6 +13,7 @@ rem     -c          subcommand to signer
 rem		-p			partition     	(optional)
 rem     -u          UKC username	(optional)
 rem		-w          UKC password	(optional)
+rem		-r          Input full filepath to clear existing signature. offclearsig.exe must be present in SIP installation folder	(optional)
 rem
 rem  Example:
 rem     offsign_ub_ksp_runner.bat -i mydoc.docx -c DEV -p test -u user -w 123456
@@ -216,6 +217,7 @@ echo		-c		subcommand to signer
 echo		-p		partition	(optional)
 echo		-u		UKC username	(optional)
 echo		-w		UKC password	(optional)
+echo		-r		Input full filepath to clear existing signature. offclearsig.exe must be present in SIP installation folder	(optional)
 goto EOF
 
 :LDone
