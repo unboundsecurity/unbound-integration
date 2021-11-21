@@ -7,12 +7,12 @@ if not exist "..\signed_files" mkdir "..\signed_files"
 rem Sign macros of Excel document
 copy ..\files_to_sign\book_with_macro.xlsm ..\signed_files\book_with_macro_signed.xlsm
 echo Signing macros of Excel document in ..\signed_files\book_with_macro_signed.xlsm
-call offsign_ub_ksp_runner.bat -c "sign /v /t http://timestamp.digicert.com /fd sha256 /n %cert% ..\signed_files\book_with_macro_signed.xlsm" -p test -u sasha -w Password1!
+call offsign_ub_ksp_runner.bat -c "sign /v /t http://timestamp.digicert.com /fd sha256 /n %cert% ..\signed_files\book_with_macro_signed.xlsm" -r "..\signed_files\book_with_macro_signed.xlsm" -p test -u sasha -w Password1!
 
 rem Sign macros of Word document
 echo Signing macros of Word document in ..\signed_files\word_doc_with_macros_signed.docm
 copy ..\files_to_sign\word_doc_with_macros.docm ..\signed_files\word_doc_with_macros_signed.docm
-call offsign_ub_ksp_runner.bat -c "sign /v /t http://timestamp.digicert.com /fd sha256 /n %cert% ..\signed_files\word_doc_with_macros_signed.docm" -p test -u sasha -w Password1!
+call offsign_ub_ksp_runner.bat -c "sign /v /t http://timestamp.digicert.com /fd sha256 /n %cert% ..\signed_files\word_doc_with_macros_signed.docm" -r "..\signed_files\word_doc_with_macros_signed.docm" -p test -u sasha -w Password1!
 
 
 rem Verify signed documents

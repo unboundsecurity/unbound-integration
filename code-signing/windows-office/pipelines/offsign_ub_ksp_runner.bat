@@ -2,20 +2,20 @@
 rem ==========================================================================
 rem
 rem
-rem  This tool is used for signing VBA projects contained in Office files.
+rem  This tool is used for signing of signatures for VBA projects contained in Office files.
 rem
 rem  The tool depends on SignTool.exe (from the Windows SDK) being installed and SIPs being registered. Besides,
-rem  the tool calls coffclearsig.exe to remove any existing signatures in the currently processed file before
-rem  signing. Please ensure that offsign.bat and offclearsig.exe are in the same directory.
+rem  the tool will call coffclearsig.exe to remove any existing signatures in the currently processed file before
+rem  signing, please ensure the offsign.bat and offclearsig.exe are in the same directory.
 rem
 rem  Paremeters:
-rem     -c      subcommand to signer
-rem	-p	partition     	(optional)
-rem     -u      UKC username	(optional)
-rem	-w      UKC password	(optional)
+rem     -c          subcommand to signer
+rem		-p			partition     	(optional)
+rem     -u          UKC username	(optional)
+rem		-w          UKC password	(optional)
 rem
 rem  Example:
-rem     offsign_ub_ksp_runner.bat -c "sign /v /t http://timestamp.digicert.com /fd sha256 /n cert book_with_macro_signed.xlsm" -p test -u username -w password
+rem     offsign_ub_ksp_runner.bat -i mydoc.docx -c DEV -p test -u user -w 123456
 rem ==========================================================================
 
 setlocal
@@ -65,6 +65,10 @@ IF NOT "%1"=="" (
         SET password=%2
         SHIFT
     )
+	IF "%1"=="-r" (
+        SET clearsig_in=%2
+        SHIFT
+    )
 	IF "%1"=="-h" (
         goto LUsage
     )
@@ -107,6 +111,10 @@ rem ==========================================================================
 rem Find if OffClearSig.exe is located in the same path as OffSign.bat
 
 :LFindOffClearSig
+if "%clearsig_in%"=="" (
+	goto LRun1stSign
+)
+
 set offclearsig=offclearsig.exe
 set offclearsigPath="%source_dir%%offclearsig%"
 IF EXIST %offclearsigPath% (
@@ -122,7 +130,7 @@ rem ==========================================================================
 rem Run sign and verify commands
 
 :LRunCommand
-call %offclearsigPath% %input%
+call %offclearsigPath% %clearsig_in%
 if %errorlevel%==0 (
 	goto LRun1stSign
 ) else (
@@ -201,7 +209,7 @@ goto EOF
 
 :LUsage
 echo.
-echo offsign_ub_ksp_runner.bat -- signing VBA projects contained in Office files.
+echo offsign_ub_ksp_runner.bat -- signing and verification of signatures for VBA projects contained in Office files.
 echo.
 echo Usage:
 echo		-c		subcommand to signer
