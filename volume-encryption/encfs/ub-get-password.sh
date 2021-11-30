@@ -1,5 +1,6 @@
 #########################################################################################
-# Get a random strong password encryped with an Unbound CORE KMS Key
+# Gets a random strong password encryped with an Unbound CORE KMS Key.
+#
 # The encrypted password is stored in a file along with the key ID
 # The filepath can be set using the UB_PASSWORD_FILE env variable.
 #
@@ -59,10 +60,19 @@ ub_post() {
      -d "$2" $UB_CORE_URL/api/v1/$1?partitionId=$UB_PARTITION
 }
 
+# check connection to ukc
+set +e
+ub_get info > /dev/null
+ret=$?
+if [ $ret -ne 0 ]; then
+    echo "Could not connect to Unbound CORE at: '${UB_CORE_URL}'. Please check your UB_CORE_URL env value "
+    exit $ret
+fi
+set -e
 # Encryption algorithm parameters
 ASSYM_PARAMS="\"aSymmetricParams\": {\"padding\": {\"type\":\"OAEP\", \"oaep\": { \"mgf\": \"SHA256\"}}}"
 
-#### 1. Get the encfs key passowrd either by decrypting it from a 
+#### 1. Get the passowrd either by decrypting it from a 
 ####    previously saved encrypted data or by generating a new one
 if test -f "$UB_PASSWORD_FILE"; then
     # Get key UID from first line of file
@@ -73,6 +83,7 @@ if test -f "$UB_PASSWORD_FILE"; then
     PASSPHRASE_B64=$(ub_post keys/${KEYUID_1}/decrypt "{\"cipher\":{ \"cipherTextBase64\":\"$CIPHER_1\"}, $ASSYM_PARAMS}"\
         | grep -oP clearText\":\"\\K[^\"]*)
 fi
+
 # In case password reset was requested 
 if [[ "${RESET_PASSWORD}" == "YES" ]]; then
     unset PASSPHRASE_B64    
@@ -87,7 +98,7 @@ PASSPHRASE_B64=${PASSPHRASE_B64:=$(head -c 128 /dev/random | base64 -w 0)}
 KEY_UID=$(ub_get keys/${UB_KEY_NAME} | grep -oP uid\":\"\\K[[:alnum:]]*)
 # Export the public key to use for encryption
 PUBLIC_KEY_PEM=$(ub_get keys/${KEY_UID}/public | grep -oP keyData\":\"\\K[^\"\}]*)
-# Encrypt the encfs password using latest key revision
+# Encrypt the password using latest key revision
 ENC_REQUEST="{\"clearText\":\"$PASSPHRASE_B64\" ,$ASSYM_PARAMS}"
 CIPHER=$(ub_post keys/${KEY_UID}/encrypt "$ENC_REQUEST" | grep -oP cipherTextBase64\":\"\\K[^\"]*)
 

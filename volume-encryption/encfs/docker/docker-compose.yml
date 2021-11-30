@@ -1,0 +1,23 @@
+version: '3.2'
+networks: 
+  default:
+      external:
+         name: ukc_default
+services:
+  encfs:
+    privileged: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - UB_CORE_URL=https://ukc-ep
+      - UB_PARTITION=encfs
+      - UB_USER_PASSWORD=Unbound1!
+      - UB_USER=user
+      - UB_KEY_NAME=encfs
+      - UB_PASSWORD_FILE=/scripts/encfs_pass.txt
+    volumes:
+      - ./data:/data
+      - ..:/scripts
+    
+    command: tail -F anything
