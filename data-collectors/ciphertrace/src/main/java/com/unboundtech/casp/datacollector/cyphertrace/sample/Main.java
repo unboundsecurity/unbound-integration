@@ -2,19 +2,19 @@ package com.unboundtech.casp.datacollector.cyphertrace.sample;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.unboundtech.casp.desktop.bot.KeyStoreStorage;
+import com.unboundtech.casp.desktop.KeyStoreStorage;
 import com.unboundtech.casp.desktop.dc.DataCollectorSdk;
 import com.unboundtech.casp.desktop.dc.DataCollectorSdkInitBuilder;
 import com.unboundtech.casp.desktop.signer.CaspLog;
 import com.unboundtech.casp.desktop.signer.CaspStatus;
 import com.unboundtech.casp.desktop.signer.Log4jLogger;
 import com.unboundtech.casp.desktop.signer.network.JavaRestClient;
-import com.unboundtech.casp.service.txhandlers.BitcoinMainNetTransactionHandler;
-import com.unboundtech.casp.service.txhandlers.DetailedTransaction;
-import com.unboundtech.casp.service.txhandlers.EthereumMainNetTransactionHandler;
-import com.unboundtech.casp.service.txhandlers.TransactionHandler;
-import com.unboundtech.casp.service.txhandlers.errors.BadTransactionException;
 import com.unboundtech.utils.Utils;
+import com.unboundtech.utils.txhandlers.BitcoinMainNetTransactionHandler;
+import com.unboundtech.utils.txhandlers.DetailedTransaction;
+import com.unboundtech.utils.txhandlers.EthereumMainNetTransactionHandler;
+import com.unboundtech.utils.txhandlers.TransactionHandler;
+import com.unboundtech.utils.txhandlers.errors.BadTransactionException;
 import org.apache.commons.cli.*;
 
 import java.util.*;

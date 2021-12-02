@@ -20,17 +20,25 @@ The Ethereum Data Collector collects these attributes:
 
 ## Build Instructions
 
-Use Maven to build the data collector sample jar, with the following commands:
+Use Maven to build the Ethereum data collector sample jar, with the following commands:
 
-1. Install the data collector SDK jar file in your local Maven repository:
-    
-    `mvn install:install-file -Dfile=../jar/dc-sdk-<version>.jar -DgroupId=casp -DartifactId=dc-sdk -Dversion=1.0 -Dpackaging=jar`
-2. Build the BOT:
-    
-    `mvn clean compile assembly:single`
-	
- These commands create *eth-data-collector-compiled-sample-1.0-SNAPSHOT-jar-with-dependencies.jar* in the *target* folder.
+1. Acquire CASP SDK jar from Unbound repo
+ 
+2. Navigate to `unbound-integration/data-collectors/casp-sdk`
 
+3. Install the casp-sdk.jar file in your local Maven repository
+    ```
+    mvn install:install-file -Dfile=casp-sdk-<version>.jar -DgroupId=com.unboundtech.casp -DartifactId=casp-sdk -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true`
+   
+    ```
+4. Navigate to `unbound-integration/data-collectors/ethereum`
+    
+5. Build *eth-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar* in the *target* folder.
+    ```
+    mvn clean compile assembly:single
+   
+    ```
+   
 
 ## Data Collector Setup
 
@@ -46,8 +54,6 @@ The specified name and type are mandatory as the bot looks to supply a attribute
     - Set minimum to 0
 1. Create an attribute template group *ethTxGroup*. The suggested name is not mandatory.
 1. Create a data collector in CASP with *ethTxGroup* as the attribute template group.
-1. Activate the data collector. See the [User Guide section on Bots](https://www.unboundsecurity.com/docs/CASP/CASP_User_Guide/Content/Products/CASP/CASP_User_Guide/CASP_Bot.htm) for more information.
-1. Run the data collector with all the required parameters.
 
 ## Policy Vault Setup
 
@@ -61,13 +67,20 @@ Create a [risk-based policy vault](https://www.unboundsecurity.com/docs/CASP/CAS
     - totalAmount - define in wei coin where 1 ether = 1,000,000,000,000,000,000 wei (1018), 0.09 eth = 90000000000000000 wei.
 2. Create the vault policy with attribute rules based on contractAddress, recipientAddress, and totalAmount attribute templates.
 
-## Run Ethereum Data Collector
+## Activate and Run Ethereum Data Collector Instructions
 
 Use the following command to start the data collector:
 
-```
-sudo java -jar casp-eth-data-collector-sample.jar -k -i eth_data_collector_id -u https://localhost/ -w 12345678
-```
+1. Activate the data collector:
+    ```
+    java -jar ./target/eth-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar  -u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD> -c <ACTIVATION_CODE>
+      
+    ```
+2. Run the data collector:
+    ```
+    java -jar ./target/eth-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar  -u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD>
+   
+    ```
 
 ## Notes
 
