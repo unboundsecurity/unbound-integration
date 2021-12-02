@@ -13,11 +13,11 @@ services:
       - UB_CORE_URL=https://ukc-ep
       - UB_PARTITION=encfs
       - UB_USER_PASSWORD=Unbound1!
-      - UB_USER=user
+      - UB_USER=adam2
       - UB_KEY_NAME=encfs
-      - UB_PASSWORD_FILE=/scripts/encfs_pass.txt
+      - UB_PASSWORD_FILE=/encfs_pass.txt
     volumes:
       - ./data:/data
-      - ..:/scripts
+      - ../bash-scripts:/bash-scripts
     
-    command: tail -F anything
+    command: keepalive

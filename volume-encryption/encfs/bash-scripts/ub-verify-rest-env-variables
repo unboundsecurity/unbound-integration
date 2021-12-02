@@ -1,0 +1,25 @@
+#!/bin/bash
+if [[ -z "${UB_CORE_URL}" ]]; then
+    echo "Environment variable UB_CORE_URL must be set with Unbound CORE KMS service URL"
+    echo "For example: https://www.unboundserver.com"
+    exit 1
+fi
+
+UB_PARTITION=${UB_PARTITION:-'encfs'}
+
+if [[ -z "${UB_USER}" ]]; then
+    echo "Environment variable UB_USER must be set with Unbound CORE KMS crypto username"
+    echo "Must be a valid user of partition '$UB_PARTITION' with a password"
+    exit 1
+fi
+
+if [[ -z "${UB_USER_PASSWORD}" ]]; then
+    echo "Environment variable UB_USER_PASSWORD must be set with the password for Unbound CORE KMS user '$UB_USER'"
+    exit 1
+fi
+
+if [[ -z "${UB_KEY_NAME}" ]]; then
+    echo "Environment variable UB_KEY_NAME must be set with Unbound CORE KMS key name for encryption"
+    echo "The key must be an RSA key which was created in partition '$UB_PARTITION'"
+    exit 1
+fi

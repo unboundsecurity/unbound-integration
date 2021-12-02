@@ -1,0 +1,43 @@
+#!/bin/bash
+set +e
+
+ucl version 1>/dev/null 2>&1
+if [ $? -eq 0 ]; then 
+    export UNBOUND_CLIENT_INSTALLLED=1
+fi
+
+set -e
+
+if [[ $UNBOUND_CLIENT_INSTALLLED -eq 1 ]]; then
+    echo Configuring Unbound CORE client with the following parameters
+    echo CORE Server              : $UB_SERVER_NAME
+    echo Partition                : $UB_PARTITION
+    echo Ephemeral client template: $UB_CLIENT_TEMPLATE_NAME
+    echo --------------------------------------------------------------
+    echo
+    echo "Core Client Version: $(ucl version)"
+    echo "servers=$UB_SERVER_NAME" > /etc/ekm/client.conf
+    ucl register -p $UB_PARTITION -t $UB_CLIENT_TEMPLATE_NAME -c $UB_CLIENT_ACTIVATION_CODE
+else
+    echo "Core Client not installed. Using REST API"
+    set +e
+    ub-verify-rest-env-variables
+    curl_status=`curl --write-out '%{http_code}' --output /dev/null -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info 2>/dev/null`
+    echo $curl_status
+    if [[ $curl_status -ne 200 ]]; then
+        echo "Could not connect to Unbound CORE server ($curl_status)"
+        echo "curl --silent --user $UB_USER@$UB_PARTITION:****** $UB_CORE_URL/api/v1/info"
+        curl -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info
+        exit 1
+    else 
+        echo "Successfully connected to Unbound CORE server"
+        curl -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info
+    fi
+    
+    set -e
+fi
+
+if [ $1 == "keepalive" ]; then
+    echo "Keeping container alive"
+    tail -F nonexistingfile 2>/dev/null
+fi

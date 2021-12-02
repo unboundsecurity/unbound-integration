@@ -1,0 +1,13 @@
+#!/bin/bash
+if [[ -z "${ENCFS_ROOT_DIR}" ]]; then
+    echo "Environment variable ENCFS_ROOT_DIR must be set"
+    echo "This is where encfs will save its encrypted data"
+    exit 1
+fi
+if [[ -z "${ENCFS_MOUNT_POINT}" ]]; then
+    echo "Environment variable ENCFS_MOUNT_POINT must be set"
+    echo "This is where encfs will mount the volume with cleartext files"
+    exit 1
+fi
+encfs --extpass="echo $(ub-get-password)" $ENCFS_ROOT_DIR $ENCFS_MOUNT_POINT
+unset $passphrase

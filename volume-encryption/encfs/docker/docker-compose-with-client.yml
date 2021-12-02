@@ -1,0 +1,26 @@
+version: '3.2'
+networks: 
+  default:
+      external:
+         name: ukc_default
+services:
+  encfs:
+    privileged: true
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.with-client
+      args:
+        UNBOUND_CLIENT_INSTALLATION_FILE: ekm-client_2.0.2106.42245.deb10_amd64.deb
+        UNBOUND_CLIENT_INSTALLATION_URL: https://repo.dyadicsec.local/cust/autotest/ekm/2.0.2106.42245/linux
+    environment:
+      - UB_SERVER_NAME=ukc-ep
+      - UB_PARTITION=encfs
+      - UB_USER_PASSWORD=
+      - UB_USER=user
+      - UB_KEY_NAME=encfs
+      - UB_PASSWORD_FILE=
+      - UB_CLIENT_TEMPLATE_NAME=tmp1
+      - UB_CLIENT_ACTIVATION_CODE=4339044611650998
+    volumes:
+      - ..:/unbound
+    command: keepalive
