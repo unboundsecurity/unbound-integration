@@ -22,23 +22,35 @@ The following components are required:
 - Java 1.8 or newer
 - CoinMetrics API key (used when starting the CASP data collector)
 
-## Building and running
-Use the following procedure to install the jar files to local Maven repository.
-1. Download this repository.
-2. Navigate to `unbound-integration/data-collectors/java-sdk`
-3. Run the following Maven commands.
+## Build and Run Instructions
+
+Use Maven to build the CoinMetrics data collector sample jar, with the following commands:
+
+1. Acquire CASP SDK jar from Unbound repo
+ 
+2. Navigate to `unbound-integration/data-collectors/casp-sdk`
+
+3. Install the casp-sdk.jar file in your local Maven repository
     ```
-    mvn install:install-file -Dfile=client-sdk-1.0.jar -DgroupId=com.unboundtech.casp -DartifactId=client-sdk -Dversion=1.0-SNAPSHOT -Dpackaging=jar -DgeneratePom=true
-    mvn install:install-file -Dfile=java-utils-1.0.jar -DgroupId=com.unboundtech.casp -DartifactId=java-utils -Dversion=1.0-SNAPSHOT -Dpackaging=jar -DgeneratePom=true
-    mvn install:install-file -Dfile=samples-base-1.0.jar -DgroupId=com.unboundtech.casp -DartifactId=samples-base -Dversion=1.0-SNAPSHOT -Dpackaging=jar -DgeneratePom=true
-    mvn install:install-file -Dfile=transaction-handlers-1.0.jar -DgroupId=com.unboundtech.casp -DartifactId=transaction-handlers -Dversion=1.0-SNAPSHOT -Dpackaging=jar -DgeneratePom=true
+    mvn install:install-file -Dfile=casp-sdk-<version>.jar -DgroupId=com.unboundtech.casp -DartifactId=casp-sdk -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true`
+   
     ```
-3. Navigate to `unbound-integration/data-collectors/coinmetrics`
-4. Activate the data collector:
+4. Navigate to `unbound-integration/data-collectors/coinmetrics`
+    
+5. Build *coinmetrics-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar* in the *target* folder.
     ```
-    mvn compile exec:java -Dexec.mainClass=com.unboundtech.casp.datacollector.coinmetrics.sample.Main "-Dexec.args=-u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD> -c <ACTIVATION_CODE>"
+    mvn clean compile assembly:single
+   
     ```
-5. Run the data collector:
+
+6. Activate the data collector:
     ```
-    mvn compile exec:java -Dexec.mainClass=com.unboundtech.casp.datacollector.coinmetrics.sample.Main "-Dexec.args=-u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD> -a <COINMETRICS_API_KEY>"
+    java -jar ./target/coinmetrics-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar  -u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD> -c <ACTIVATION_CODE>
+      
     ```
+7. Run the data collector:
+    ```
+    java -jar ./target/coinmetrics-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar  -u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD> -a <COINMETRICS_API_KEY>
+   
+    ```
+   
