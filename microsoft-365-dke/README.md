@@ -14,10 +14,11 @@ These instructions use Azure as the service deployment platform. It is possible 
 
 1. A Running Unbound UKC (Unbound CORE KMS) server with a user partition that has:
     1. An RSA key for encryption. [See here how to create it](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/KeyTab.html#h2_1)  
-       The size of the key must be 2048 bits.  
+       The size of the key must be 2048 bits, and it must has *Decrypt* in its *Permitted operations*
        You'll need to use the **name of the key** for the DKE service configuration below. 
     3. An Ephemeral Client Template. [See here how to create one](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/ClientsTab.html#Multi-us).  
        You'll need the **name of the client and its *activation code*** for the DKE service configuration below.
+    4. A user assigned to role **User** (or equivalent custom role that has permissions for Decrypt with the encryption Key)
 
 
 2. Access to [Microsoft Azure portal](https://portal.azure.com/), with the following permissions:
@@ -34,7 +35,7 @@ These instructions use Azure as the service deployment platform. It is possible 
 The following sections guide you through the process of configuring an publishing Unbound DKE service as an Azure web app service
 
 ## Create a new app service in Azure portal
-1. Go to [Microsoft Azure portal](https://portal.azure.com/) -> App Services -> Create
+1. In a web browser, open the [Microsoft Azure portal](https://portal.azure.com/) -> App Services -> Create
 2. Select your subscription and resource group and select the following options for the instance details:
     * Publish: Docker container 
     * Operation System: Linux
@@ -44,8 +45,9 @@ The following sections guide you through the process of configuring an publishin
     * Access type: Public
     * Image and tag: `unboundukc/ms-dke-service:latest`
 5. Click on the *Review + create* button
-6. Wait for the deployment to finish and then click *Go to resource*
-7. On the sidebar click on *Configuration* -> *Application setttings* -> *Advanced edit* button -> add the following application settings to the json :
+6. Click on *Finish/confirm* button
+7. Wait for the deployment to finish and then click *Go to resource*
+8. On the sidebar click on *Configuration* -> *Application setttings* -> *Advanced edit* button -> add the following application settings to the json and then click *Ok* and click *Save* button at top of the page:
  
         a. EP_HOST_NAME - EP server name.
 
@@ -89,7 +91,6 @@ The following sections guide you through the process of configuring an publishin
  
     Alternatively, you can add them manually by clicking the "New application settings" button.
 
-    Note: Click save at top of the page when you done.
 
 ## Integration with UKC
 
@@ -103,7 +104,7 @@ Apart from that, the protection of the service should be provided in the network
 
 ## Register your app service
 
-1. In your browser, open the [Microsoft Azure portal](https://portal.azure.com/), and go to All Services > Identity > App Registrations.
+1. In a web browser, open the [Microsoft Azure portal](https://portal.azure.com/), and click on the top left menu button and then select *All Services* and search for 'App registrations' and select it.
 2. Select New registration, and enter a meaningful name.
 3. Select an account type from the options displayed.
 
@@ -193,7 +194,7 @@ Note that the label cannot be used for encryption for up to 24 hours after creat
 
 4. Choose sensitivity->choose your created label->edit the document->save.
 
-## How to run the project with visual code dev container ?
+## For Developers > How to run the project with visual code dev container ?
 
 1. Open 'devcontainer.json' file and edit the "containerEnv" section with the relevant data.
 
