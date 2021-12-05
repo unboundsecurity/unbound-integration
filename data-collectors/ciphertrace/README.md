@@ -16,30 +16,26 @@ The following components are required:
 
 Use Maven to build the CipherTrace data collector sample jar, with the following commands:
 
-1. Acquire CASP SDK jar from Unbound repo
+1. Download the CASP SDK package from the Unbound repository (using the link provided to you by [Unbound Support](mailto:support@unboundsecurity.com)) and extract the JAR file. 
  
-2. Navigate to `unbound-integration/data-collectors/casp-sdk`
+2. Copy the JAR file to `unbound-integration/data-collectors/casp-sdk`.
 
-3. Install the casp-sdk.jar file in your local Maven repository
+3. Install *casp-sdk-<version>.jar* in your local Maven repository.
     ```
     mvn install:install-file -Dfile=casp-sdk-<version>.jar -DgroupId=com.unboundtech.casp -DartifactId=casp-sdk -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true`
-   
     ```
-4. Navigate to `unbound-integration/data-collectors/ciphertrace`
+4. Navigate to `unbound-integration/data-collectors/ciphertrace`.
     
 5. Build *ciphertrace-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar* in the *target* folder.
     ```
     mvn clean compile assembly:single
-   
     ```
 
-6. Activate the data collector:
+6. Activate the data collector.
     ```
     java -jar ./target/ciphertrace-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar  -u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD> -c <ACTIVATION_CODE>
-      
     ```
-7. Run the data collector:
+7. Run the data collector.
     ```
     java -jar ./target/ciphertrace-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar  -u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD> -a <CIPHERTRACE_API_KEY>
-   
     ```
