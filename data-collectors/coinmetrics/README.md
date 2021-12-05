@@ -26,31 +26,22 @@ The following components are required:
 
 Use Maven to build the CoinMetrics data collector sample jar, with the following commands:
 
-1. Acquire CASP SDK jar from Unbound repo
- 
-2. Navigate to `unbound-integration/data-collectors/casp-sdk`
-
-3. Install the casp-sdk.jar file in your local Maven repository
+1. Download the CASP SDK package from the Unbound repository (using the link provided to you by [Unbound Support](mailto:support@unboundsecurity.com)) and extract the JAR file. 
+2. Copy the JAR file to `unbound-integration/data-collectors/casp-sdk`.
+3. Install *casp-sdk-<version>.jar* in your local Maven repository.
     ```
     mvn install:install-file -Dfile=casp-sdk-<version>.jar -DgroupId=com.unboundtech.casp -DartifactId=casp-sdk -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true`
-   
     ```
-4. Navigate to `unbound-integration/data-collectors/coinmetrics`
-    
+4. Navigate to `unbound-integration/data-collectors/coinmetrics`.
 5. Build *coinmetrics-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar* in the *target* folder.
     ```
     mvn clean compile assembly:single
-   
     ```
-
 6. Activate the data collector:
     ```
     java -jar ./target/coinmetrics-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar  -u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD> -c <ACTIVATION_CODE>
-      
     ```
 7. Run the data collector:
     ```
     java -jar ./target/coinmetrics-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar  -u <CASP_URL> -i <DATA_COLLECTOR_ID> -w <KEY_STORE_PWD> -a <COINMETRICS_API_KEY>
-   
     ```
-   
