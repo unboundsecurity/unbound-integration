@@ -22,21 +22,19 @@ The Ethereum Data Collector collects these attributes:
 
 Use Maven to build the Ethereum data collector sample jar, with the following commands:
 
-1. Acquire CASP SDK jar from Unbound repo
+1. Download the CASP SDK package from the Unbound repository (using the link provided to you by [Unbound Support](mailto:support@unboundsecurity.com)) and extract the JAR file. 
  
-2. Navigate to `unbound-integration/data-collectors/casp-sdk`
+2. Copy the JAR file to `unbound-integration/data-collectors/casp-sdk`.
 
-3. Install the casp-sdk.jar file in your local Maven repository
+3. Install *casp-sdk-<version>.jar* in your local Maven repository.
     ```
     mvn install:install-file -Dfile=casp-sdk-<version>.jar -DgroupId=com.unboundtech.casp -DartifactId=casp-sdk -Dversion=1.0 -Dpackaging=jar -DgeneratePom=true`
-   
     ```
-4. Navigate to `unbound-integration/data-collectors/ethereum`
+4. Navigate to `unbound-integration/data-collectors/ethereum`.
     
 5. Build *eth-data-collector-sample-1.0-SNAPSHOT-jar-with-dependencies.jar* in the *target* folder.
     ```
     mvn clean compile assembly:single
-   
     ```
    
 
