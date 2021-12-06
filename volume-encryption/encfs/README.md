@@ -91,6 +91,9 @@ To see an interactive demo after the client is configured, you can run `ub-start
 ### Demo with Docker
 To run the demo on docker you'll need to have [Docker installed](https://docs.docker.com/get-docker/) on your system.
 1. Open a bash shell in the `docker` subfolder of this repository.
-2. Run `docker-compose build && docker-compose run ukc-client`
-3. Follow the on-screen instructions
+2. (Optional), if you want to use Unbound CORE Client, edit the Dockerfile and uncomment the relevant client installation command. 
+   You must have permissions to download Unbound CORE Client installation
+3. Edit the `docker-compose` file and set the relevant configuartion parameters.
+4. Run `docker-compose build && docker-compose run ukc-client`
+5. Follow the on-screen instructions
 
