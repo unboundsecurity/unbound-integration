@@ -65,7 +65,7 @@ These settings are only required if your'e using the REST API communication meth
   The URL of the Unbound CORE server. For example: `https://unbound-server.com`
 ### CORE Client settings
 These settings are only required if you're using Unbound CORE Client communication method and you are using the `ub-init` script for configuring it.  
-If you already configured your'e client manually you don't need these.
+If you already configured your'e client manually you don't need these, however you may need to remove the validation section in the `ub-init` script.
 * `UB_SERVER_NAME` (Required only when using CORE Client)  
   The network name of the CORE Server
 * `UB_CLIENT_TEMPLATE_NAME`  
