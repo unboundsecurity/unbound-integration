@@ -13,29 +13,21 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     environment:
-      # These argumets are used for both REST API and Client
-      # - UB_PARTITION=encfs
-      # - UB_USER_PASSWORD=Unbound1!
-      # The default user password is empty, you can set it if you change
-      # - UB_USER=user
-      - UB_USER=adam2
-      - UB_USER_PASSWORD=Unbound1!
+      # Common settings
+      - UB_PARTITION=encfs
       - UB_KEY_NAME=encfs
+      - UB_USER=user
       - UB_PASSWORD_FILE=/encfs_pass.txt
-      
-      # This argument is required only for REST API
-      - UB_CORE_URL=https://ukc-ep
-      
-      # Uncoment and set these argumets if your'e using
-      # Core Client software
-      - UB_SERVER_NAME=ukc-ep
-      - UB_CLIENT_TEMPLATE_NAME=tmp1
-      - UB_CLIENT_ACTIVATION_CODE=8614832401071093
 
+      # REST API settings
+      - UB_CORE_URL=https://ukc-ep
+      - UB_USER_PASSWORD=
+
+      # CORE Client settings
+      - UB_SERVER_NAME=ukc-ep
+      - UB_CLIENT_TEMPLATE_NAME=
+      - UB_CLIENT_ACTIVATION_CODE=
+
+      # Demo settings
       - ENCFS_ROOT_DIR=/.encfs_root
       - ENCFS_MOUNT_POINT=/encfs_mount
-      
-    volumes:
-      - ./data:/data
-      - ../bash-scripts:/bash-scripts
-    
