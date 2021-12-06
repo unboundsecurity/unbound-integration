@@ -1,3 +1,4 @@
 #!/bin/bash
+set -e
 ub-init
 ub-start-encfs-demo
