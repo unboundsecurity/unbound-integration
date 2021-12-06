@@ -3,7 +3,7 @@
 ## Overview
 Protecting sensitive files with Unbound MPC technology is possible using [EncFS](https://en.wikipedia.org/wiki/EncFS).
 
-EncFS provides transparent file encryption for an arbitrary volume and is supported by many platforms. The volume can be mounted to any media supported by the host including cloud volumes like [Amazom EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html) 
+EncFS provides transparent file encryption for an arbitrary volume and is supported by many platforms. The volume can be mounted to any media supported by the host including cloud volumes like [Amazom EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html).  
 
 Files are encrypted using a volume key and a password is used to decrypt that key.
 
@@ -13,60 +13,84 @@ This provides the following benefits:
 * Key rotation for increased security 
 
 ## Prerequisites
-1. A working [Unbound CORE KMS](https://www.unboundsecurity.com/docs/TechDocs/Unbound_Doc_Versions-HTML/Content/Products/UnboundDocLibrary/Technical_Document_Versions.htm#UKC) server
-2. The client machine should have
-   1. EncFS package installed
-   2. For communications with Unbound CORE server, either of these two options:
-      1. For communications using [CORE REST API](http://www.unboundsecurity.com/docs/ukc_rest/ukc.html) 
-         For this option **curl** should be installed.  
-         This option is easier to deploy but may be less secure.
-      1. For communications using Unbound CORE Client, The CORE Client package should be installed.  
-         This option is more secure but requires [installation and configuration of Unbound CORE Client](https://www.unboundsecurity.com/docs/UKC/UKC_Installation/Content/Products/UKC-EKM/UKC_User_Guide/UG-Inst/ClientInstallation.html)
-## Prepare the encryption key
-The first step is to [create an RSA key with Unbound CORE KMS](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/KeyTab.html#Create2).
-This key is used for encrypting the EncFS volume password.
-Unbound KMS stores keys in segregated containers called Partitions so the first step is to [create and configure a partition](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiRoot/PartitionsTab.html#Create) for our key. This step can be skipped if you already have an existing partition you want to use.
+### Server
+A working [Unbound CORE Cluster](https://www.unboundsecurity.com/docs/TechDocs/Unbound_Doc_Versions-HTML/Content/Products/UnboundDocLibrary/Technical_Document_Versions.htm#UKC) server is required.  
+You'll need to use the server URL / network name in the *Configuration* section below.  
 
-The preparation steps in this section should be carried out by an Unbound CORE Administrator (SO) user. They can be done from Unbound [CORE Web Admin (UI)](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/SoUI.html#top) or by using a script with [Unbound CLI](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/cliIntro.html#h1_1), called `ucl` as follows:
+The following objects should be created:
+#### Encryption Key
+[Create an RSA key](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/KeyTab.html#Create2) with permissions for `Decrypt`.  
+You'll need to use the key name and partition name as described in the *Configuration* section below
+#### Ephemeral Client
+If your'e going to use Unbound CORE Client for communications you'll need to prepare an [Ephemeral client template](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/ClientsTab.html#Multi-us).  
+You'll need to use the *Client name* and *Activation code* in the *Configuration* section below.
+#### Partition User
+To be able to decrypt with the key, you'll need to have a partition user with appropriate role with permission for `Decrypt` operation with the encryption key. The built-in `user` role might be used for this purpose.  
+If using the REST API communication method, the user **must have a password set**.
+### Client
+The client machine should have:
+1. Linux with `bash`  
+   The scripts in this repo are targetd for a **Linux** machine. Although the overall solution can be migrated to other OS's which are supported by EncFS
+1. `encfs` package
+2. Copy the `bash-scripts` folder from this repository into the client machine and _add it to system PATH_  
+   To check if this step was successfull try to run `ub-init` from a bash shell.
+4. Environment variables should be set as described in the *Configuration* section below according to the chosen communication method.
 
-```
-# Set the partition name - you may change it or use existing partition
-PARTITION_NAME=encfs 
-# Set the partition administrator(usename so) password
-PARTITION_ADMIN_PASSWORD=<use a strong password> 
-# Create the partition if necessary
-sudo ucl partition create -p $PARTITION_NAME -w Password1! -s Password1
+#### Communications with Unbound CORE server can be done in one of two ways:
+   1. Using [CORE REST API](http://www.unboundsecurity.com/docs/ukc_rest/ukc.html)  
+      `curl` is required for this option to work.  
+      This option is easier to deploy but may be less secure when used without client TLS certificate.
+      This option requires that you create a partition user with a password.
+   1. Using Unbound CORE Client  
+      This requires [installation of Unbound CORE Client](https://www.unboundsecurity.com/docs/UKC/UKC_Installation/Content/Products/UKC-EKM/UKC_User_Guide/UG-Inst/ClientInstallation.html) package.  
+      This option is more secure since it uses Unbound proprietry trust algorithms including mutual TLS.  
+   The `ub-init` scripts can be used to test which of the communication options is used and configure it
 
-# Create an RSA key for encryption. You may change the key name.
-ENCFS_KEY_NAME=encfskey
-ucl generate -t RSA -p $PARTITION_NAME --name $ENCFS_KEY_NAME
-
-# Create a partition user with restricted permissions only for crypto operations.
-PARTITION_CRYPTO_USER_NAME=encfs_user
-PARTITION_CRYOTO_USER_PASSWORD=<replace with a strong password>
-ucl user create -p $PARTITION_NAME -n $PARTITION_CRYPTO_USER_NAME -d $PARTITION_CRYOTO_USER_PASSWORD -w PARTITION_ADMIN_PASSWORD -r user
-```
 ## Configuration
 The `ub-get-password` script uses the following environment variables
-* UB_PARTITION - The partition containing the encryption key. Defaults to `encfs`
-* UB_KEY_NAME  - The name of the key to use for encryption. Must be an RSA key in UB_PARTITION, with Decrypt operation permission.
-* UB_USER - The partition user - must be a user with permissions for Decrypt for the encryption key. Defaults to `user`
-* UB_USER_PASSWORD - The partition user password. This is required only if REST API is used
-* UB_CORE_URL - The URL of the Unbound CORE server. This is required only if REST API is used, for example: `https://unbound-server.com`
-## Start EncFS 
-To use EncFS with Unbound CORE, Start EncFS Daemon with the password encrypted and generated by Unbound CORE 
+### Common settings
+* `UB_PARTITION` (Required, Defaults to `encfs`)  
+  The name of the Unbound CORE partition containing the encryption key.
+* `UB_KEY_NAME` (Required)  
+  The name of the key to use for encryption. Must be an RSA key in UB_PARTITION, with Decrypt operation permission.
+* `UB_USER` (Required, Defaults to `user`)  
+  The partition user name. Must be a user with permissions for Decrypt with the encryption key. 
+* `UB_PASSWORD_FILE` (Required, Default is `encfs_pass.txt` in current folder)  
+  The path for saving the encrypted password data.
+### REST API settings
+These settings are only required if your'e using the REST API communication method.
+* `UB_USER_PASSWORD`  
+  The partition user password.  
+* `UB_CORE_URL`  
+  The URL of the Unbound CORE server. For example: `https://unbound-server.com`
+### CORE Client settings
+These settings are only required if you're using Unbound CORE Client communication method
+* `UB_SERVER_NAME` (Required only when using CORE Client)  
+  The network name of the CORE Server
+* `UB_CLIENT_TEMPLATE_NAME`  
+  The name of the Ephemeral client template to use for communications with the server.
+* `UB_CLIENT_ACTIVATION_CODE`  
+  The client secret activation code initiating trusted communications.
+### Checking the configuration
+To check if the configuration is correct:
+1. Run `ub-init` and make sure you see a message with the server version.
+2. Run `ub-get-password` and verify you get a new password printed to the screen.
+
+## Starting EncFS with Unbound CORE
+To use EncFS with Unbound CORE, start EncFS Daemon with the password encrypted with Unbound CORE 
 ```
 encfs --extpass="ub-get-password" --standard /your-encrypted-data-folder /your-mounted-data-folder
 ```
-
 ## Key rotation
-This solution automatically supports key-rotation.
-The encrypted key is stored along with its 
+This solution automatically supports key-rotation.  
+`ub-get-password` will always encrypt using the latest version of the key.
 
-## Demo with Docker
-You can see a full demo of this solution with Docker.
-You'll need to have [Docker installed](https://docs.docker.com/get-docker/) on your system to run this.
-1. Open a bash shell in the `docker` folder
+## Demo
+### Demo script
+To see an interactive demo after the client is configured, you can run `ub-start-encfs-demo`  
+### Demo with Docker
+To run the demo on docker you'll need to have [Docker installed](https://docs.docker.com/get-docker/) on your system.
+1. Open a bash shell in the `docker` subfolder of this repository.
 2. Run `docker-compose build && docker-compose run ukc-client`
 3. Follow the on-screen instructions
 
