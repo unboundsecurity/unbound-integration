@@ -1,13 +1,75 @@
 #!/bin/bash
-if [[ -z "${ENCFS_ROOT_DIR}" ]]; then
-    echo "Environment variable ENCFS_ROOT_DIR must be set"
-    echo "This is where encfs will save its encrypted data"
-    exit 1
-fi
-if [[ -z "${ENCFS_MOUNT_POINT}" ]]; then
-    echo "Environment variable ENCFS_MOUNT_POINT must be set"
-    echo "This is where encfs will mount the volume with cleartext files"
-    exit 1
-fi
-encfs --extpass="echo $(ub-get-password)" $ENCFS_ROOT_DIR $ENCFS_MOUNT_POINT
-unset $passphrase
+
+function waitForAnyKey {
+    read -n 1 -s -r -p ">> Press any key to continue"
+    echo && echo
+}
+
+echo "**************************************************************************"
+echo "*                                                                        *"
+echo "*                              Unbound CORE                              *"
+echo "*                       Volume Encryption with EncFS                     *"
+echo "*                                  Demo                                  *"
+echo "*                                                                        *"
+echo "**************************************************************************"
+echo 
+echo  This Demo shows how to use Unbound CORE KMS to protect EncFS volume key 
+echo  encryption password with MPC. 
+waitForAnyKey
+echo
+echo "EncFS stores encrypted data in the root folder and cleartext data is "
+echo "available in the mount point folder:"
+set +e
+set -x
+ENCFS_ROOT_DIR=${ENCFS_ROOT_DIR:=/.encfs_root}
+ENCFS_MOUNT_POINT=${ENCFS_MOUNT_POINT:=/encfs_mount}
+mkdir -p $ENCFS_ROOT_DIR
+mkdir -p $ENCFS_MOUNT_POINT && set +x
+
+export UB_PASSWORD_FILE=$ENCFS_ROOT_DIR/.ub-password
+echo && echo "Next we'll start EncFS daemon with the password encrypted by Unbound Core"
+waitForAnyKey
+set -v
+encfs --standard --extpass="echo $(ub-get-password)" $ENCFS_ROOT_DIR $ENCFS_MOUNT_POINT
+
+set +v
+echo "To actually see that files are getting encrypted, lets create a sample text file"
+echo "in the mount folder."
+waitForAnyKey
+set -x
+echo "some secret data" > $ENCFS_MOUNT_POINT/test.txt
+set +x && echo "Now lets check EncFS root folder contents to see that an encrypted file was created"
+waitForAnyKey
+set -x
+ls -la $ENCFS_ROOT_DIR && set +x
+waitForAnyKey
+
+echo "Next, we'll unmount the cleartext folder and see that we can't access it "
+echo "The root folder stays untouched"
+waitForAnyKey
+set -x
+fusermount -u $ENCFS_MOUNT_POINT 
+set +e
+ls -la $ENCFS_MOUNT_POINT 
+ls -la $ENCFS_ROOT_DIR
+set -e +x
+
+
+echo "Lets now try to start EncFS with wrong password"
+waitForAnyKey
+set +e -x
+encfs --standard --extpass="echo ffffff" $ENCFS_ROOT_DIR $ENCFS_MOUNT_POINT
+set -e +x
+
+echo "And finally, lets start EncFS with Unbound CORE password again and see our cleartext file"
+waitForAnyKey
+set -v
+encfs --standard --extpass="echo $(ub-get-password)" $ENCFS_ROOT_DIR $ENCFS_MOUNT_POINT
+set -x +v
+ls -l $ENCFS_MOUNT_POINT
+cat $ENCFS_MOUNT_POINT/test.txt
+set +x
+
+echo "Thanks for watching... Goodbye "
+waitForAnyKey
+

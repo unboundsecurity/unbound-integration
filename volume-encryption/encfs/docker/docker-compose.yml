@@ -4,8 +4,11 @@ networks:
       external:
          name: ukc_default
 services:
-  encfs:
+  ukc-client:
+    container_name: ukc-client-encfs
     privileged: true
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -28,9 +31,11 @@ services:
       - UB_SERVER_NAME=ukc-ep
       - UB_CLIENT_TEMPLATE_NAME=tmp1
       - UB_CLIENT_ACTIVATION_CODE=8614832401071093
+
+      - ENCFS_ROOT_DIR=/.encfs_root
+      - ENCFS_MOUNT_POINT=/encfs_mount
       
     volumes:
       - ./data:/data
       - ../bash-scripts:/bash-scripts
     
-    command: keepalive

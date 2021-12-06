@@ -13,7 +13,4 @@ RUN apt update && apt upgrade && \
 ADD bash-scripts /unbound-scripts/
 RUN chmod +x /unbound-scripts/*
 ENV PATH="/unbound-scripts:${PATH}"
-ENTRYPOINT [ "ub-init-client" ]
-
-
-
+ENTRYPOINT [ "ub-start" ]

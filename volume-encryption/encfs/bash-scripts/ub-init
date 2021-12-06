@@ -1,4 +1,15 @@
 #!/bin/bash
+
+########################################################################################################
+#  This script initializes Unbound CORE client and verifies connection with Unbound CORE server
+#  
+#  Communication with Unbound CORE server can be done either through Unbound CORE Client software
+#  installed or by REST API without any Unbound software.
+# 
+#  The script will first check if Unbound CORE Client is installed or not.
+#  It will then verifies that all required configuration is set
+#  And, finally it will initate a test request to Unbound CORE Server to verify the connection
+#######################################################################################################
 set +e
 ucl version 1>/dev/null 2>&1
 if [ $? -eq 0 ]; then 
@@ -62,21 +73,22 @@ else
         exit 1
     fi
     curl_status=`curl --write-out '%{http_code}' --output /dev/null -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info 2>/dev/null`
-    echo $curl_status
     if [[ $curl_status -ne 200 ]]; then
         echo "Could not connect to Unbound CORE server ($curl_status)"
         echo "curl --silent --user $UB_USER@$UB_PARTITION:****** $UB_CORE_URL/api/v1/info"
         curl -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info
         exit 1
-    else 
-        echo "Successfully connected to Unbound CORE server"
-        curl -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info
+    else
+        response=$(curl -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info)
+        server_version=$(echo $response | grep -oP version\":\"\\K[^\"\}]*)
+        echo "Successfully connected to Unbound CORE server version: $server_version"
+        
     fi
     
     set -e
 fi
 
-if [ $1 == "keepalive" ]; then
+if  [[ -n $1 && $1 == "keepalive" ]]; then
     echo "Keeping container alive"
     tail -F nonexistingfile 2>/dev/null
 fi
