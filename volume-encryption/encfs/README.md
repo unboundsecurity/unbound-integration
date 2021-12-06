@@ -1,7 +1,7 @@
 # Volume encryption with EncFS
 
 ## Overview
-Protecting sensitive files with Unbound MPC technology is possible using [EncFS](https://en.wikipedia.org/wiki/EncFS).
+Protecting sensitive files with Unbound MPC technology is supported using [EncFS](https://en.wikipedia.org/wiki/EncFS).
 
 EncFS provides transparent file encryption for an arbitrary volume and is supported by many platforms. The volume can be mounted to any media supported by the host including cloud volumes like [Amazom EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html).  
 
@@ -26,14 +26,14 @@ If your'e going to use Unbound CORE Client for communications you'll need to pre
 You'll need to use the *Client name* and *Activation code* in the *Configuration* section below.
 #### Partition User
 To be able to decrypt with the key, you'll need to have a partition user with appropriate role with permission for `Decrypt` operation with the encryption key. The built-in `user` role might be used for this purpose.  
-If using the REST API communication method, the user **must have a password set**.
+When using the REST API communication method, the user **must have a password set**.
 ### Client
-The client machine should have:
+The client machine pre-requisites:
 1. Linux with `bash`  
-   The scripts in this repo are targetd for a **Linux** machine. Although the overall solution can be migrated to other OS's which are supported by EncFS
+   The scripts in this repo are targeted for a **Linux** machine. Although the overall solution can be migrated to any other OS which is supported by EncFS.
 1. `encfs` package
 2. Copy the `bash-scripts` folder from this repository into the client machine and _add it to system PATH_  
-   To check if this step was successfull try to run `ub-init` from a bash shell.
+   To check if this step was successfull try to run `ub-init` from a bash shell and verifies it is found.
 4. Environment variables should be set as described in the *Configuration* section below according to the chosen communication method.
 
 #### Communications with Unbound CORE server can be done in one of two ways:
@@ -64,11 +64,12 @@ These settings are only required if your'e using the REST API communication meth
 * `UB_CORE_URL`  
   The URL of the Unbound CORE server. For example: `https://unbound-server.com`
 ### CORE Client settings
-These settings are only required if you're using Unbound CORE Client communication method
+These settings are only required if you're using Unbound CORE Client communication method and you are using the `ub-init` script for configuring it.  
+If you already configured your'e client manually you don't need these, however you may need to remove the validation section in the `ub-init` script.
 * `UB_SERVER_NAME` (Required only when using CORE Client)  
   The network name of the CORE Server
 * `UB_CLIENT_TEMPLATE_NAME`  
-  The name of the Ephemeral client template to use for communications with the server.
+  The name of the Ephemeral client template to use for communications with the server.  
 * `UB_CLIENT_ACTIVATION_CODE`  
   The client secret activation code initiating trusted communications.
 ### Checking the configuration
