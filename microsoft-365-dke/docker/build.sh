@@ -1,6 +1,6 @@
 #!/bin/bash
 
-install_url="https://repo.dyadicsec.local/cust/autotest/ekm/2.0.2103.39708/linux/ekm-client_2.0.2103.39708.deb9_amd64.deb"
+install_url="https://repo.dyadicsec.local/cust/autotest/ekm/2.0.2106.42245/linux/ekm-client_2.0.2106.42245.deb9_amd64.deb"
 tag="unboundukc/ms-dke-service:latest"
 
 docker build -t $tag --no-cache \

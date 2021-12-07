@@ -67,7 +67,7 @@ namespace Unbound.Web.Controllers
             }
             catch(WebException ex)
             {
-                var errorMessage="";
+                var errorMessage = "";
                 using (var stream = ex.Response.GetResponseStream())
                 using (var reader = new StreamReader(stream))
                 {

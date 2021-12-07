@@ -49,15 +49,23 @@ The following sections guide you through the process of configuring an publishin
 7. Wait for the deployment to finish and then click *Go to resource*
 8. On the sidebar click on *Configuration* -> *Application setttings* -> *Advanced edit* button -> add the following application settings to the json and then click *Ok* and click *Save* button at top of the page:
  
-        a. EP_HOST_NAME - EP server name.
+        a. EP_HOST_NAME - EP server network name - this should match the server TLS certificate.
 
-        b. UKC_PARTITION - UKC partition name.
+        b. UKC_PARTITION - The name of the partition whose keys should be used for DKE.
 
-        c. UKC_SERVER_IP - UKC server ip. 
+        c. UKC_SERVER_IP - The network IP of the UKC server. 
 
-        d. UKC_USER_NAME - the user name that will be sent to the UKC requests with a Basic auth header.
+        d. UKC_USER_NAME - the user name that will be used to authorize UKC requests with a Basic auth header.
         
         e. UKC_PASSWORD - the password that will be sent to the UKC requests with a Basic auth header.
+
+        f. UKC_URL - The URL prefix of the UKC service, for example: `https://ukc-ep:8443`.  
+           This is used for sending requests to UKC
+
+        g. UKC_CA_CERT_B64 - Optional, a Base64 representation of UKC CA certificate in pem format.  
+           This may be used for TLS validation of a self-signed CA certificate.  
+           In case this is not specified, the service container will run a script to try and fetch  
+           the certificate from the server with UKC_URL and install it in the trusted certificate store
 
    For example:
 

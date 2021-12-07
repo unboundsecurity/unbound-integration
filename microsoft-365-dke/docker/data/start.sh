@@ -6,7 +6,7 @@ export PORT=8080
 export ASPNETCORE_URLS=http://*:$PORT
 
 echo "check if all needed application settings are set:"
-required_vars=(EP_HOST_NAME UKC_PARTITION UKC_SERVER_IP)
+required_vars=(UKC_URL EP_HOST_NAME UKC_PARTITION UKC_SERVER_IP)
 
 missing_vars=()
 for i in "${required_vars[@]}"
@@ -22,11 +22,18 @@ fi
 
 
 echo "servers=$EP_HOST_NAME">/etc/ekm/client.conf
+echo "$UKC_SERVER_IP $EP_HOST_NAME" >> /etc/hosts
 
-echo "$UKC_SERVER_IP ep1" >> /etc/hosts
+# Install UKC root CA certificate
+if [ -z "$UKC_CA_CERT_B64" ]; then
+  base64 -d $UKC_CA_CERT_B64 > /usr/local/share/ca-certificates/unbound-core-ca.pem
+  cp /usr/local/share/ca-certificates/unbound-core-ca.pem /etc/ssl/certs
+  update-ca-certificates --fresh
+else
+  sh /root/data/ub-install-ca-certificate
+fi
 
-# Wait until UKC is ready
-sh /root/data/wait_for_ukc_cluster_to_start.sh
+wait_for_ukc_cluster_to_start.sh
 
 cd /root/data/publish
 

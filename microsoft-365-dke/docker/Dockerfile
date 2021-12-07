@@ -4,9 +4,6 @@
 ARG VARIANT="3.1"
 FROM mcr.microsoft.com/vscode/devcontainers/dotnetcore:0-${VARIANT}
 
-######################################
-RUN echo "Downloading UKC Utils";
-
 # Common utilities and clean
 RUN echo 'alias ll="ls -l"' >> ~/.bashrc; \
     apt-get update -y \
@@ -21,9 +18,7 @@ RUN curl -LO# https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
     chmod +x ./jq; \
     mv jq /usr/bin    
 
-RUN mkdir /root/data
-COPY data /root/data
-
+# Install UKC Client
 ARG UKC_CLIENT_INSTALLER_URL
 RUN echo "Downloading ${UKC_CLIENT_INSTALLER_URL}"; \
     curl -O#  "${UKC_CLIENT_INSTALLER_URL}"; \
@@ -33,7 +28,10 @@ RUN echo "Downloading ${UKC_CLIENT_INSTALLER_URL}"; \
     echo "UKC Client Installed successfully"
 
 
-RUN chmod +x /root/data/*.sh;
+RUN mkdir /unbound
+COPY data /unbound
+RUN chmod +x /unbound/*;
+ENV PATH="/unbound:${PATH}"
 
 ######################################   
 
@@ -57,6 +55,6 @@ EXPOSE 8080
 
 ENV ASPNETCORE_URLS "http://*:${PORT}"
 
-CMD "/root/data/start.sh"
+CMD "start.sh"
 
 

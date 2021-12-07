@@ -7,12 +7,12 @@
 		}
 	},
 
+	"runArgs": ["--network=host"],
 	"containerEnv": {
-		"EP_HOST_NAME": "ep1",
-		"UKC_PARTITION":"part1",
-		"UKC_SERVER_IP":"54.174.121.27",
-		"CLIENT_TEMPLATE_ACTIVATION_CODE":"8776496990657163",
-		"CLIENT_TEMPLATE_NAME":"template6"
+		"EP_HOST_NAME": "ukc-ep",
+        "UKC_PARTITION": "encfs",
+		"UKC_URL": "https://ukc-ep:8443",
+        "UKC_SERVER_IP": "192.168.187.194"
 	},
 
 	// Set *default* container specific settings.json values on container create.
@@ -29,6 +29,6 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	 "forwardPorts": [8080, 8000],
 
-	 "postCreateCommand": "cd /root/data && ./start.sh"
+	 "postCreateCommand": "start.sh"
 
 	}
