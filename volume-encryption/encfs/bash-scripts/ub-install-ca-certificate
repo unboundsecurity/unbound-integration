@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ -z "${UB_CORE_URL}" ]]; then
+    echo "Environment variable UB_CORE_URL must be set with Unbound CORE KMS service URL"
+    echo "For example: https://www.unboundserver.com"
+    exit 1
+fi
+
+set -e
+# Pull and install the self-signed CA certificate from Unbound CORE server
+curl -k --output server-ca.p7b $UB_CORE_URL/api/v1/server-ca.p7b 
+openssl pkcs7 -inform der -print_certs -in server-ca.p7b -out /usr/local/share/ca-certificates/unbound-core-ca.pem
+cp /usr/local/share/ca-certificates/unbound-core-ca.pem /etc/ssl/certs
+update-ca-certificates --fresh
+

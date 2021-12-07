@@ -1,4 +1,5 @@
 #!/bin/bash
 set -e
+ub-install-ca-certificate
 ub-init
 ub-start-encfs-demo

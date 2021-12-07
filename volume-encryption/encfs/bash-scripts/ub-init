@@ -72,14 +72,15 @@ else
         echo "Environment variable UB_USER_PASSWORD must be set with the password for Unbound CORE KMS user '$UB_USER'"
         exit 1
     fi
-    curl_status=`curl --write-out '%{http_code}' --output /dev/null -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info 2>/dev/null`
+
+    curl_status=`curl --write-out '%{http_code}' --output /dev/null --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info 2>/dev/null`
     if [[ $curl_status -ne 200 ]]; then
         echo "Could not connect to Unbound CORE server ($curl_status)"
         echo "curl --silent --user $UB_USER@$UB_PARTITION:****** $UB_CORE_URL/api/v1/info"
-        curl -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info
+        curl --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info
         exit 1
     else
-        response=$(curl -k --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info)
+        response=$(curl  --silent --user $UB_USER@$UB_PARTITION:$UB_USER_PASSWORD $UB_CORE_URL/api/v1/info)
         server_version=$(echo $response | grep -oP version\":\"\\K[^\"\}]*)
         echo "Successfully connected to Unbound CORE server version: $server_version"
         
