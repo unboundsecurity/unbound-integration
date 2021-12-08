@@ -47,48 +47,25 @@ The following sections guide you through the process of configuring an publishin
 5. Click on the *Review + create* button
 6. Click on *Finish/confirm* button
 7. Wait for the deployment to finish and then click *Go to resource*
-8. On the sidebar click on *Configuration* -> *Application setttings* -> *Advanced edit* button -> add the following application settings to the json and then click *Ok* and click *Save* button at top of the page:
- 
-        b. UKC_PARTITION - The name of the partition whose keys should be used for DKE.
-
-        d. UKC_USER_NAME - the user name that will be used to authorize UKC requests with a Basic auth header.
-        
-        e. UKC_PASSWORD - the password that will be sent to the UKC requests with a Basic auth header.
-
-        f. UKC_URL - The URL prefix of the UKC service, for example: `https://ukc-ep:8443`.  
-           This is used for sending requests to UKC
-
-        g. UKC_CA_CERT_B64 - Optional, a Base64 representation of UKC CA certificate in pem format.  
-           This may be used for TLS validation of a self-signed CA certificate.  
-           In case this is not specified, the service container will run a script to try and fetch  
-           the certificate from the server with UKC_URL and install it in the trusted certificate store
-
-   For example:
-        {
-            "name": "UKC_PARTITION",
-            "value": "test",
-            "slotSetting": false
-        },
-        {
-            "name": "UKC_USER_NAME",
-            "value": "dke_user",
-            "slotSetting": false
-        },
-        {
-            "name": "UKC_PASSWORD",
-            "value": "********",
-            "slotSetting": false
-        },
-
-    ```
- 
-    Alternatively, you can add them manually by clicking the "New application settings" button.
-
-
+8. On the sidebar click on *Configuration* -> *Application setttings* -> *Advanced edit* button -> add the following application settings to the json and then click *Ok* and click *Save* button at top of the page:  
+   * `UB_CORE_URL`  
+     The URL for Unbound CORE KMS service, for example: `https://ukc-ep:8443`.  
+     This is used for sending requests to Unbound CORE service.
+   * `UB_PARTITION`  
+     The name of the partition whose keys should be used for DKE.
+   * `UB_USER`
+     The user name that will be used to authorize UKC requests with a Basic auth header.
+   * `UB_USER_PASSWORD`  
+     The password that will be sent to the UKC requests with a Basic auth header.
+   * `UB_CA_CERT_B64`  
+     Optional, a Base64 representation of UKC CA certificate in pem format.  
+     This may be used for TLS validation of a self-signed CA certificate.  
+     In case this is not specified, the service container will run a script to try and fetch  
+     the certificate from the server with UB_CORE_URL and install it in the trusted certificate store
 ## Integration with UKC
 
 As mentioned above, configuring the service with UKC credentials by setting the
-environment variables "UKC_USER_NAME" and "UKC_PASSWORD" will let the service send UKC requests with a Basic auth header.
+environment variables "UB_USER" and "UB_USER_PASSWORD" will let the service send UKC requests with a Basic auth header.
 
 If the service receives an “Authorization” header (supports both Bearer or Basic auth header) in the request, it will pass it as part of the UKC requests header.
 

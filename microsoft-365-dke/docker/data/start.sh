@@ -6,7 +6,7 @@ export PORT=8080
 export ASPNETCORE_URLS=http://+:$PORT
 
 echo "check if all needed application settings are set:"
-required_vars=(UKC_URL UKC_PARTITION UKC_USER_NAME UKC_PASSWORD)
+required_vars=(UB_CORE_URL UB_PARTITION UB_USER UB_USER_PASSWORD)
 
 missing_vars=()
 for i in "${required_vars[@]}"
@@ -23,8 +23,8 @@ fi
 wait_for_ukc_cluster_to_start.sh
 
 # Install UKC root CA certificate
-if [ ! -z "$UKC_CA_CERT_B64" ]; then
-  base64 -d $UKC_CA_CERT_B64 > /usr/local/share/ca-certificates/unbound-core-ca.pem
+if [ ! -z "$UB_CA_CERT_B64" ]; then
+  base64 -d $UB_CA_CERT_B64 > /usr/local/share/ca-certificates/unbound-core-ca.pem
   cp /usr/local/share/ca-certificates/unbound-core-ca.pem /etc/ssl/certs
   update-ca-certificates --fresh
 else
@@ -34,10 +34,10 @@ fi
 # now verify that TLS connection is working
 echo Verify that TLS connection to Unbound CORE is working
 echo This requires that the Unbound CORE EP certificate 
-echo  contains the host name of $UKC_URL and that its
+echo  contains the host name of $UB_CORE_URL and that its
 echo  CA certificate is trusted
 set -x
-curl $UKC_URL/api/v1/info
+curl $UB_CORE_URL/api/v1/info
 
 cd /unbound/publish
 

@@ -82,7 +82,7 @@ namespace Unbound.Web.Controllers
                 var wRespStatusCode = ((HttpWebResponse)ex.Response).StatusCode;
                 if(wRespStatusCode==HttpStatusCode.Unauthorized)
                 {
-                    _logger.LogInformation("Error in authroization header – sending unauthorized request to UKC. Use env UKC_USER / UKC_PASSWORD");
+                    _logger.LogInformation("Error in authroization header – sending unauthorized request to UKC. Use env UKC_USER / UB_USER_PASSWORD");
                     return StatusCode(401, "Authroization failed – please check the request header credentials");
                 }
 
@@ -124,7 +124,7 @@ namespace Unbound.Web.Controllers
                 var wRespStatusCode = ((HttpWebResponse)ex.Response).StatusCode;
                 if(wRespStatusCode==HttpStatusCode.Unauthorized)
                 {
-                     _logger.LogInformation("Error in authroization header – sending unauthorized request to UKC. Use env UKC_USER / UKC_PASSWORD");
+                     _logger.LogInformation("Error in authroization header – sending unauthorized request to UKC. Use env UKC_USER / UB_USER_PASSWORD");
                     return StatusCode(401, "Authroization failed – please check the request header credentials");
                 }
 

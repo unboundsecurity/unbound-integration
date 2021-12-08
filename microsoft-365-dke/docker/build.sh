@@ -8,3 +8,16 @@ docker build -t $tag  \
 --build-arg UKC_CLIENT_INSTALLER_URL=$install_url \
 $(dirname "$0")
 
+rm -rf $(pwd)/../src/unbound-key-store/bin
+rm -rf $(pwd)/../src/unbound-key-store/obj
+
+rm -rf ./data/publish
+docker run --entrypoint="dotnet" -v $(pwd)/..:/unboundkeystore \
+    $tag publish /unboundkeystore/src/unbound-key-store/unboundkeystore.csproj \
+    --output /unboundkeystore/docker/data/publish \
+    /property:GenerateFullPaths=true 
+
+docker build -t $tag  \
+--build-arg UKC_CLIENT_INSTALLER_URL=$install_url \
+$(dirname "$0")
+

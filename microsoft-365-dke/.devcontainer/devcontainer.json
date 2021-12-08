@@ -9,10 +9,10 @@
 
 	"runArgs": ["--network=host"],
 	"containerEnv": {
-        "UKC_PARTITION": "encfs",
-		"UKC_URL": "https://ukc-ep:8443",
-		"UKC_USER_NAME": "adam2",
-		"UKC_PASSWORD": "Unbound1!"
+        "UB_PARTITION": "encfs",
+		"UB_CORE_URL": "https://ukc-ep:8443",
+		"UB_USER": "adam2",
+		"UB_USER_PASSWORD": "Unbound1!"
 	},
 
 	// Set *default* container specific settings.json values on container create.

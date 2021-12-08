@@ -21,21 +21,19 @@ namespace Unbound.Web.Models
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using Newtonsoft.Json;
-
-
     public class KeyManager
     {
         private readonly ILogger _logger;
-        string UKC_URL = System.Environment.GetEnvironmentVariable("UKC_URL") + "/api/v1";
-        string partition = System.Environment.GetEnvironmentVariable("UKC_PARTITION");
+        string UB_CORE_URL = System.Environment.GetEnvironmentVariable("UB_CORE_URL") + "/api/v1";
+        string partition = System.Environment.GetEnvironmentVariable("UB_PARTITION");
 
         string BASIC_AUTH;
         public KeyManager(ILogger<KeyManager> logger)
         {
             _logger = logger;
 
-            string userName = System.Environment.GetEnvironmentVariable("UKC_USER_NAME");
-            string passowrd = System.Environment.GetEnvironmentVariable("UKC_PASSWORD");
+            string userName = System.Environment.GetEnvironmentVariable("UB_USER");
+            string passowrd = System.Environment.GetEnvironmentVariable("UB_USER_PASSWORD");
             string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1")
                                .GetBytes(userName + "@" + partition + ":" + passowrd));
 
@@ -82,8 +80,8 @@ namespace Unbound.Web.Models
 
         public String getUkcToken()
         {
-            string password = System.Environment.GetEnvironmentVariable("UKC_PASSWORD");
-            string userName = System.Environment.GetEnvironmentVariable("UKC_USER_NAME");
+            string password = System.Environment.GetEnvironmentVariable("UB_USER_PASSWORD");
+            string userName = System.Environment.GetEnvironmentVariable("UB_USER");
 
             var postData = "grant_type=" + Uri.EscapeDataString("password");
             postData += "&username=" + Uri.EscapeDataString(userName + "@" + partition);
@@ -91,15 +89,12 @@ namespace Unbound.Web.Models
 
             var data = Encoding.ASCII.GetBytes(postData);
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(UKC_URL + "/token");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(UB_CORE_URL + "/token");
             request.Method = "POST";
             request.KeepAlive = true;
-            //request.ContentType = "appication/json";
             request.ContentType = "application/x-www-form-urlencoded";
             request.ContentLength = data.Length;
-            //request.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-            //request.ContentType = "application/x-www-form-urlencoded";
-
+    
             using (var stream = request.GetRequestStream())
             {
                 stream.Write(data, 0, data.Length);
@@ -137,14 +132,13 @@ namespace Unbound.Web.Models
             return resultantArray;
         }
 
-
         public string HexString2B64String(string input)
         {
             return System.Convert.ToBase64String(HexStringToBin(input));
         }
 
         public JObject SendUkcRequest(Microsoft.AspNetCore.Http.HttpRequest requestContext, string method, string path, object body = null) {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(UKC_URL + "/" + path + "?partitionId=" + partition);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(UB_CORE_URL + "/" + path + "?partitionId=" + partition);
             request.Method = method;
             request.KeepAlive = true;
             request.PreAuthenticate = true;

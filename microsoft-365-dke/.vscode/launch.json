@@ -21,10 +21,10 @@
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-                "UKC_USER_NAME": "adam2",
-                "UKC_PASSWORD": "Unbound1!",
-                "UKC_PARTITION": "encfs",
-                "UKC_URL": "https://ukc-ep:8443",
+                "UB_USER": "user",
+                "UB_USER_PASSWORD": "Unbound1!",
+                "UB_PARTITION": "test",
+                "UB_CORE_URL": "https://ukc-ep:8443",
                 "WEBSITE_HOSTNAME": "localhost:5001"
             },
             "sourceFileMap": {
