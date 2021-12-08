@@ -3,10 +3,10 @@ set -e
 
 export PORT=8080
 
-export ASPNETCORE_URLS=http://*:$PORT
+export ASPNETCORE_URLS=http://+:$PORT
 
 echo "check if all needed application settings are set:"
-required_vars=(UKC_URL EP_HOST_NAME UKC_PARTITION UKC_SERVER_IP)
+required_vars=(UKC_URL UKC_PARTITION UKC_USER_NAME UKC_PASSWORD)
 
 missing_vars=()
 for i in "${required_vars[@]}"
@@ -20,21 +20,25 @@ then
     exit 1
 fi
 
-
-echo "servers=$EP_HOST_NAME">/etc/ekm/client.conf
-echo "$UKC_SERVER_IP $EP_HOST_NAME" >> /etc/hosts
+wait_for_ukc_cluster_to_start.sh
 
 # Install UKC root CA certificate
-if [ -z "$UKC_CA_CERT_B64" ]; then
+if [ ! -z "$UKC_CA_CERT_B64" ]; then
   base64 -d $UKC_CA_CERT_B64 > /usr/local/share/ca-certificates/unbound-core-ca.pem
   cp /usr/local/share/ca-certificates/unbound-core-ca.pem /etc/ssl/certs
   update-ca-certificates --fresh
 else
-  sh /root/data/ub-install-ca-certificate
+  ub-install-ca-certificate
 fi
 
-wait_for_ukc_cluster_to_start.sh
+# now verify that TLS connection is working
+echo Verify that TLS connection to Unbound CORE is working
+echo This requires that the Unbound CORE EP certificate 
+echo  contains the host name of $UKC_URL and that its
+echo  CA certificate is trusted
+set -x
+curl $UKC_URL/api/v1/info
 
-cd /root/data/publish
+cd /unbound/publish
 
 dotnet unboundkeystore.dll

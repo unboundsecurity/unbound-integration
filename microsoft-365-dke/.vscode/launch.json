@@ -20,7 +20,12 @@
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "UKC_USER_NAME": "adam2",
+                "UKC_PASSWORD": "Unbound1!",
+                "UKC_PARTITION": "encfs",
+                "UKC_URL": "https://ukc-ep:8443",
+                "WEBSITE_HOSTNAME": "localhost:5001"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"

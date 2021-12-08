@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using unbound.cryptoki;
-
-
-namespace UnboundKeyStore
+﻿namespace UnboundKeyStore
 {
+    using System;
+    using System.Linq;
+    using System.Text;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Logging;

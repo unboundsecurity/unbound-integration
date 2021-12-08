@@ -67,12 +67,15 @@ namespace Unbound.Web.Controllers
             }
             catch(WebException ex)
             {
-                var errorMessage = "";
-                using (var stream = ex.Response.GetResponseStream())
-                using (var reader = new StreamReader(stream))
-                {
-                    JObject json = JObject.Parse(reader.ReadToEnd());
-                    errorMessage = (string)json.SelectToken("message");
+                var errorMessage = ex.Message;
+                _logger.LogInformation("Error message : " + errorMessage);
+                if(ex.Response != null) {
+                    using (var stream = ex.Response.GetResponseStream())
+                    using (var reader = new StreamReader(stream))
+                    {
+                        JObject json = JObject.Parse(reader.ReadToEnd());
+                        errorMessage = (string)json.SelectToken("message");
+                    }
                 }
                  _logger.LogInformation("Error message : " + errorMessage);
 

@@ -19,19 +19,13 @@ RUN curl -LO# https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
     mv jq /usr/bin    
 
 # Install UKC Client
-ARG UKC_CLIENT_INSTALLER_URL
-RUN echo "Downloading ${UKC_CLIENT_INSTALLER_URL}"; \
-    curl -O#  "${UKC_CLIENT_INSTALLER_URL}"; \
-    echo "Installing $(basename ${UKC_CLIENT_INSTALLER_URL})"; \
-    sudo apt install $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
-    rm $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
-    echo "UKC Client Installed successfully"
-
-
-RUN mkdir /unbound
-COPY data /unbound
-RUN chmod +x /unbound/*;
-ENV PATH="/unbound:${PATH}"
+# ARG UKC_CLIENT_INSTALLER_URL
+# RUN echo "Downloading ${UKC_CLIENT_INSTALLER_URL}"; \
+#     curl -O#  "${UKC_CLIENT_INSTALLER_URL}"; \
+#     echo "Installing $(basename ${UKC_CLIENT_INSTALLER_URL})"; \
+#     sudo apt install $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
+#     rm $(basename "${UKC_CLIENT_INSTALLER_URL}"); \
+#     echo "UKC Client Installed successfully"
 
 ######################################   
 
@@ -49,12 +43,18 @@ RUN apt-get update \
 
 # COPY sshd_config /etc/ssh/
 
+RUN mkdir /unbound
+COPY data /unbound
+RUN chmod +x /unbound/*;
+ENV PATH="/unbound:${PATH}"
+
+
 ENV PORT 8080
 
 EXPOSE 8080
 
 ENV ASPNETCORE_URLS "http://*:${PORT}"
 
-CMD "start.sh"
+ENTRYPOINT [ "/unbound/start.sh" ]
 
 

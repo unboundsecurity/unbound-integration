@@ -143,7 +143,7 @@ namespace Unbound.Web.Models
             return System.Convert.ToBase64String(HexStringToBin(input));
         }
 
-        public JObject sendUkcRequest(Microsoft.AspNetCore.Http.HttpRequest requestContext, string method, string path, object body = null) {
+        public JObject SendUkcRequest(Microsoft.AspNetCore.Http.HttpRequest requestContext, string method, string path, object body = null) {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(UKC_URL + "/" + path + "?partitionId=" + partition);
             request.Method = method;
             request.KeepAlive = true;
@@ -177,12 +177,14 @@ namespace Unbound.Web.Models
             _logger.LogInformation("get public key : " + keyName);
             keyName.ThrowIfNull(nameof(keyName));
 
-            JObject json = sendUkcRequest(request, "GET", "keys/" + keyName);
-            if(json.SelectToken("pkInfo.rsa.publicExponent")==null) throw new System.ArgumentException("key " + keyName + " not found");
+            JObject json = SendUkcRequest(request, "GET", "keys/" + keyName);
+            if(json.SelectToken("pkInfo.rsa.publicExponent")==null) {
+                throw new System.ArgumentException("key " + keyName + " not found");
+            }
             string publicExponent = (string)json.SelectToken("pkInfo.rsa.publicExponent");
             string keyUid = (string)json.SelectToken("uid"); 
             string modulus = (string)json.SelectToken("pkInfo.rsa.modulus");
-            string hexstr = modulus.Replace(":", "");
+            string hexstr = modulus.Replace(":", "", System.StringComparison.InvariantCulture);
             string hexstrWithoutPrefixZero = hexstr.Substring(2, hexstr.Length - 2);
             string nStrBase64 = HexString2B64String(hexstrWithoutPrefixZero);
             var publicKey = new PublicKey(nStrBase64, 65537);
@@ -198,8 +200,8 @@ namespace Unbound.Web.Models
         {
 
             _logger.LogInformation("decrypt called from key manager class for keyName : " + keyName + " and keyID : " + keyId);
-            string myResponse = "";
-            string clearText = "";
+            string myResponse = string.Empty;
+            string clearText = string.Empty;
 
 
             keyName.ThrowIfNull(nameof(keyName));
@@ -230,7 +232,7 @@ namespace Unbound.Web.Models
 
             try
             {
-                JObject jsonObj = sendUkcRequest(httpRequest, "POST", "keys/" + keyId + "/decrypt", body);
+                JObject jsonObj = SendUkcRequest(httpRequest, "POST", "keys/" + keyId + "/decrypt", body);
                 clearText = (string)jsonObj.SelectToken("clearText");
             }
             catch (WebException e)
