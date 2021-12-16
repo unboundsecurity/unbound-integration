@@ -1,25 +1,28 @@
 # Unbound integration with Microsoft DKE
 
-** Important: This is an alpha version not yet fully tested for production **
+** Important: This is a beta version not yet fully tested for production **
 
 [Microsoft Double Key Encryption (DKE)](https://docs.microsoft.com/en-us/microsoft-365/compliance/double-key-encryption) provides strong protection for sensitive data in Office 365 applications by using encryption keys which are stored in an external keystore.  
 
 This repo provides an implementation which uses Unbound Core KMS as the keystore.  
-The keystore is available as a docker image that implements DKE API and connects it to Unbound CORE KMS server (UKC).
+The keystore is a dotnet service application that implements DKE API and connects it to Unbound CORE KMS server (UKC).
+The service is also provided installed in a Docker image and ready to be deployed as a container.
 
 The following sections specify the steps required for configuring and using Unbound DKE keystore service. 
-These instructions use Azure as the service deployment platform. It is possible if needed to deploy the service on other platforms too, or on-prem. 
+The instructions focus on deployment as a Docker container and use Azure as the service deployment platform. 
+It is possible if needed to deploy the service on other platforms too, or on-prem. 
 
 # Prerequisites
 
 1. A Running Unbound UKC (Unbound CORE KMS) server with a user partition that has:
     1. An RSA key for encryption. [See here how to create it](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/KeyTab.html#h2_1)  
-       The size of the key must be 2048 bits, and it must has *Decrypt* in its *Permitted operations*
-       You'll need to use the **name of the key** for the DKE service configuration below. 
+       * The size of the key must be 2048 bits, and it must has *Decrypt* in its *Permitted operations*.
+       * You'll need to use the **name of the key** for the DKE service configuration below. 
     3. An Ephemeral Client Template. [See here how to create one](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/ClientsTab.html#Multi-us).  
-       You'll need the **name of the client and its *activation code*** for the DKE service configuration below.
-    4. A user assigned to role **User** (or equivalent custom role that has permissions for Decrypt with the encryption Key)
-
+       * You'll need the **name of the client and its *activation code*** for the DKE service configuration below.
+    4. A user assigned to role **User** (or equivalent custom role that has permissions for Decrypt with the encryption Key)  
+       * The user must have a password (the default CORE 'user' does not have a password by default).
+       * You'll need to use the **user name** and its **password** for the DKE service configuration below.
 
 2. Access to [Microsoft Azure portal](https://portal.azure.com/), with the following permissions:
     * Create new app service.
@@ -32,7 +35,7 @@ These instructions use Azure as the service deployment platform. It is possible 
 3. Microsoft 365 with "Microsoft 365 E5" license.
 
 # Azure app service configuration
-The following sections guide you through the process of configuring an publishing Unbound DKE service as an Azure web app service
+The following sections guide you through the process of configuring and deploying Unbound DKE service as an Azure web app conteinerized service.
 
 ## Create a new app service in Azure portal
 1. In a web browser, open the [Microsoft Azure portal](https://portal.azure.com/) -> App Services -> Create
@@ -47,33 +50,51 @@ The following sections guide you through the process of configuring an publishin
 5. Click on the *Review + create* button
 6. Click on *Finish/confirm* button
 7. Wait for the deployment to finish and then click *Go to resource*
-8. On the sidebar click on *Configuration* -> *Application setttings* -> *Advanced edit* button -> add the following application settings to the json and then click *Ok* and click *Save* button at top of the page:  
+8. On the sidebar click on *Configuration* and select the *Application setttings* tab at the top.  
+   Then, for each of the settings below, click the *+ New application setting* button enter the setting's *Name* and the *Value* relevant for your configuration and click *Ok*. 
+   When you're finished adding all the settings make sure you click the **Save** button at the top of the page.  
+   The required settings are:
    * `UB_CORE_URL`  
      The URL for Unbound CORE KMS service, for example: `https://ukc-ep:8443`.  
-     This is used for sending requests to Unbound CORE service.
+     This is used for sending requests to Unbound CORE service. The URL must be accessible from within the container.
    * `UB_PARTITION`  
-     The name of the partition whose keys should be used for DKE.
+     The name of the partition which stores the encryption key.
    * `UB_USER`
-     The user name that will be used to authorize UKC requests with a Basic auth header.
+     The user name that will be used to authorize UKC requests with a Basic auth header.  
+     As mentioned above, this must be a user with permissions for Decrypt with the encryption key.
    * `UB_USER_PASSWORD`  
-     The password that will be sent to the UKC requests with a Basic auth header.
+     The user password which will be used for authentication.
    * `UB_CA_CERT_B64`  
-     Optional, a Base64 representation of UKC CA certificate in pem format.  
+     This setting is Optional. It allows to pass a Base64 representation of a CA certificate in pem format.    
      This may be used for TLS validation of a self-signed CA certificate.  
      In case this is not specified, the service container will run a script to try and fetch  
-     the certificate from the server with UB_CORE_URL and install it in the trusted certificate store
+     the certificate from the Unbound CORE server at UB_CORE_URL and install it in the local OS certificate store.
+     
 ## Integration with UKC
-
 As mentioned above, configuring the service with UKC credentials by setting the
-environment variables "UB_USER" and "UB_USER_PASSWORD" will let the service send UKC requests with a Basic auth header.
+environment variables "UB_USER" and "UB_USER_PASSWORD" will let the service send requests to Unbound CORE server with a Basic authentication header.
 
 If the service receives an “Authorization” header (supports both Bearer or Basic auth header) in the request, it will pass it as part of the UKC requests header.
 
 Apart from that, the protection of the service should be provided in the network level, by using the service in a single shared network location only available when in the organization (e.g. only after VPN).
- 
+
+### Establishing TLS 
+The DKE service communicates with Unbound CORE server using REST API over secure http (HTTPS) using TLS.  
+TLS automatically validates the certificate of the server, in our case of the Unbound CORE server.  
+The validation specifically uses two important stages:  
+1. Validating that the host name which was specified in `UB_URL` matches one of the subject identifiers in the server certificate.  
+   In case your server's public host name is different than its private one, you'll need to add the public address to the server certificate using 
+   the [ekm_renew_server_certificate](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/AdminScripts/CertScripts.html#ekm_rene) utility. 
+2. Validating the certificate issuing CA certificate.  
+   In case the Unbound CORE server certificate was issued using the default self-signed CA, the CA certificate needs to be added to the OS trusted-ca's list.  
+   With the default DKE Container, this will be automatically done using the `start` script. It can also be done by setting an environment variable `UB_CA_CERT_B64` as described above.
+   
+### Testing the deployment
+At this stage, after you deployed the service, it will be a good idea to check that its functioning or troubleshoot if its not.  
+1. You can click the *Log stream* entry under *Monitoring* on the left and look for a message indicating the service is running / or failure message.
+2. You can open a browser and try browsing to get public key data from the service by using the service URL with the key name as its path, for example: `https://my-dke-service.azurewebsites.net\my-key`. The service URL is available under the `Overview` tab on the left.
 
 ## Register your app service
-
 1. In a web browser, open the [Microsoft Azure portal](https://portal.azure.com/), and click on the top left menu button and then select *All Services* and search for 'App registrations' and select it.
 2. Select New registration, and enter a meaningful name.
 3. Select an account type from the options displayed.
