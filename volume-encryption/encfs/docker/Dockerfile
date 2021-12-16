@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-RUN apt update && apt upgrade && \
+RUN apt update && apt upgrade -y && \
   apt install -y curl iputils-ping encfs wget
 
 # Uncomment these next lines to install and use Unbound CORE Client
