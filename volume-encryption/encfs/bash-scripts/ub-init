@@ -56,9 +56,18 @@ if [[ $UB_CLIENT_INSTALLED -eq 1 ]]; then
     echo Ephemeral client template: $UB_CLIENT_TEMPLATE_NAME
     echo --------------------------------------------------------------
     echo
-    echo "Core Client Version: $(ucl version)"
-    echo "servers=$UB_SERVER_NAME" > /etc/ekm/client.conf
-    ucl register -p $UB_PARTITION -t $UB_CLIENT_TEMPLATE_NAME -c $UB_CLIENT_ACTIVATION_CODE
+    echo "Core Client software version: $(ucl version)"
+    set +e
+    ucl list > /dev/null
+    ret=$?
+    set -e
+    if [[ $ret -ne 0 ]]; then
+      echo Registering Unbound CORE client
+      echo "servers=$UB_SERVER_NAME" > /etc/ekm/client.conf
+      ucl register -p $UB_PARTITION -t $UB_CLIENT_TEMPLATE_NAME -c $UB_CLIENT_ACTIVATION_CODE
+    else
+      echo "Client already registered"
+    fi
 else
     echo "Core Client not installed. Using REST API"
     set +e
