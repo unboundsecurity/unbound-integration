@@ -29,5 +29,5 @@ services:
       - UB_CLIENT_ACTIVATION_CODE=
 
       # Demo settings
-      - ENCFS_ROOT_DIR=/.encfs_root
-      - ENCFS_MOUNT_POINT=/encfs_mount
+      - ENCFS_ROOT_DIR=~/.encfs_root
+      - ENCFS_MOUNT_POINT=~/encfs_mount

@@ -21,8 +21,11 @@ echo "EncFS stores encrypted data in the root folder and cleartext data is "
 echo "available in the mount point folder:"
 set +e
 set -x
-ENCFS_ROOT_DIR=${ENCFS_ROOT_DIR:=/.encfs_root}
-ENCFS_MOUNT_POINT=${ENCFS_MOUNT_POINT:=/encfs_mount}
+# use absolute paths
+ENCFS_ROOT_DIR=${ENCFS_ROOT_DIR:=~/.encfs_root}
+ENCFS_ROOT_DIR="${ENCFS_ROOT_DIR/#\~/$HOME}"
+ENCFS_MOUNT_POINT=${ENCFS_MOUNT_POINT:=~/encfs_mount}
+ENCFS_MOUNT_POINT="${ENCFS_MOUNT_POINT/#\~/$HOME}"
 mkdir -p $ENCFS_ROOT_DIR
 mkdir -p $ENCFS_MOUNT_POINT && set +x
 
