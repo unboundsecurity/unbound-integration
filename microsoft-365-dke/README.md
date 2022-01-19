@@ -18,9 +18,7 @@ It is possible if needed to deploy the service on other platforms too, or on-pre
     1. An RSA key for encryption. [See here how to create it](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/KeyTab.html#h2_1)  
        * The size of the key must be 2048 bits, and it must has *Decrypt* in its *Permitted operations*.
        * You'll need to use the **name of the key** for the DKE service configuration below. 
-    3. An Ephemeral Client Template. [See here how to create one](https://www.unboundsecurity.com/docs/UKC/UKC_Interfaces/Content/Products/UKC-EKM/UKC_User_Guide/UG-If/uiSO/ClientsTab.html#Multi-us).  
-       * You'll need the **name of the client and its *activation code*** for the DKE service configuration below.
-    4. A user assigned to role **User** (or equivalent custom role that has permissions for Decrypt with the encryption Key)  
+    2. A user assigned to role **User** (or equivalent custom role that has permissions for Decrypt with the encryption Key)  
        * The user must have a password (the default CORE 'user' does not have a password by default).
        * You'll need to use the **user name** and its **password** for the DKE service configuration below.
 
@@ -55,7 +53,7 @@ The following sections guide you through the process of configuring and deployin
    When you're finished adding all the settings make sure you click the **Save** button at the top of the page.  
    The required settings are:
    * `UB_CORE_URL`  
-     The URL for Unbound CORE KMS service, for example: `https://ukc-ep:8443`.  
+     The URL for Unbound CORE KMS service, for example: `https://ukc-ep`.  
      This is used for sending requests to Unbound CORE service. The URL must be accessible from within the container.
    * `UB_PARTITION`  
      The name of the partition which stores the encryption key.
@@ -158,7 +156,7 @@ At this stage, after you deployed the service, it will be a good idea to check t
 9. Mark the checkbox of “use double key encryption” and enter the app service url with the key you will use to encrypt/decrypt the files with .
  For example : https://unbound-dke.azurewebsites.net/<key_name> and click Next.
 
-10. Click the Next button 3 more times and then click Create label.
+10. Click the Next until finished, then click Create label.
 
 ## Publish the label
 
